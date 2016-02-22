@@ -7,7 +7,7 @@ It also includes [built-in support for Laravel 5](https://github.com/DoSomething
 Install with Composer:
 ```json
 "require": {
-    "dosomething/northstar": "^1.0.0"
+    "dosomething/northstar": "0.1.*"
 }
 ```
 
@@ -24,8 +24,11 @@ $northstar = new NorthstarClient([
 // And go!
 $northstar->getAllUsers();
 $northstar->getUser('email', 'test@dosomething.org');
+$northstar->updateUser('5480c950bffebc651c8b4570', ['first_name' => 'Puppet']);
+$northstar->deleteUser('5480c950bffebc651c8b4570');
 
 // and so on...
+
 ```
 
 ### Laravel Usage
@@ -35,6 +38,11 @@ Laravel support is built-in. First, add a service provider to your `config/app.p
 'providers' => [
     // ...
     DoSomething\Northstar\NorthstarServiceProvider::class,
+],
+
+'aliases' => [
+   // ...
+   'Northstar' => DoSomething\Northstar\Facades\Northstar::class,
 ]
 ```
 
@@ -47,20 +55,13 @@ Then, set your environment & key in `config/services.php`:
 ]
 ```
 
-You can now resolve the API client from the service container:
+You can now use the `Northstar` facade anywhere in your app:
 ```php
 class Inspire
 {
-    protected $northstar;
-    
-    public function __construct(NorthstarClient $northstar)
-    {
-        $this->northstar = $northstar;
-    }
-    
     public function doSomething()
     {
-        $users = $this->northstar->getAllUsers();
+        $users = Northstar::getAllUsers();
     }
 }
 ```
