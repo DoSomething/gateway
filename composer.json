@@ -1,0 +1,22 @@
+{
+  "name": "dosomething/northstar",
+  "description": "PHP API client for Northstar, the DoSomething.org user API.",
+  "require": {
+    "php": ">=5.4.0",
+    "guzzlehttp/guzzle": "~5.0",
+    "nesbot/carbon": "~1.14",
+    "giggsey/libphonenumber-for-php": "~7.0"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "David Furnes",
+      "email": "dfurnes@dosomething.org"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "DoSomething\\Northstar\\": "src/"
+    }
+  }
+}
