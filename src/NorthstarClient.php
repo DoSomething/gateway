@@ -3,14 +3,12 @@
 namespace DoSomething\Northstar;
 
 use DoSomething\Northstar\Common\RestAPIClient;
-use DoSomething\Northstar\Exceptions\APIException;
 use DoSomething\Northstar\Exceptions\UnauthorizedException;
 use DoSomething\Northstar\Exceptions\ValidationException;
 use DoSomething\Northstar\Resources\NorthstarKey;
 use DoSomething\Northstar\Resources\NorthstarUser;
 use DoSomething\Northstar\Resources\NorthstarUserCollection;
 use DoSomething\Northstar\Resources\NorthstarKeyCollection;
-use GuzzleHttp\Exception\ClientException;
 
 class NorthstarClient extends RestAPIClient
 {

@@ -19,21 +19,21 @@ abstract class APICollection implements ArrayAccess, Countable, IteratorAggregat
     /**
      * Total number of results on the server.
      *
-     * @var integer
+     * @var int
      */
     protected $total;
 
     /**
      * Maximum number of results returned per page.
      *
-     * @var integer
+     * @var int
      */
     protected $perPage;
 
     /**
      * Current page being displayed from the API.
      *
-     * @var integer
+     * @var int
      */
     protected $currentPage;
 
@@ -45,7 +45,8 @@ abstract class APICollection implements ArrayAccess, Countable, IteratorAggregat
     protected $paginator;
 
     /**
-     * APIResponseCollection constructor.
+     * Create a new API response collection.
+     *
      * @param array $response - Array of raw API responses
      * @param string $class - Class to create for contents
      */
@@ -113,7 +114,7 @@ abstract class APICollection implements ArrayAccess, Countable, IteratorAggregat
      * @see ArrayAccess::offsetExists
      *
      * @param mixed $offset - An offset to check for.
-     * @return boolean
+     * @return bool
      */
     public function offsetExists($offset)
     {
@@ -178,7 +179,8 @@ abstract class APICollection implements ArrayAccess, Countable, IteratorAggregat
      *
      * @return ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->items);
     }
 }

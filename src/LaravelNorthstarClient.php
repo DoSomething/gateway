@@ -24,7 +24,7 @@ class LaravelNorthstarClient extends NorthstarClient
     {
         try {
             return parent::send($method, $path, $options);
-        } catch(ValidationException $e) {
+        } catch (ValidationException $e) {
             $messages = new MessageBag;
 
             foreach ($e->getErrors() as $attribute => $errors) {
@@ -34,9 +34,8 @@ class LaravelNorthstarClient extends NorthstarClient
             }
 
             throw new LaravelValidationException($messages);
-        } catch(InternalException $e) {
+        } catch (InternalException $e) {
             throw new HttpException(500, 'Northstar returned an unexpected error for that request.');
         }
     }
-
 }

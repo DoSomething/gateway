@@ -4,7 +4,6 @@ namespace DoSomething\Northstar\Exceptions;
 
 class ValidationException extends APIException
 {
-
     /**
      * The validation errors.
      *
@@ -34,5 +33,4 @@ class ValidationException extends APIException
     {
         return $this->errors;
     }
-
 }

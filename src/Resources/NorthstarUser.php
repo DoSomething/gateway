@@ -42,7 +42,7 @@ class NorthstarUser extends APIResponse
      */
     public function prettyMobile($fallback = '')
     {
-        if (!isset($this->mobile)) {
+        if (! isset($this->mobile)) {
             return $fallback;
         }
 
