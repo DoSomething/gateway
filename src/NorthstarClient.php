@@ -78,6 +78,20 @@ class NorthstarClient extends RestAPIClient
     }
 
     /**
+     * Send a POST request to create/update a user in Northstar.
+     * Requires an `admin` scoped API key.
+     *
+     * @param array $input - Fields to update in profile
+     * @return NorthstarUser|null
+     */
+    public function createUser($input)
+    {
+        $response = $this->post('users', $input);
+
+        return new NorthstarUser($response['data']);
+    }
+
+    /**
      * Send a PUT request to update a user in Northstar.
      *
      * @param string $id - Northstar User ID
@@ -93,6 +107,7 @@ class NorthstarClient extends RestAPIClient
 
     /**
      * Send a DELETE request to delete a user from Northstar.
+     * Requires an `admin` scoped API key.
      *
      * @param $id - Northstar user ID
      * @return bool - Whether user was successfully deleted
@@ -106,6 +121,7 @@ class NorthstarClient extends RestAPIClient
 
     /**
      * Send a GET request to return all Northstar keys.
+     * Requires an `admin` scoped API key.
      *
      * @return array - keys
      */
@@ -118,6 +134,7 @@ class NorthstarClient extends RestAPIClient
 
     /**
      * Send a POST request to create a new API key.
+     * Requires an `admin` scoped API key.
      *
      * @param array $input - key values
      * @return NorthstarKey
@@ -131,6 +148,7 @@ class NorthstarClient extends RestAPIClient
 
     /**
      * Send a GET request to get the specified key.
+     * Requires an `admin` scoped API key.
      *
      * @param string $api_key - API key
      * @return NorthstarKey
@@ -144,6 +162,7 @@ class NorthstarClient extends RestAPIClient
 
     /**
      * Send a POST request to generate new keys to northstar
+     * Requires an `admin` scoped API key.
      *
      * @param string $api_key - API key
      * @param array $input - key values
@@ -158,6 +177,7 @@ class NorthstarClient extends RestAPIClient
 
     /**
      * Send a DELETE request to delete an API key from Northstar.
+     * Requires an `admin` scoped API key.
      *
      * @param string $api_key - API key
      * @return bool - Whether user was successfully deleted
