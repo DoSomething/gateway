@@ -135,7 +135,7 @@ class RestAPIClient
 
                 // If it's a validation error, throw a generic validation error.
                 case 422:
-                    $errors = json_decode($e->getResponse()->getBody()->getContents())->errors;
+                    $errors = json_decode($e->getResponse()->getBody()->getContents())->error->fields;
                     throw new ValidationException($errors, $endpoint);
                     break;
 
