@@ -88,6 +88,16 @@ abstract class APICollection implements ArrayAccess, Countable, IteratorAggregat
     }
 
     /**
+     * Get the first item from the collection.
+     *
+     * @return APIResponse|null
+     */
+    public function first()
+    {
+        return $this->count() > 0 ? $this->items[0] : null;
+    }
+
+    /**
      * Get the total number of results in the collection (including
      * those not currently fetched from the API, if paginated).
      *
