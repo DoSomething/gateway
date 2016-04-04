@@ -7,7 +7,7 @@ It also includes [built-in support for Laravel 5](https://github.com/DoSomething
 Install with Composer:
 ```json
 "require": {
-    "dosomething/northstar": "0.1.*"
+    "dosomething/northstar": "0.4.*"
 }
 ```
 
