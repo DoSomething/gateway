@@ -74,8 +74,8 @@ method of your `AuthServiceProvider`:
 ```php
 // For Laravel 5.0 or 5.1
 $this->app['auth']->extend('northstar', function ($app) {
-    return new \DoSomething\Northstar\Auth\NorthstarUserProvider(
-        $app['northstar.auth'], $app['hash'], config('auth.model')
+    return new \DoSomething\Northstar\NorthstarUserProvider(
+        $app['northstar'], $app['hash'], config('auth.model')
     );
 });
 
