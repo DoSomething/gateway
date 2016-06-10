@@ -2,7 +2,6 @@
 
 namespace DoSomething\Northstar\Common;
 
-use DoSomething\Northstar\Exceptions\APIException;
 use DoSomething\Northstar\Exceptions\ForbiddenException;
 use DoSomething\Northstar\Exceptions\InternalException;
 use DoSomething\Northstar\Exceptions\UnauthorizedException;
@@ -10,27 +9,32 @@ use DoSomething\Northstar\Exceptions\ValidationException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 
-class RestAPIClient
+class RestApiClient
 {
+    /**
+     * The Guzzle HTTP client.
+     *
+     * @var Client
+     */
     protected $client;
 
     /**
-     * RestAPIClient constructor.
+     * RestApiClient constructor.
      *
-     * @param $base_url - Base URL for this API, e.g. https://api.dosomething.org/v1/
-     * @param array $additional_headers - Additional headers that should be sent with every request
+     * @param string $url - Base URL for this API, e.g. https://api.dosomething.org/
+     * @param array $additionalHeaders - Additional headers that should be sent with every request
      */
-    public function __construct($base_url, $additional_headers = [])
+    public function __construct($url, $additionalHeaders = [])
     {
-        $standard_headers = [
+        $standardHeaders = [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ];
 
         $client = new Client([
-            'base_url' => $base_url,
+            'base_url' => $url,
             'defaults' => [
-                'headers' => array_merge($standard_headers, $additional_headers),
+                'headers' => array_merge($standardHeaders, $additionalHeaders),
             ],
         ]);
 
@@ -42,13 +46,16 @@ class RestAPIClient
      *
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $query - Key-value array of query string values
+     * @param bool $withAuthorization - Should this request be authorized?
      * @return array
      */
-    public function get($path, $query = [])
+    public function get($path, $query = [], $withAuthorization = true)
     {
-        $response = $this->send('GET', $path, [
+        $options = [
             'query' => $query,
-        ]);
+        ];
+
+        $response = $this->send('GET', $path, $options, $withAuthorization);
 
         return is_null($response) ? null : $response->json();
     }
@@ -58,13 +65,16 @@ class RestAPIClient
      *
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $body - Body of the POST request
+     * @param bool $withAuthorization - Should this request be authorized?
      * @return array
      */
-    public function post($path, $body = [])
+    public function post($path, $body = [], $withAuthorization = true)
     {
-        $response = $this->send('POST', $path, [
+        $options = [
             'body' => json_encode($body),
-        ]);
+        ];
+
+        $response = $this->send('POST', $path, $options, $withAuthorization);
 
         return is_null($response) ? null : $response->json();
     }
@@ -74,13 +84,16 @@ class RestAPIClient
      *
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $body - Body of the PUT request
+     * @param bool $withAuthorization - Should this request be authorized?
      * @return array
      */
-    public function put($path, $body = [])
+    public function put($path, $body = [], $withAuthorization = true)
     {
-        $response = $this->send('PUT', $path, [
+        $options = [
             'body' => json_encode($body),
-        ]);
+        ];
+
+        $response = $this->send('PUT', $path, $options, $withAuthorization);
 
         return is_null($response) ? null : $response->json();
     }
@@ -89,13 +102,25 @@ class RestAPIClient
      * Send a DELETE request to the given URL.
      *
      * @param string $path - URL to make request to (relative to base URL)
+     * @param bool $withAuthorization - Should this request be authorized?
      * @return bool
      */
-    public function delete($path)
+    public function delete($path, $withAuthorization = true)
     {
-        $response = $this->send('DELETE', $path);
+        $response = $this->send('DELETE', $path, $withAuthorization);
 
         return $this->responseSuccessful($response);
+    }
+
+    /**
+     * Get the authorization header for a request, if needed.
+     * @see AuthorizesWithOAuth
+     *
+     * @return string|null
+     */
+    protected function getAuthorizationHeader()
+    {
+        return null;
     }
 
     /**
@@ -105,13 +130,23 @@ class RestAPIClient
      * @param string $method - 'GET', 'POST', 'PUT', or 'DELETE'
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $options - Guzzle options (http://guzzle.readthedocs.org/en/latest/request-options.html)
+     * @param bool $withAuthorization - Should this request be authorized?
      * @return Response|void
-     *
-     * @throws APIException
+     * @throws ForbiddenException
+     * @throws InternalException
+     * @throws UnauthorizedException
      * @throws ValidationException
      */
-    public function send($method, $path, $options = [])
+    public function send($method, $path, $options = [], $withAuthorization = true)
     {
+        // By default, we append the authorization header to every request.
+        if ($withAuthorization) {
+            $token = $this->getAuthorizationHeader();
+            if (! empty($token)) {
+                $options['headers']['Authorization'] = $token;
+            }
+        }
+
         try {
             return $this->raw($method, $path, $options);
         } catch (\GuzzleHttp\Exception\ClientException $e) {

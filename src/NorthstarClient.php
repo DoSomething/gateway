@@ -2,47 +2,32 @@
 
 namespace DoSomething\Northstar;
 
-use DoSomething\Northstar\Common\RestAPIClient;
-use DoSomething\Northstar\Exceptions\UnauthorizedException;
-use DoSomething\Northstar\Exceptions\ValidationException;
+use DoSomething\Northstar\Common\RestApiClient;
 use DoSomething\Northstar\Resources\NorthstarKey;
 use DoSomething\Northstar\Resources\NorthstarUser;
 use DoSomething\Northstar\Resources\NorthstarUserCollection;
 use DoSomething\Northstar\Resources\NorthstarKeyCollection;
 
-class NorthstarClient extends RestAPIClient
+class NorthstarClient extends RestApiClient
 {
+    use AuthorizesWithNorthstar;
+
     /**
      * Create a new Northstar API client.
      * @param array $config
      */
     public function __construct($config = [])
     {
-        $base_url = $config['url'].'/v1/';
-        $api_key = $config['api_key'];
+        $base_url = $config['url'];
 
-        parent::__construct($base_url, ['X-DS-REST-API-Key' => $api_key]);
-    }
+        // Set required fields for OAuth authentication trait.
+        $this->clientId = $config['client_id'];
+        $this->clientSecret = $config['client_secret'];
+        $this->authorizationServerUrl = $config['authorization_server_url'];
+        $this->repository = $config['repository'];
+        $this->scope = isset($config['scope']) ? $config['scope'] : ['user'];
 
-    /**
-     * Send a POST request to verify the user's credentials.
-     *
-     * @param array $credentials
-     *   ex: ['email' => '...', 'password' => '...']
-     *       ['mobile' => '...', 'password' => '...']
-     * @return NorthstarUser|null
-     */
-    public function verify($credentials)
-    {
-        try {
-            $response = $this->post('auth/verify', $credentials);
-
-            return new NorthstarUser($response['data']);
-        } catch (UnauthorizedException $e) {
-            return null;
-        } catch (ValidationException $e) {
-            return null;
-        }
+        parent::__construct($base_url);
     }
 
     /**
@@ -54,7 +39,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function getAllUsers($inputs = [])
     {
-        $response = $this->get('users', $inputs);
+        $response = $this->get('v1/users', $inputs);
 
         return new NorthstarUserCollection($response);
     }
@@ -68,7 +53,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function getUser($type, $id)
     {
-        $response = $this->get('users/'.$type.'/'.$id);
+        $response = $this->get('v1/users/'.$type.'/'.$id);
 
         if (is_null($response)) {
             return null;
@@ -86,7 +71,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function createUser($input)
     {
-        $response = $this->post('users', $input);
+        $response = $this->post('v1/users', $input);
 
         return new NorthstarUser($response['data']);
     }
@@ -100,7 +85,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function updateUser($id, $input)
     {
-        $response = $this->put('users/_id/'.$id, $input);
+        $response = $this->put('v1/users/_id/'.$id, $input);
 
         return new NorthstarUser($response['data']);
     }
@@ -114,7 +99,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function deleteUser($id)
     {
-        $success = $this->delete('users/_id/'.$id);
+        $success = $this->delete('v1/users/_id/'.$id);
 
         return $success;
     }
@@ -127,7 +112,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function getAllApiKeys()
     {
-        $response = $this->get('keys');
+        $response = $this->get('v1/keys');
 
         return new NorthstarKeyCollection($response);
     }
@@ -141,7 +126,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function createNewApiKey($input)
     {
-        $response = $this->post('keys', $input);
+        $response = $this->post('v1/keys', $input);
 
         return new NorthstarKey($response['data']);
     }
@@ -155,7 +140,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function getApiKey($api_key)
     {
-        $response = $this->get('keys/'.$api_key);
+        $response = $this->get('v1/keys/'.$api_key);
 
         return new NorthstarKey($response['data']);
     }
@@ -170,7 +155,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function updateApiKey($api_key, $input)
     {
-        $response = $this->put('keys/'.$api_key, $input);
+        $response = $this->put('v1/keys/'.$api_key, $input);
 
         return new NorthstarKey($response['data']);
     }
@@ -184,7 +169,7 @@ class NorthstarClient extends RestAPIClient
      */
     public function deleteApiKey($api_key)
     {
-        return $this->delete('keys/'.$api_key);
+        return $this->delete('v1/keys/'.$api_key);
     }
 
     /**
@@ -194,6 +179,6 @@ class NorthstarClient extends RestAPIClient
      */
     public function scopes()
     {
-        return $this->get('scopes');
+        return $this->get('v2/scopes');
     }
 }

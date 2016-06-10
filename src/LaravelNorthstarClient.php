@@ -18,12 +18,13 @@ class LaravelNorthstarClient extends NorthstarClient
      * @param string $method
      * @param string $path
      * @param array $options
+     * @param bool $withAuthorization
      * @return Response|void
      */
-    public function send($method, $path, $options = [])
+    public function send($method, $path, $options = [], $withAuthorization = true)
     {
         try {
-            return parent::send($method, $path, $options);
+            return parent::send($method, $path, $options, $withAuthorization);
         } catch (ValidationException $e) {
             $messages = new MessageBag;
 
@@ -35,7 +36,13 @@ class LaravelNorthstarClient extends NorthstarClient
 
             throw new LaravelValidationException($messages);
         } catch (InternalException $e) {
-            throw new HttpException(500, 'Northstar returned an unexpected error for that request.');
+            $message = 'Northstar returned an unexpected error for that request.';
+
+            if (config('app.debug')) {
+                $message = $e->getMessage();
+            }
+
+            throw new HttpException(500, $message);
         }
     }
 }
