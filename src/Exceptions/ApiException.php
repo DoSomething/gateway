@@ -4,7 +4,7 @@ namespace DoSomething\Northstar\Exceptions;
 
 use Exception;
 
-class APIException extends Exception
+class ApiException extends Exception
 {
     /**
      * Make a new generic API exception.

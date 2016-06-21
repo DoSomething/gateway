@@ -2,7 +2,7 @@
 
 namespace DoSomething\Northstar\Exceptions;
 
-class ValidationException extends APIException
+class ValidationException extends ApiException
 {
     /**
      * The validation errors.

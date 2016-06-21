@@ -2,7 +2,7 @@
 
 namespace DoSomething\Northstar\Exceptions;
 
-class ForbiddenException extends APIException
+class ForbiddenException extends ApiException
 {
     /**
      * Make a new 403 Forbidden API response exception.

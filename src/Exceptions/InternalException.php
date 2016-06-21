@@ -2,7 +2,7 @@
 
 namespace DoSomething\Northstar\Exceptions;
 
-class InternalException extends APIException
+class InternalException extends ApiException
 {
     /**
      * Make a new internal (likely 500) API response exception.
