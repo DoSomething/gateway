@@ -131,6 +131,22 @@ class RestApiClient
     }
 
     /**
+     * Handle unauthorized exceptions.
+     *
+     * @param $endpoint - The path that
+     * @param $response
+     * @param $method - The HTTP method for the request that triggered the error, for optionally resending.
+     * @param $path - The path for the request that triggered the error, for optionally resending.
+     * @param $options - The options for the request that triggered the error, for optionally resending.
+     * @return \GuzzleHttp\Message\Response|void
+     * @throws UnauthorizedException
+     */
+    public function handleUnauthorizedException($endpoint, $response, $method, $path, $options)
+    {
+        throw new UnauthorizedException($endpoint, json_encode($response));
+    }
+
+    /**
      * Send a Northstar API request, and parse any returned validation
      * errors or status codes to present to the user.
      *
@@ -157,38 +173,36 @@ class RestApiClient
         try {
             // Increment the number of attempts so we can eventually give up.
             $this->attempts++;
-            
+
             // Make the request. Any error code will send us to the 'catch' below.
             $response = $this->raw($method, $path, $options);
-            
+
             // Reset the number of attempts back to zero once we've had a successful response!
             $this->attempts = 0;
-            
+
             return $response;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $endpoint = strtoupper($method).' '.$path;
 
             switch ($e->getCode()) {
-                // If the request is unauthorized, throw a generic unauthorized exception.
+                // If the request is unauthorized, handle it.
                 case 401:
-                    throw new UnauthorizedException($endpoint, $e->getMessage());
-                    break;
+                    $response = json_decode($e->getResponse()->getBody()->getContents());
+
+                    return $this->handleUnauthorizedException($endpoint, $response, $method, $path, $options);
 
                 // If the request is forbidden, throw a generic forbidden exception.
                 case 403:
                     throw new ForbiddenException($endpoint, $e->getMessage());
-                    break;
 
                 // If the resource doesn't exist, return null.
                 case 404:
                     return null;
-                    break;
 
                 // If it's a validation error, throw a generic validation error.
                 case 422:
                     $errors = json_decode($e->getResponse()->getBody()->getContents())->error->fields;
                     throw new ValidationException($errors, $endpoint);
-                    break;
 
                 default:
                     throw new InternalException($endpoint, $e->getCode(), $e->getMessage());

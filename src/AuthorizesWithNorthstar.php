@@ -179,9 +179,10 @@ trait AuthorizesWithNorthstar
      * Get the authorization header that should be used for requests.
      * Overrides RestApiClient's stub getAuthorizationHeader method.
      *
-     * @return string|null
+     * @param bool $forceRefresh - Should the token be refreshed, even if it still appears valid?
+     * @return null|string
      */
-    protected function getAuthorizationHeader()
+    protected function getAuthorizationHeader($forceRefresh = false)
     {
         $token = $this->getOAuthRepository()->getUserToken();
 
@@ -192,10 +193,33 @@ trait AuthorizesWithNorthstar
         // If access token will expire with in the next minute, fetch a new one & continue with request.
         // @TODO: Also need to be able to handle re-authorizing with client grant here.
         $access_token = $token->getAccessToken();
-        if ($token->willExpireSoon()) {
+        if ($forceRefresh || $token->willExpireSoon()) {
             $access_token = $this->reauthorizeUser($token)['access_token'];
         }
 
         return 'Bearer '.$access_token;
+    }
+
+    /**
+     * Handle unauthorized exceptions.
+     *
+     * @param $endpoint - The human-formatted path for the error.
+     * @param $response - The error response.
+     * @param $method - The HTTP method for the request that triggered the error, for optionally resending.
+     * @param $path - The path for the request that triggered the error, for optionally resending.
+     * @param $options - The options for the request that triggered the error, for optionally resending.
+     * @return \GuzzleHttp\Message\Response|void
+     * @throws UnauthorizedException
+     */
+    public function handleUnauthorizedException($endpoint, $response, $method, $path, $options)
+    {
+        // If we got an "Access Denied" error from an invalid access token, attempt to force-refresh it once.
+        if ($response->error === 'access_denied' && $this->getAttempts() < 2) {
+            $options['headers']['Authorization'] = $this->getAuthorizationHeader(true);
+
+            return $this->send($method, $path, $options, false);
+        }
+
+        throw new UnauthorizedException($endpoint, json_encode($response));
     }
 }
