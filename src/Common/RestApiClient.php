@@ -183,17 +183,16 @@ class RestApiClient
             return $response;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $endpoint = strtoupper($method).' '.$path;
+            $response = json_decode($e->getResponse()->getBody()->getContents());
 
             switch ($e->getCode()) {
                 // If the request is unauthorized, handle it.
                 case 401:
-                    $response = json_decode($e->getResponse()->getBody()->getContents());
-
                     return $this->handleUnauthorizedException($endpoint, $response, $method, $path, $options);
 
                 // If the request is forbidden, throw a generic forbidden exception.
                 case 403:
-                    throw new ForbiddenException($endpoint, $e->getMessage());
+                    throw new ForbiddenException($endpoint, json_encode($response));
 
                 // If the resource doesn't exist, return null.
                 case 404:
@@ -201,7 +200,7 @@ class RestApiClient
 
                 // If it's a validation error, throw a generic validation error.
                 case 422:
-                    $errors = json_decode($e->getResponse()->getBody()->getContents())->error->fields;
+                    $errors = $response->error->fields;
                     throw new ValidationException($errors, $endpoint);
 
                 default:
