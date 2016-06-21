@@ -19,6 +19,13 @@ class RestApiClient
     protected $client;
 
     /**
+     * The number of times a request has been attempted.
+     *
+     * @var int
+     */
+    protected $attempts;
+
+    /**
      * RestApiClient constructor.
      *
      * @param string $url - Base URL for this API, e.g. https://api.dosomething.org/
@@ -148,7 +155,16 @@ class RestApiClient
         }
 
         try {
-            return $this->raw($method, $path, $options);
+            // Increment the number of attempts so we can eventually give up.
+            $this->attempts++;
+            
+            // Make the request. Any error code will send us to the 'catch' below.
+            $response = $this->raw($method, $path, $options);
+            
+            // Reset the number of attempts back to zero once we've had a successful response!
+            $this->attempts = 0;
+            
+            return $response;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $endpoint = strtoupper($method).' '.$path;
 
@@ -202,5 +218,15 @@ class RestApiClient
     public function responseSuccessful(Response $response)
     {
         return isset($response->json()['success']);
+    }
+
+    /**
+     * Get the number of times a request has been attempted.
+     *
+     * @return int
+     */
+    public function getAttempts()
+    {
+        return $this->attempts;
     }
 }
