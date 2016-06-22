@@ -191,6 +191,10 @@ class RestApiClient
             $response = json_decode($e->getResponse()->getBody()->getContents());
 
             switch ($e->getCode()) {
+                // If the request is bad, throw a generic bad request exception.
+                case 400:
+                    throw new BadRequestException($endpoint, json_encode($response));
+
                 // If the request is unauthorized, handle it.
                 case 401:
                     return $this->handleUnauthorizedException($endpoint, $response, $method, $path, $options);
