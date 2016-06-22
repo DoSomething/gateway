@@ -2,12 +2,13 @@
 
 namespace DoSomething\Northstar\Common;
 
+use DoSomething\Northstar\Exceptions\BadRequestException;
 use DoSomething\Northstar\Exceptions\ForbiddenException;
 use DoSomething\Northstar\Exceptions\InternalException;
 use DoSomething\Northstar\Exceptions\UnauthorizedException;
 use DoSomething\Northstar\Exceptions\ValidationException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
+use GuzzleHttp\Psr7\Response;
 
 class RestApiClient
 {
@@ -39,7 +40,7 @@ class RestApiClient
         ];
 
         $client = new Client([
-            'base_url' => $url,
+            'base_uri' => $url,
             'defaults' => [
                 'headers' => array_merge($standardHeaders, $additionalHeaders),
             ],
@@ -63,46 +64,49 @@ class RestApiClient
         ];
 
         $response = $this->send('GET', $path, $options, $withAuthorization);
+        $body = $response->getBody()->getContents();
 
-        return is_null($response) ? null : $response->json();
+        return is_null($response) ? null : json_decode($body, true);
     }
 
     /**
      * Send a POST request to the given URL.
      *
      * @param string $path - URL to make request to (relative to base URL)
-     * @param array $body - Body of the POST request
+     * @param array $payload - Body of the POST request
      * @param bool $withAuthorization - Should this request be authorized?
      * @return array
      */
-    public function post($path, $body = [], $withAuthorization = true)
+    public function post($path, $payload = [], $withAuthorization = true)
     {
         $options = [
-            'body' => json_encode($body),
+            'json' => $payload,
         ];
 
         $response = $this->send('POST', $path, $options, $withAuthorization);
+        $body = $response->getBody()->getContents();
 
-        return is_null($response) ? null : $response->json();
+        return is_null($response) ? null : json_decode($body, true);
     }
 
     /**
      * Send a PUT request to the given URL.
      *
      * @param string $path - URL to make request to (relative to base URL)
-     * @param array $body - Body of the PUT request
+     * @param array $payload - Body of the PUT request
      * @param bool $withAuthorization - Should this request be authorized?
      * @return array
      */
-    public function put($path, $body = [], $withAuthorization = true)
+    public function put($path, $payload = [], $withAuthorization = true)
     {
         $options = [
-            'body' => json_encode($body),
+            'json' => $payload,
         ];
 
         $response = $this->send('PUT', $path, $options, $withAuthorization);
+        $body = $response->getBody()->getContents();
 
-        return is_null($response) ? null : $response->json();
+        return is_null($response) ? null : json_decode($body, true);
     }
 
     /**
@@ -138,7 +142,7 @@ class RestApiClient
      * @param $method - The HTTP method for the request that triggered the error, for optionally resending.
      * @param $path - The path for the request that triggered the error, for optionally resending.
      * @param $options - The options for the request that triggered the error, for optionally resending.
-     * @return \GuzzleHttp\Message\Response|void
+     * @return \GuzzleHttp\Psr7\Response|void
      * @throws UnauthorizedException
      */
     public function handleUnauthorizedException($endpoint, $response, $method, $path, $options)
@@ -154,7 +158,8 @@ class RestApiClient
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $options - Guzzle options (http://guzzle.readthedocs.org/en/latest/request-options.html)
      * @param bool $withAuthorization - Should this request be authorized?
-     * @return Response|void
+     * @return \GuzzleHttp\Psr7\Response|void
+     * @throws BadRequestException
      * @throws ForbiddenException
      * @throws InternalException
      * @throws UnauthorizedException
@@ -215,11 +220,11 @@ class RestApiClient
      * @param $method
      * @param $path
      * @param array $options
-     * @return Response|void
+     * @return \GuzzleHttp\Psr7\Response
      */
     public function raw($method, $path, $options)
     {
-        return $this->client->send($this->client->createRequest($method, $path, $options));
+        return $this->client->request($method, $path, $options);
     }
 
     /**
@@ -230,7 +235,10 @@ class RestApiClient
      */
     public function responseSuccessful(Response $response)
     {
-        return isset($response->json()['success']);
+        $body = $response->getBody()->getContents();
+        $json = json_decode($body, true);
+
+        return ! empty($json['success']);
     }
 
     /**
