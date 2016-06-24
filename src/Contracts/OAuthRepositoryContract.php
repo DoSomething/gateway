@@ -7,14 +7,14 @@ interface OAuthRepositoryContract
     /**
      * Get the given authenticated user's access token.
      *
-     * @return \League\OAuth2\Client\Token\AccessToken
+     * @return \League\OAuth2\Client\Token\AccessToken|null
      */
     public function getUserToken();
 
     /**
      * Get the OAuth client's token.
      *
-     * @return \League\OAuth2\Client\Token\AccessToken
+     * @return \League\OAuth2\Client\Token\AccessToken|null
      */
     public function getClientToken();
 
