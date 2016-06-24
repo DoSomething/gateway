@@ -33,6 +33,7 @@ trait AuthorizesWithNorthstar
 
     /**
      * OAuth scopes to request.
+     * 
      * @var array
      */
     protected $scope = ['user'];
@@ -52,7 +53,7 @@ trait AuthorizesWithNorthstar
     protected $repository;
 
     /**
-     * The authorization server URL (for example, Northstar).
+     * The authorization server.
      *
      * @var NorthstarOAuthProvider
      */
