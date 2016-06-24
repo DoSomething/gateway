@@ -2,11 +2,11 @@
   "name": "dosomething/northstar",
   "description": "PHP API client for Northstar, the DoSomething.org identity API.",
   "require": {
-    "php": ">=5.6.0",
     "nesbot/carbon": "~1.14",
     "giggsey/libphonenumber-for-php": "~7.0",
     "lcobucci/jwt": "^3.1",
-    "guzzlehttp/guzzle": "~6.0.0"
+    "guzzlehttp/guzzle": "~6.0.0",
+    "league/oauth2-client": "~1.4"
   },
   "license": "MIT",
   "authors": [
