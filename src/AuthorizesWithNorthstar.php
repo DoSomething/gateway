@@ -91,7 +91,7 @@ trait AuthorizesWithNorthstar
      *
      * @return mixed
      */
-    public function authorizeClient()
+    public function authorizeByClientCredentialsGrant()
     {
         try {
             $token = $this->getAuthorizationServer()->getAccessToken('client_credentials', [
@@ -114,9 +114,9 @@ trait AuthorizesWithNorthstar
      * Re-authorize a user based on their stored refresh token.
      *
      * @param AccessToken $token
-     * @return mixed
+     * @return AccessToken
      */
-    public function authorizeByRefreshToken(AccessToken $token)
+    public function authorizeByRefreshTokenGrant(AccessToken $token)
     {
         $newToken = $this->getAuthorizationServer()->getAccessToken('refresh_token', [
             'refresh_token' => $token->getRefreshToken(),
