@@ -3,6 +3,7 @@
 namespace DoSomething\Northstar;
 
 use DoSomething\Northstar\Contracts\OAuthRepositoryContract;
+use DoSomething\Northstar\Exceptions\UnauthorizedException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 
@@ -128,20 +129,45 @@ trait AuthorizesWithNorthstar
      * Get the authorization header for a request, if needed.
      * Overrides this empty method in RestApiClient.
      *
-     * @return string|null
+     * @param bool $forceRefresh - Should the token be refreshed, even if expiration timestamp hasn't passed?
+     * @return null|string
+     * @throws \Exception
      */
-    protected function getAuthorizationHeader()
+    protected function getAuthorizationHeader($forceRefresh = false)
     {
         // @TODO: Client token as well.
         $token = $this->getOAuthRepository()->getUserToken();
 
         // If the token is expired, fetch a new one.
-        if($token && $token->hasExpired()) {
+        if($token && ($token->hasExpired() || $forceRefresh)) {
             // @TODO: ...
             $token = $this->authorizeByRefreshToken($token);
         }
 
         return $this->getAuthorizationServer()->getHeaders($token);
+    }
+
+    /**
+     * Handle unauthorized exceptions.
+     *
+     * @param $endpoint - The path that
+     * @param $response
+     * @param $method - The HTTP method for the request that triggered the error, for optionally resending.
+     * @param $path - The path for the request that triggered the error, for optionally resending.
+     * @param $options - The options for the request that triggered the error, for optionally resending.
+     * @return \GuzzleHttp\Psr7\Response|void
+     * @throws UnauthorizedException
+     */
+    public function handleUnauthorizedException($endpoint, $response, $method, $path, $options)
+    {
+        // If we got an "Access Denied" error from an invalid access token, attempt to force-refresh it once.
+        if (! empty($response->error) && $response->error === 'access_denied' && $this->getAttempts() < 2) {
+            $options['headers']['Authorization'] = $this->getAuthorizationHeader(true);
+
+            return $this->send($method, $path, $options, false);
+        }
+
+        throw new UnauthorizedException($endpoint, json_encode($response));
     }
 
     /**
