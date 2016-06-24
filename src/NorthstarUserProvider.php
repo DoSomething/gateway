@@ -60,8 +60,8 @@ class NorthstarUserProvider extends EloquentUserProvider implements UserProvider
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        $response = $this->northstar->authorizeUser($credentials);
+        $token = $this->northstar->authorizeUser($credentials);
 
-        return ! empty($response['access_token']);
+        return ! is_null($token);
     }
 }

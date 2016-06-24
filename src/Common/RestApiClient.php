@@ -29,10 +29,9 @@ class RestApiClient
     /**
      * RestApiClient constructor.
      *
-     * @param string $url - Base URL for this API, e.g. https://api.dosomething.org/
-     * @param array $additionalHeaders - Additional headers that should be sent with every request
+     * @param string $url - Base URL for this Resource API, e.g. https://api.dosomething.org/
      */
-    public function __construct($url, $additionalHeaders = [])
+    public function __construct($url)
     {
         $standardHeaders = [
             'Content-Type' => 'application/json',
@@ -42,7 +41,7 @@ class RestApiClient
         $client = new Client([
             'base_uri' => $url,
             'defaults' => [
-                'headers' => array_merge($standardHeaders, $additionalHeaders),
+                'headers' => $standardHeaders,
             ],
         ]);
 
@@ -125,7 +124,7 @@ class RestApiClient
 
     /**
      * Get the authorization header for a request, if needed.
-     * @see AuthorizesWithOAuth
+     * @see AuthorizesWithNorthstar
      *
      * @return string|null
      */
@@ -167,20 +166,12 @@ class RestApiClient
      */
     public function send($method, $path, $options = [], $withAuthorization = true)
     {
-        // By default, we append the authorization header to every request.
-        if ($withAuthorization) {
-            $token = $this->getAuthorizationHeader();
-            if (! empty($token)) {
-                $options['headers']['Authorization'] = $token;
-            }
-        }
-
         try {
             // Increment the number of attempts so we can eventually give up.
             $this->attempts++;
 
             // Make the request. Any error code will send us to the 'catch' below.
-            $response = $this->raw($method, $path, $options);
+            $response = $this->raw($method, $path, $options, $withAuthorization);
 
             // Reset the number of attempts back to zero once we've had a successful response!
             $this->attempts = 0;
@@ -224,10 +215,21 @@ class RestApiClient
      * @param $method
      * @param $path
      * @param array $options
-     * @return \GuzzleHttp\Psr7\Response
+     * @param bool $withAuthorization
+     * @return Response
      */
-    public function raw($method, $path, $options)
+    public function raw($method, $path, $options, $withAuthorization = true)
     {
+        // By default, we append the authorization header to every request.
+        if ($withAuthorization) {
+            $headers = $this->getAuthorizationHeader();
+            if (empty($options['headers'])) {
+                $options['headers'] = [];
+            }
+            
+            $options['headers'] = array_merge($options['headers'], $headers);
+        }
+        
         return $this->client->request($method, $path, $options);
     }
 

@@ -2,12 +2,9 @@
 
 namespace DoSomething\Northstar;
 
-use DoSomething\Northstar\Common\RestApiClient;
-use DoSomething\Northstar\Common\Token;
 use DoSomething\Northstar\Contracts\OAuthRepositoryContract;
-use DoSomething\Northstar\Exceptions\UnauthorizedException;
-use DoSomething\Northstar\Exceptions\ValidationException;
-use Lcobucci\JWT\Parser;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Token\AccessToken;
 
 trait AuthorizesWithNorthstar
 {
@@ -29,7 +26,7 @@ trait AuthorizesWithNorthstar
      * OAuth scopes to request.
      * @var array
      */
-    protected $scope = [];
+    protected $scope = ['user'];
 
     /**
      * The authorization server URL (for example, Northstar).
@@ -39,18 +36,113 @@ trait AuthorizesWithNorthstar
     protected $authorizationServerUrl;
 
     /**
-     * The authorization server URL (for example, Northstar).
+     * The class name of the OAuth repository.
      *
-     * @var RestApiClient
-     */
-    protected $authorizationServer;
-
-    /**
-     * The repository where OAuth details are stored/retrieved.
-     *
-     * @var \DoSomething\Northstar\Contracts\OAuthRepositoryContract
+     * @var string
      */
     protected $repository;
+
+    /**
+     * The authorization server URL (for example, Northstar).
+     *
+     * @var NorthstarOAuthProvider
+     */
+    private $authorizationServer;
+
+    /**
+     * Authorize a user based on the given username & password.
+     *
+     * @param array $credentials
+     * @return \League\OAuth2\Client\Token\AccessToken
+     */
+    public function authorizeUser($credentials)
+    {
+        try {
+            $token = $this->getAuthorizationServer()->getAccessToken('password', [
+                'username' => $credentials['username'],
+                'password' => $credentials['password'],
+                'scope' => $this->scope,
+            ]);
+
+            $this->getOAuthRepository()->persistUserCredentials(
+                $token->getResourceOwnerId(),
+                $token->getToken(),
+                $token->getRefreshToken(),
+                $token->getExpires()
+            );
+
+            return $token;
+        } catch (IdentityProviderException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Authorize a machine based on the given client credentials.
+     *
+     * @return mixed
+     */
+    public function authorizeClient()
+    {
+        try {
+            $token = $this->getAuthorizationServer()->getAccessToken('client_credentials', [
+                'scope' => $this->scope,
+            ]);
+
+            $this->getOAuthRepository()->persistClientCredentials(
+                $this->clientId,
+                $token->getToken(),
+                $token->getExpires()
+            );
+
+            return $token;
+        } catch (IdentityProviderException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Re-authorize a user based on their stored refresh token.
+     *
+     * @param AccessToken $token
+     * @return mixed
+     */
+    public function authorizeByRefreshToken(AccessToken $token)
+    {
+        $newToken = $this->getAuthorizationServer()->getAccessToken('refresh_token', [
+            'refresh_token' => $token->getRefreshToken(),
+            'scope' => $this->scope,
+        ]);
+
+        $this->getOAuthRepository()->persistUserCredentials(
+            $newToken->getResourceOwnerId(),
+            $newToken->getToken(),
+            $newToken->getRefreshToken(),
+            $newToken->getExpires()
+        );
+
+        return $newToken;
+    }
+
+    /**
+     * Get the authorization header for a request, if needed.
+     * Overrides this empty method in RestApiClient.
+     *
+     * @return string|null
+     */
+    protected function getAuthorizationHeader()
+    {
+        // @TODO: Client token as well.
+        $token = $this->getOAuthRepository()->getUserToken();
+
+        // If the token is expired, fetch a new one.
+        if($token && $token->hasExpired()) {
+            // @TODO: ...
+            $token = $this->authorizeByRefreshToken($token);
+        }
+
+        return $this->getAuthorizationServer()->getHeaders($token);
+    }
 
     /**
      * Get the authorization server.
@@ -58,7 +150,12 @@ trait AuthorizesWithNorthstar
     protected function getAuthorizationServer()
     {
         if (! $this->authorizationServer) {
-            $this->authorizationServer = new RestApiClient($this->authorizationServerUrl);
+            $this->authorizationServer = new NorthstarOAuthProvider([
+                'url' => $this->authorizationServerUrl,
+                'clientId' => $this->clientId,
+                'clientSecret' => $this->clientSecret,
+                'redirectUri' => '', // @TODO: Add this once we support auth code grant.
+            ]);
         }
 
         return $this->authorizationServer;
@@ -76,150 +173,5 @@ trait AuthorizesWithNorthstar
         }
 
         return new $this->repository();
-    }
-
-    /**
-     * Authorize a user based on the given username & password.
-     *
-     * @param array $credentials
-     * @return mixed
-     */
-    public function authorizeUser($credentials)
-    {
-        try {
-            $response = $this->getAuthorizationServer()->post('v2/auth/token', [
-                'grant_type' => 'password',
-                'username' => $credentials['username'],
-                'password' => $credentials['password'],
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret,
-                'scope' => implode(' ', $this->scope),
-            ], false);
-
-            $jwt = (new Parser())->parse($response['access_token']);
-            $this->getOAuthRepository()->persistUserCredentials(
-                $jwt->getClaim('sub'),
-                $response['access_token'],
-                $response['refresh_token'],
-                $jwt->getClaim('exp')
-            );
-
-            return $response;
-        } catch (UnauthorizedException $e) {
-            return null;
-        } catch (ValidationException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Authorize a machine based on the given client credentials.
-     *
-     * @return mixed
-     */
-    public function authorizeClient()
-    {
-        try {
-            $response = $this->getAuthorizationServer()->post('v2/auth/token', [
-                'grant_type' => 'client_credentials',
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret,
-                'scope' => implode(' ', $this->scope),
-            ], false);
-
-            $jwt = (new Parser())->parse($response['access_token']);
-            $this->getOAuthRepository()->persistClientCredentials(
-                $jwt->getClaim('aud'),
-                $response['access_token'],
-                $jwt->getClaim('exp')
-            );
-
-            return $response;
-        } catch (UnauthorizedException $e) {
-            return null;
-        } catch (ValidationException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Re-authorize a user based on their stored refresh token.
-     *
-     * @param $token
-     * @return mixed
-     */
-    public function reauthorizeUser(Token $token)
-    {
-        try {
-            $response = $this->getAuthorizationServer()->post('v2/auth/token', [
-                'grant_type' => 'refresh_token',
-                'refresh_token' => $token->getRefreshToken(),
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret,
-                'scope' => implode(' ', $this->scope),
-            ], false);
-
-            $jwt = (new Parser())->parse($response['access_token']);
-            $this->getOAuthRepository()->persistUserCredentials(
-                $jwt->getClaim('sub'),
-                $response['access_token'],
-                $response['refresh_token'],
-                $jwt->getClaim('exp')
-            );
-
-            return $response;
-        } catch (UnauthorizedException $e) {
-            return null;
-        } catch (ValidationException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Get the authorization header that should be used for requests.
-     * Overrides RestApiClient's stub getAuthorizationHeader method.
-     *
-     * @param bool $forceRefresh - Should the token be refreshed, even if it still appears valid?
-     * @return null|string
-     */
-    protected function getAuthorizationHeader($forceRefresh = false)
-    {
-        $token = $this->getOAuthRepository()->getUserToken();
-
-        if (! $token) {
-            return null;
-        }
-
-        // If access token will expire with in the next minute, fetch a new one & continue with request.
-        // @TODO: Also need to be able to handle re-authorizing with client grant here.
-        $access_token = $token->getAccessToken();
-        if ($forceRefresh || $token->willExpireSoon()) {
-            $access_token = $this->reauthorizeUser($token)['access_token'];
-        }
-
-        return 'Bearer '.$access_token;
-    }
-
-    /**
-     * Handle unauthorized exceptions.
-     *
-     * @param $endpoint - The human-formatted path for the error.
-     * @param $response - The error response.
-     * @param $method - The HTTP method for the request that triggered the error, for optionally resending.
-     * @param $path - The path for the request that triggered the error, for optionally resending.
-     * @param $options - The options for the request that triggered the error, for optionally resending.
-     * @return \GuzzleHttp\Message\Response|void
-     * @throws UnauthorizedException
-     */
-    public function handleUnauthorizedException($endpoint, $response, $method, $path, $options)
-    {
-        // If we got an "Access Denied" error from an invalid access token, attempt to force-refresh it once.
-        if ($response->error === 'access_denied' && $this->getAttempts() < 2) {
-            $options['headers']['Authorization'] = $this->getAuthorizationHeader(true);
-
-            return $this->send($method, $path, $options, false);
-        }
-
-        throw new UnauthorizedException($endpoint, json_encode($response));
     }
 }
