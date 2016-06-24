@@ -10,6 +10,14 @@ use League\OAuth2\Client\Token\AccessToken;
 trait AuthorizesWithNorthstar
 {
     /**
+     * The grant to use for authorization: supported values are either
+     * 'password' or 'client_credentials'.
+     * 
+     * @var string
+     */
+    protected $grant = 'password';
+    
+    /**
      * The OAuth2 client ID.
      *
      * @var string
@@ -56,7 +64,7 @@ trait AuthorizesWithNorthstar
      * @param array $credentials
      * @return \League\OAuth2\Client\Token\AccessToken
      */
-    public function authorizeUser($credentials)
+    public function authorizeByPasswordGrant($credentials)
     {
         try {
             $token = $this->getAuthorizationServer()->getAccessToken('password', [
@@ -126,6 +134,48 @@ trait AuthorizesWithNorthstar
     }
 
     /**
+     * Get the access token from the repository based on the chosen grant.
+     * 
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function getAccessToken()
+    {
+        switch ($this->grant) {
+            case 'client_credentials';
+                return $this->getOAuthRepository()->getClientToken();
+            
+            case 'password':
+                return $this->getOAuthRepository()->getUserToken();
+
+            default:
+                throw new \Exception('Unsupported grant type. Check $this->grant.');
+        }
+    }
+
+
+    /**
+     * Get a new access token based on the chosen grant.
+     * 
+     * @param $token
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function refreshAccessToken($token)
+    {
+        switch ($this->grant) {
+            case 'client_credentials';
+                return $this->authorizeByClientCredentialsGrant();
+                
+            case 'password':
+                return $this->authorizeByRefreshTokenGrant($token);
+            
+            default:
+                throw new \Exception('Unsupported grant type. Check $this->grant.');
+        }
+    }
+
+    /**
      * Get the authorization header for a request, if needed.
      * Overrides this empty method in RestApiClient.
      *
@@ -135,13 +185,11 @@ trait AuthorizesWithNorthstar
      */
     protected function getAuthorizationHeader($forceRefresh = false)
     {
-        // @TODO: Client token as well.
-        $token = $this->getOAuthRepository()->getUserToken();
+        $token = $this->getAccessToken();
 
-        // If the token is expired, fetch a new one.
+        // If the token is expired, fetch a new one before making the request.
         if($token && ($token->hasExpired() || $forceRefresh)) {
-            // @TODO: ...
-            $token = $this->authorizeByRefreshToken($token);
+            $token = $this->refreshAccessToken($token);
         }
 
         return $this->getAuthorizationServer()->getHeaders($token);
