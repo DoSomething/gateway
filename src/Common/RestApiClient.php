@@ -226,10 +226,10 @@ class RestApiClient
             if (empty($options['headers'])) {
                 $options['headers'] = [];
             }
-            
+
             $options['headers'] = array_merge($options['headers'], $headers);
         }
-        
+
         return $this->client->request($method, $path, $options);
     }
 

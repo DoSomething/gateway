@@ -135,13 +135,13 @@ class NorthstarOAuthProvider extends AbstractProvider
     protected function checkResponse(ResponseInterface $response, $data)
     {
         // Standard error response format
-        if (!empty($data['error'])) {
+        if (! empty($data['error'])) {
             // @TODO Better error handling.
             throw new \Exception('Unexpected API error.');
         }
 
         // OAuth error response format
-        if (!empty($data['error_type'])) {
+        if (! empty($data['error_type'])) {
             throw new IdentityProviderException(
                 $response->getReasonPhrase(),
                 $response->getStatusCode(),
