@@ -141,6 +141,38 @@ trait AuthorizesWithNorthstar
     }
 
     /**
+     * Invalidate the authenticated user's refresh token.
+     */
+    public function invalidateCurrentRefreshToken()
+    {
+        if ($this->grant === 'client_credentials') {
+            return;
+        }
+
+        $token = $this->getAccessToken();
+        if ($token) {
+            $this->invalidateRefreshToken($token);
+        }
+    }
+
+    /**
+     * Invalidate the refresh token for the given access token.
+     *
+     * @param AccessToken $token
+     */
+    public function invalidateRefreshToken(AccessToken $token)
+    {
+        $this->getAuthorizationServer()->getAuthenticatedRequest('DELETE',
+            $this->authorizationServerUrl . '/v2/auth/token', $token, [
+                'json' => [
+                    'token' => $token->getRefreshToken(),
+                ],
+            ]);
+
+        $this->getOAuthRepository()->removeUserToken($token->getResourceOwnerId());
+    }
+
+    /**
      * Get the access token from the repository based on the chosen grant.
      *
      * @return mixed

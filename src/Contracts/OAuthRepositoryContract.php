@@ -47,6 +47,8 @@ interface OAuthRepositoryContract
 
     /**
      * Remove the user's token information when they log out.
+     *
+     * @param $userId - Northstar user ID
      */
-    public function removeUserToken();
+    public function removeUserToken($userId);
 }

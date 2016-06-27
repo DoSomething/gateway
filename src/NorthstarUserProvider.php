@@ -26,6 +26,12 @@ class NorthstarUserProvider extends EloquentUserProvider implements UserProvider
     {
         $this->northstar = $northstar;
 
+        // When using this user provider, register an event to invalidate & remove
+        // refresh token from the local database record on logout.
+        app('events')->listen('auth.logout', function () {
+            $this->northstar->invalidateCurrentRefreshToken();
+        });
+
         parent::__construct($hasher, $model);
     }
 
