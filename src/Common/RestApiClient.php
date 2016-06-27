@@ -136,11 +136,11 @@ class RestApiClient
     /**
      * Handle unauthorized exceptions.
      *
-     * @param $endpoint - The path that
-     * @param $response
-     * @param $method - The HTTP method for the request that triggered the error, for optionally resending.
-     * @param $path - The path for the request that triggered the error, for optionally resending.
-     * @param $options - The options for the request that triggered the error, for optionally resending.
+     * @param string $endpoint - The human-readable route that triggered the error.
+     * @param array $response - The body of the response.
+     * @param string $method - The HTTP method for the request that triggered the error, for optionally resending.
+     * @param string $path - The path for the request that triggered the error, for optionally resending.
+     * @param array $options - The options for the request that triggered the error, for optionally resending.
      * @return \GuzzleHttp\Psr7\Response|void
      * @throws UnauthorizedException
      */
