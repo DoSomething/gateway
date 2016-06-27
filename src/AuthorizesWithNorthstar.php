@@ -74,7 +74,7 @@ trait AuthorizesWithNorthstar
                 'scope' => $this->scope,
             ]);
 
-            $this->getOAuthRepository()->persistUserCredentials(
+            $this->getOAuthRepository()->persistUserToken(
                 $token->getResourceOwnerId(),
                 $token->getToken(),
                 $token->getRefreshToken(),
@@ -99,7 +99,7 @@ trait AuthorizesWithNorthstar
                 'scope' => $this->scope,
             ]);
 
-            $this->getOAuthRepository()->persistClientCredentials(
+            $this->getOAuthRepository()->persistClientToken(
                 $this->clientId,
                 $token->getToken(),
                 $token->getExpires()
@@ -114,24 +114,28 @@ trait AuthorizesWithNorthstar
     /**
      * Re-authorize a user based on their stored refresh token.
      *
-     * @param AccessToken $token
+     * @param AccessToken $oldToken
      * @return AccessToken
      */
-    public function authorizeByRefreshTokenGrant(AccessToken $token)
+    public function authorizeByRefreshTokenGrant(AccessToken $oldToken)
     {
-        $newToken = $this->getAuthorizationServer()->getAccessToken('refresh_token', [
-            'refresh_token' => $token->getRefreshToken(),
-            'scope' => $this->scope,
-        ]);
+        try {
+            $token = $this->getAuthorizationServer()->getAccessToken('refresh_token', [
+                'refresh_token' => $oldToken->getRefreshToken(),
+                'scope' => $this->scope,
+            ]);
 
-        $this->getOAuthRepository()->persistUserCredentials(
-            $newToken->getResourceOwnerId(),
-            $newToken->getToken(),
-            $newToken->getRefreshToken(),
-            $newToken->getExpires()
-        );
+            $this->getOAuthRepository()->persistUserToken(
+                $token->getResourceOwnerId(),
+                $token->getToken(),
+                $token->getRefreshToken(),
+                $token->getExpires()
+            );
 
-        return $newToken;
+            return $token;
+        } catch (IdentityProviderException $e) {
+            return null;
+        }
     }
 
     /**

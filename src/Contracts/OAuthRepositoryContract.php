@@ -27,7 +27,7 @@ interface OAuthRepositoryContract
      * @param $expiration - Access token expiration as UNIX timestamp
      * @return void
      */
-    public function persistUserCredentials($userId, $accessToken, $refreshToken, $expiration);
+    public function persistUserToken($userId, $accessToken, $refreshToken, $expiration);
 
     /**
      * Save the access token for an authorized client.
@@ -37,5 +37,16 @@ interface OAuthRepositoryContract
      * @param $expiration - Access token expiration as UNIX timestamp
      * @return void
      */
-    public function persistClientCredentials($clientId, $accessToken, $expiration);
+    public function persistClientToken($clientId, $accessToken, $expiration);
+
+    /**
+     * If a refresh token is invalid, request the user's credentials
+     * by redirecting to the login screen.
+     */
+    public function requestUserCredentials();
+
+    /**
+     * Remove the user's token information when they log out.
+     */
+    public function removeUserToken();
 }
