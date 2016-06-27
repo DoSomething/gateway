@@ -134,6 +134,8 @@ trait AuthorizesWithNorthstar
 
             return $token;
         } catch (IdentityProviderException $e) {
+            $this->getOAuthRepository()->requestUserCredentials();
+
             return null;
         }
     }
