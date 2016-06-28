@@ -1,24 +1,33 @@
 # Northstar PHP [![Packagist](https://img.shields.io/packagist/v/dosomething/northstar.svg)](https://packagist.org/packages/dosomething/northstar)
-This is a simple PHP API client for [Northstar](https://www.github.com/dosomething/northstar), the DoSomething.org user API.
+This is a simple PHP API client for [Northstar](https://www.github.com/dosomething/northstar), the DoSomething.org
+identity API. It supports authorization and resource requests from Northstar, and includes the tools necessary for
+building other API clients that authorize against Northstar.
 
-It also includes [built-in support for Laravel 5](https://github.com/DoSomething/northstar-php#laravel-usage) and an optional [authentication driver](#laravel-authentication).
+It also includes [built-in support for Laravel 5](https://github.com/DoSomething/northstar-php#laravel-usage) and an
+optional [authentication driver](#laravel-authentication).
 
 ### Installation
 Install with Composer:
 ```json
 "require": {
-    "dosomething/northstar": "0.4.*"
+    "dosomething/northstar": "^1.0.0"
 }
 ```
 
 ### Usage
-In vanilla PHP, simply require the `Client` class and create a new instance with your API key.
+In vanilla PHP, you can require the `NorthstarClient` class and create a new instance with your credentials. You'll need
+to implement your own version of the `\DoSomething\Northstar\Contracts\OAuthRepositoryContract` class to handle storing
+and retrieving tokens.
+
 ```php
 use DoSomething\Northstar\NorthstarClient;
 
 $northstar = new NorthstarClient([
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'api_key' => getenv('NORTHSTAR_API_KEY')      // your app's API key
+    'client_id' => 'example', // your app's client ID
+    'client_secret' => 'xxxxxxxxxxxxx', // your app's client secret
+    'scope' => ['user'], // the scopes to request  
+    'repository' => \YourApp\OAuthRepository::class, // class which handles saving/retrieving tokens
 ]);
 
 // And go!
@@ -50,8 +59,11 @@ Then, set your environment & key in `config/services.php`:
 
 ```php
 'northstar' => [
+    'grant' => 'client_credentials',
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'api_key' => env('NORTHSTAR_API_KEY')         // your app's API key
+    'client_id' => 'example', // your app's client ID
+    'client_secret' => 'xxxxxxxxxxxxx', // your app's client secret
+    'scope' => ['user', 'admin'], // the scopes to request  
 ]
 ```
 
@@ -68,7 +80,7 @@ class Inspire
 
 ### Laravel Authentication
 A Laravel user provider is also included to configure Laravel's built-in authentication to validate against Northstar
-instead of your local database. After configuring the API above, register the included user provider in the `boot`
+instead of your local database. After configuring the client above, register the included user provider in the `boot`
 method of your `AuthServiceProvider`:
 
 ```php
@@ -102,6 +114,15 @@ Then set your application to use the `northstar` driver instead of `eloquent` in
     ],
     // ...
  ]
+```
+
+Finally, make sure to switch the Northstar client to use the password grant in `config/services.php`:
+
+```
+    'northstar' => [
+        'grant' => 'password',
+        // ...
+    ]
 ```
 
 Now, Laravel will query Northstar with user credentials, rather than your local Eloquent database. If
