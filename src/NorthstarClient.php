@@ -24,8 +24,11 @@ class NorthstarClient extends RestApiClient
         $this->clientId = $config['client_id'];
         $this->clientSecret = $config['client_secret'];
         $this->authorizationServerUrl = $config['authorization_server_url'];
-        $this->repository = $config['repository'];
         $this->scope = isset($config['scope']) ? $config['scope'] : ['user'];
+
+        if (! empty($config['repository'])) {
+            $this->repository = $config['repository'];
+        }
 
         parent::__construct($base_url);
     }
