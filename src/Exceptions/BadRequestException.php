@@ -2,14 +2,14 @@
 
 namespace DoSomething\Northstar\Exceptions;
 
-class ForbiddenException extends ApiException
+class BadRequestException extends ApiException
 {
     /**
-     * Make a new 403 Forbidden API response exception.
+     * Make a new 400 Bad Request API response exception.
      * @param string $message
      */
     public function __construct($endpoint, $message)
     {
-        parent::__construct($endpoint, 403, $message);
+        parent::__construct($endpoint, 400, $message);
     }
 }

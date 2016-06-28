@@ -26,6 +26,12 @@ class NorthstarUserProvider extends EloquentUserProvider implements UserProvider
     {
         $this->northstar = $northstar;
 
+        // When using this user provider, register an event to invalidate & remove
+        // refresh token from the local database record on logout.
+        app('events')->listen('auth.logout', function () {
+            $this->northstar->invalidateCurrentRefreshToken();
+        });
+
         parent::__construct($hasher, $model);
     }
 
@@ -37,12 +43,18 @@ class NorthstarUserProvider extends EloquentUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        $user = $this->northstar->getUser('email', $credentials['email']);
+        $user = $this->northstar->getUser('username', $credentials['username']);
 
         // If a matching user is found, find or create local user with that ID.
-        return $this->createModel()->firstOrCreate([
-            'northstar_id' => $user->id,
-        ]);
+        if (! is_null($model = $this->createModel()->where('northstar_id', $user->id)->first())) {
+            return $model;
+        }
+
+        $model = $this->createModel()->newInstance();
+        $model->northstar_id = $user->id;
+        $model->save();
+
+        return $model;
     }
 
     /**
@@ -54,8 +66,8 @@ class NorthstarUserProvider extends EloquentUserProvider implements UserProvider
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        $user = $this->northstar->verify($credentials);
+        $token = $this->northstar->authorizeByPasswordGrant($credentials);
 
-        return ! is_null($user);
+        return ! is_null($token);
     }
 }

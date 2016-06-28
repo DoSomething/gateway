@@ -2,7 +2,7 @@
 
 namespace DoSomething\Northstar\Exceptions;
 
-class UnauthorizedException extends APIException
+class UnauthorizedException extends ApiException
 {
     /**
      * Make a new 401 Unauthorized API response exception.
