@@ -46,12 +46,12 @@ Laravel support is built-in. First, add a service provider to your `config/app.p
 ```php
 'providers' => [
     // ...
-    DoSomething\Northstar\NorthstarServiceProvider::class,
+    DoSomething\Northstar\Laravel\NorthstarServiceProvider::class,
 ],
 
 'aliases' => [
    // ...
-   'Northstar' => DoSomething\Northstar\Facades\Northstar::class,
+   'Northstar' => DoSomething\Northstar\Laravel\Facades\Northstar::class,
 ]
 ```
 
@@ -59,7 +59,7 @@ Then, set your environment & key in `config/services.php`:
 
 ```php
 'northstar' => [
-    'grant' => 'client_credentials',
+    'grant' => 'client_credentials', // OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
     'client_id' => 'example', // your app's client ID
     'client_secret' => 'xxxxxxxxxxxxx', // your app's client secret
@@ -100,7 +100,7 @@ instead of `eloquent` in `config/auth.php`.
 
 Finally, make sure to switch the Northstar client to use the password grant in `config/services.php`:
 
-```
+```php
     'northstar' => [
         'grant' => 'password',
         // ...
