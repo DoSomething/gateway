@@ -30,11 +30,11 @@ class NorthstarServiceProvider extends ServiceProvider
         });
 
         // Register the custom user provider.
-        $this->app->resolving('auth', function(AuthManager $auth) {
+        $this->app->resolving('auth', function (AuthManager $auth) {
             if (method_exists($auth, 'provide')) {
                 return $this->registerProviderForNewLaravel($auth);
             }
-            
+
             return $this->registerProviderForOldLaravel($auth);
         });
 
@@ -44,7 +44,7 @@ class NorthstarServiceProvider extends ServiceProvider
 
     /**
      * Register the user provider for Laravel 5.0 or 5.1 API.
-     * 
+     *
      * @param AuthManager $auth
      */
     public function registerProviderForOldLaravel(AuthManager $auth)
@@ -58,7 +58,7 @@ class NorthstarServiceProvider extends ServiceProvider
 
     /**
      * Register the user provider for Laravel 5.2 or newer.
-     * 
+     *
      * @param AuthManager $auth
      */
     public function registerProviderForNewLaravel(AuthManager $auth)
