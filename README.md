@@ -23,6 +23,7 @@ and retrieving tokens.
 use DoSomething\Northstar\NorthstarClient;
 
 $northstar = new NorthstarClient([
+    'grant' => 'client_credentials', // OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
     'client_id' => 'example', // your app's client ID
     'client_secret' => 'xxxxxxxxxxxxx', // your app's client secret
