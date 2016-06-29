@@ -1,16 +1,24 @@
 <?php
 
-namespace DoSomething\Northstar;
+namespace DoSomething\Northstar\Laravel;
 
-use GuzzleHttp\Message\Response;
-use Illuminate\Support\MessageBag;
+use DoSomething\Northstar\NorthstarClient;
 use DoSomething\Northstar\Exceptions\InternalException;
 use DoSomething\Northstar\Exceptions\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Contracts\Validation\ValidationException as LaravelValidationException;
+use Illuminate\Support\MessageBag;
 
 class LaravelNorthstarClient extends NorthstarClient
 {
+    /**
+     * The class name of the OAuth repository. For Laravel, we default to the included repository
+     * (although that can be overridden with the $config['repository'] option in the constructor).
+     *
+     * @var string
+     */
+    protected $repository = \DoSomething\Northstar\Laravel\LaravelOAuthRepository::class;
+
     /**
      * Send a Northstar API request, and translates any Northstar exceptions
      * into their built-in Laravel equivalents.
@@ -19,7 +27,7 @@ class LaravelNorthstarClient extends NorthstarClient
      * @param string $path
      * @param array $options
      * @param bool $withAuthorization
-     * @return Response|void
+     * @return \GuzzleHttp\Psr7\Response|void
      */
     public function send($method, $path, $options = [], $withAuthorization = true)
     {

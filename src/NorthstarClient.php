@@ -21,11 +21,15 @@ class NorthstarClient extends RestApiClient
         $base_url = $config['url'];
 
         // Set required fields for OAuth authentication trait.
+        $this->authorizationServerUrl = $config['url'];
+        $this->grant = ! empty($config['grant']) ? $config['grant'] : 'client_credentials';
         $this->clientId = $config['client_id'];
         $this->clientSecret = $config['client_secret'];
-        $this->authorizationServerUrl = $config['authorization_server_url'];
-        $this->repository = $config['repository'];
         $this->scope = isset($config['scope']) ? $config['scope'] : ['user'];
+
+        if (! empty($config['repository'])) {
+            $this->repository = $config['repository'];
+        }
 
         parent::__construct($base_url);
     }

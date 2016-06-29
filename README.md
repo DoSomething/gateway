@@ -1,24 +1,34 @@
 # Northstar PHP [![Packagist](https://img.shields.io/packagist/v/dosomething/northstar.svg)](https://packagist.org/packages/dosomething/northstar)
-This is a simple PHP API client for [Northstar](https://www.github.com/dosomething/northstar), the DoSomething.org user API.
+This is a simple PHP API client for [Northstar](https://www.github.com/dosomething/northstar), the DoSomething.org
+identity API. It supports authorization and resource requests from Northstar, and includes the tools necessary for
+building other API clients that authorize against Northstar.
 
-It also includes [built-in support for Laravel 5](https://github.com/DoSomething/northstar-php#laravel-usage) and an optional [authentication driver](#laravel-authentication).
+It also includes [built-in support for Laravel 5](https://github.com/DoSomething/northstar-php#laravel-usage) and an
+optional [authentication driver](#laravel-authentication).
 
 ### Installation
 Install with Composer:
 ```json
 "require": {
-    "dosomething/northstar": "0.4.*"
+    "dosomething/northstar": "^1.0.0"
 }
 ```
 
 ### Usage
-In vanilla PHP, simply require the `Client` class and create a new instance with your API key.
+In vanilla PHP, you can require the `NorthstarClient` class and create a new instance with your credentials. You'll need
+to implement your own version of the `\DoSomething\Northstar\Contracts\OAuthRepositoryContract` class to handle storing
+and retrieving tokens.
+
 ```php
 use DoSomething\Northstar\NorthstarClient;
 
 $northstar = new NorthstarClient([
+    'grant' => 'client_credentials', // OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'api_key' => getenv('NORTHSTAR_API_KEY')      // your app's API key
+    'client_id' => 'example', // your app's client ID
+    'client_secret' => 'xxxxxxxxxxxxx', // your app's client secret
+    'scope' => ['user'], // the scopes to request  
+    'repository' => \YourApp\OAuthRepository::class, // class which handles saving/retrieving tokens
 ]);
 
 // And go!
@@ -37,12 +47,12 @@ Laravel support is built-in. First, add a service provider to your `config/app.p
 ```php
 'providers' => [
     // ...
-    DoSomething\Northstar\NorthstarServiceProvider::class,
+    DoSomething\Northstar\Laravel\NorthstarServiceProvider::class,
 ],
 
 'aliases' => [
    // ...
-   'Northstar' => DoSomething\Northstar\Facades\Northstar::class,
+   'Northstar' => DoSomething\Northstar\Laravel\Facades\Northstar::class,
 ]
 ```
 
@@ -50,9 +60,18 @@ Then, set your environment & key in `config/services.php`:
 
 ```php
 'northstar' => [
+    'grant' => 'client_credentials', // OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'api_key' => env('NORTHSTAR_API_KEY')         // your app's API key
+    'client_id' => 'example', // your app's client ID
+    'client_secret' => 'xxxxxxxxxxxxx', // your app's client secret
+    'scope' => ['user', 'admin'], // the scopes to request  
 ]
+```
+
+Finally, publish the included migrations (and customize as needed) to add the required client or user database columns.
+
+```
+php artisan vendor:publish
 ```
 
 You can now use the `Northstar` facade anywhere in your app:
@@ -68,26 +87,8 @@ class Inspire
 
 ### Laravel Authentication
 A Laravel user provider is also included to configure Laravel's built-in authentication to validate against Northstar
-instead of your local database. After configuring the API above, register the included user provider in the `boot`
-method of your `AuthServiceProvider`:
-
-```php
-// For Laravel 5.0 or 5.1
-$this->app['auth']->extend('northstar', function ($app) {
-    return new \DoSomething\Northstar\NorthstarUserProvider(
-        $app['northstar'], $app['hash'], config('auth.model')
-    );
-});
-
-// For Laravel 5.2+
-$this->app['auth']->provide('northstar', function ($app, array $config) {
-    return new \DoSomething\Northstar\Auth\NorthstarUserProvider(
-        $app['northstar.auth'], $app['hash'], $config['auth.model']
-    );
-});
-```
-
-Then set your application to use the `northstar` driver instead of `eloquent` in `config/auth.php`.
+instead of your local database. After configuring the client above, set your application to use the `northstar` driver
+instead of `eloquent` in `config/auth.php`.
 
 ```php
 // For Laravel 5.0 or 5.1
@@ -104,9 +105,18 @@ Then set your application to use the `northstar` driver instead of `eloquent` in
  ]
 ```
 
-Now, Laravel will query Northstar with user credentials, rather than your local Eloquent database. If
-a matching Northstar account is found, a new instance of the specified Eloquent model will be saved to your
-local database with the matching user's `northstar_id` and set as the active user for the session.
+Finally, make sure to switch the Northstar client to use the password grant in `config/services.php`:
+
+```php
+    'northstar' => [
+        'grant' => 'password',
+        // ...
+    ]
+```
+
+Now, Laravel will query Northstar to validate user credentials, rather than your local database. If a
+matching Northstar account is found, a new instance of the specified Eloquent model will be saved to your
+local database with the matching user's `northstar_id` and token, and set as the active user for the session.
 
 ### License
 &copy;2016 DoSomething.org. The Northstar PHP client is free software, and may be redistributed under the terms

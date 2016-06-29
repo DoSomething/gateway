@@ -1,7 +1,8 @@
 <?php
 
-namespace DoSomething\Northstar;
+namespace DoSomething\Northstar\Laravel;
 
+use DoSomething\Northstar\NorthstarClient;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Auth\EloquentUserProvider;

@@ -226,7 +226,7 @@ trait AuthorizesWithNorthstar
         $token = $this->getAccessToken();
 
         // If the token is expired, fetch a new one before making the request.
-        if ($token && ($token->hasExpired() || $forceRefresh)) {
+        if (! $token || ($token && $token->hasExpired()) || $forceRefresh) {
             $token = $this->refreshAccessToken($token);
         }
 
