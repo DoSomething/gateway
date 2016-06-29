@@ -16,10 +16,8 @@ class NorthstarServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $source = realpath(__DIR__ . '/Migrations/');
-        if ($this->app instanceof Application && $this->app->runningInConsole()) {
-            $this->publishes([$source => database_path('migrations')], 'migrations');
-        }
+        // Allow sample migrations to be published using `php artisan vendor:publish`.
+        $this->publishes([realpath(__DIR__ . '/Migrations/') => database_path('migrations')], 'migrations');
     }
 
     /**
