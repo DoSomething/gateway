@@ -17,7 +17,7 @@ class LaravelNorthstarClient extends NorthstarClient
      *
      * @var string
      */
-    protected $repository = \DoSomething\Northstar\LaravelOAuthRepository::class;
+    protected $repository = \DoSomething\Northstar\Laravel\LaravelOAuthRepository::class;
 
     /**
      * Send a Northstar API request, and translates any Northstar exceptions
