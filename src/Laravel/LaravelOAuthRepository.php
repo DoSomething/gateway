@@ -99,12 +99,24 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
 
     /**
      * Get the OAuth client's token.
-     * @throws \Exception
      */
     public function getClientToken()
     {
-        // Not implemented for this app!
-        throw new \Exception('Client credentials auth is not implemented!');
+        $client = app('db')->connection()
+            ->table('clients')
+            ->where('client_id', config('services.northstar.client_id'))
+            ->first();
+
+        // If any of the required fields are empty, return null.
+        if (empty($client->access_token) || empty($client->access_token_expiration)) {
+            return null;
+        }
+
+
+        return new AccessToken([
+            'access_token' => $client->access_token,
+            'expires' => $client->access_token_expiration,
+        ]);
     }
 
     /**
@@ -114,12 +126,16 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
      * @param $accessToken - Encoded OAuth access token
      * @param $expiration - Access token expiration as UNIX timestamp
      * @return void
-     * @throws \Exception
      */
     public function persistClientToken($clientId, $accessToken, $expiration)
     {
-        // Not implemented for this app!
-        throw new \Exception('Client credentials auth is not implemented!');
+        app('db')->connection()
+            ->table('clients')
+            ->insert([
+                'client_id' => $clientId,
+                'access_token' => $accessToken,
+                'access_token_expiration' => $expiration,
+            ]);
     }
 
     /**

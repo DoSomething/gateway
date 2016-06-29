@@ -5,6 +5,7 @@ namespace DoSomething\Northstar\Laravel;
 use DoSomething\Northstar\NorthstarClient;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Application;
 
 class NorthstarServiceProvider extends ServiceProvider
 {
@@ -15,7 +16,10 @@ class NorthstarServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // ...
+        $source = realpath(__DIR__ . '/Migrations/');
+        if ($this->app instanceof Application && $this->app->runningInConsole()) {
+            $this->publishes([$source => database_path('migrations')], 'migrations');
+        }
     }
 
     /**
@@ -65,7 +69,7 @@ class NorthstarServiceProvider extends ServiceProvider
     {
         $auth->provide('northstar', function ($app, array $config) {
             return new \DoSomething\Northstar\Laravel\NorthstarUserProvider(
-                $app['northstar.auth'], $app['hash'], $config['auth.model']
+                $app['northstar'], $app['hash'], $config['auth.model']
             );
         });
     }

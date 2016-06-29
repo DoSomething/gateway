@@ -67,6 +67,12 @@ Then, set your environment & key in `config/services.php`:
 ]
 ```
 
+Finally, publish the included migrations (and customize as needed) to add the required client or user database columns.
+
+```
+php artisan vendor:publish
+```
+
 You can now use the `Northstar` facade anywhere in your app:
 ```php
 class Inspire
