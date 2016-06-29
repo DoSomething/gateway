@@ -1,7 +1,8 @@
 <?php
 
-namespace DoSomething\Northstar;
+namespace DoSomething\Northstar\Laravel;
 
+use DoSomething\Northstar\NorthstarClient;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Support\ServiceProvider;
 
@@ -49,7 +50,7 @@ class NorthstarServiceProvider extends ServiceProvider
     public function registerProviderForOldLaravel(AuthManager $auth)
     {
         $auth->extend('northstar', function ($app) {
-            return new \DoSomething\Northstar\NorthstarUserProvider(
+            return new \DoSomething\Northstar\Laravel\NorthstarUserProvider(
                 $app['northstar'], $app['hash'], config('auth.model')
             );
         });
@@ -63,7 +64,7 @@ class NorthstarServiceProvider extends ServiceProvider
     public function registerProviderForNewLaravel(AuthManager $auth)
     {
         $auth->provide('northstar', function ($app, array $config) {
-            return new \DoSomething\Northstar\NorthstarUserProvider(
+            return new \DoSomething\Northstar\Laravel\NorthstarUserProvider(
                 $app['northstar.auth'], $app['hash'], $config['auth.model']
             );
         });

@@ -1,6 +1,6 @@
 <?php
 
-namespace DoSomething\Northstar;
+namespace DoSomething\Northstar\Laravel;
 
 use DoSomething\Northstar\Contracts\OAuthRepositoryContract;
 use League\OAuth2\Client\Token\AccessToken;

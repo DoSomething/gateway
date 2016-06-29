@@ -1,12 +1,13 @@
 <?php
 
-namespace DoSomething\Northstar;
+namespace DoSomething\Northstar\Laravel;
 
-use Illuminate\Support\MessageBag;
+use DoSomething\Northstar\NorthstarClient;
 use DoSomething\Northstar\Exceptions\InternalException;
 use DoSomething\Northstar\Exceptions\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Contracts\Validation\ValidationException as LaravelValidationException;
+use Illuminate\Support\MessageBag;
 
 class LaravelNorthstarClient extends NorthstarClient
 {
