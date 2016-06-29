@@ -80,26 +80,8 @@ class Inspire
 
 ### Laravel Authentication
 A Laravel user provider is also included to configure Laravel's built-in authentication to validate against Northstar
-instead of your local database. After configuring the client above, register the included user provider in the `boot`
-method of your `AuthServiceProvider`:
-
-```php
-// For Laravel 5.0 or 5.1
-$this->app['auth']->extend('northstar', function ($app) {
-    return new \DoSomething\Northstar\NorthstarUserProvider(
-        $app['northstar'], $app['hash'], config('auth.model')
-    );
-});
-
-// For Laravel 5.2+
-$this->app['auth']->provide('northstar', function ($app, array $config) {
-    return new \DoSomething\Northstar\Auth\NorthstarUserProvider(
-        $app['northstar.auth'], $app['hash'], $config['auth.model']
-    );
-});
-```
-
-Then set your application to use the `northstar` driver instead of `eloquent` in `config/auth.php`.
+instead of your local database. After configuring the client above, set your application to use the `northstar` driver
+instead of `eloquent` in `config/auth.php`.
 
 ```php
 // For Laravel 5.0 or 5.1
@@ -125,9 +107,9 @@ Finally, make sure to switch the Northstar client to use the password grant in `
     ]
 ```
 
-Now, Laravel will query Northstar with user credentials, rather than your local Eloquent database. If
-a matching Northstar account is found, a new instance of the specified Eloquent model will be saved to your
-local database with the matching user's `northstar_id` and set as the active user for the session.
+Now, Laravel will query Northstar to validate user credentials, rather than your local database. If a
+matching Northstar account is found, a new instance of the specified Eloquent model will be saved to your
+local database with the matching user's `northstar_id` and token, and set as the active user for the session.
 
 ### License
 &copy;2016 DoSomething.org. The Northstar PHP client is free software, and may be redistributed under the terms
