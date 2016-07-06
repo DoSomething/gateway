@@ -20,6 +20,8 @@ class AddOauthFieldsToUsers extends Migration
             $table->string('access_token', 1024)->nullable();
             $table->integer('access_token_expiration')->nullable();
             $table->string('refresh_token', 1024)->nullable();
+
+            $table->string('role')->nullable();
         });
     }
 
@@ -37,6 +39,7 @@ class AddOauthFieldsToUsers extends Migration
             $table->dropColumn('access_token');
             $table->dropColumn('access_token_expiration');
             $table->dropColumn('refresh_token');
+            $table->dropColumn('role');
         });
     }
 }
