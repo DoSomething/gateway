@@ -60,9 +60,9 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
     public function persistUserToken($userId, $accessToken, $refreshToken, $expiration, $role)
     {
         $user = $this->createModel()->where('northstar_id', $userId)->first();
-        
+
         // If user hasn't tried to log in before, make them a local record.
-        if(! $user) {
+        if (! $user) {
             $user = $this->createModel();
             $user->northstar_id = $userId;
         }
