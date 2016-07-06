@@ -78,7 +78,8 @@ trait AuthorizesWithNorthstar
                 $token->getResourceOwnerId(),
                 $token->getToken(),
                 $token->getRefreshToken(),
-                $token->getExpires()
+                $token->getExpires(),
+                $token->getValues()['role']
             );
 
             return $token;
@@ -102,7 +103,8 @@ trait AuthorizesWithNorthstar
             $this->getOAuthRepository()->persistClientToken(
                 $this->clientId,
                 $token->getToken(),
-                $token->getExpires()
+                $token->getExpires(),
+                $token->getValues()['role']
             );
 
             return $token;
@@ -129,7 +131,8 @@ trait AuthorizesWithNorthstar
                 $token->getResourceOwnerId(),
                 $token->getToken(),
                 $token->getRefreshToken(),
-                $token->getExpires()
+                $token->getExpires(),
+                $token->getValues()['role']
             );
 
             return $token;
