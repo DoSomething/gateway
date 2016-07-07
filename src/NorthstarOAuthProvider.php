@@ -120,6 +120,7 @@ class NorthstarOAuthProvider extends AbstractProvider
     {
         $jwt = (new Parser())->parse($result['access_token']);
         $result['resource_owner_id'] = $jwt->getClaim('sub');
+        $result['role'] = $jwt->getClaim('role');
 
         return $result;
     }

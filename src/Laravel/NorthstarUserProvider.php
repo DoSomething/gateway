@@ -44,18 +44,13 @@ class NorthstarUserProvider extends EloquentUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        $user = $this->northstar->getUser('username', $credentials['username']);
+        $token = $this->northstar->authorizeByPasswordGrant($credentials);
 
-        // If a matching user is found, find or create local user with that ID.
-        if (! is_null($model = $this->createModel()->where('northstar_id', $user->id)->first())) {
-            return $model;
+        if (! $token) {
+            return null;
         }
 
-        $model = $this->createModel()->newInstance();
-        $model->northstar_id = $user->id;
-        $model->save();
-
-        return $model;
+        return $this->createModel()->where('northstar_id', $token->getResourceOwnerId())->first();
     }
 
     /**
@@ -67,8 +62,7 @@ class NorthstarUserProvider extends EloquentUserProvider implements UserProvider
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        $token = $this->northstar->authorizeByPasswordGrant($credentials);
-
-        return ! is_null($token);
+        // Is this weird? Yes.
+        return true;
     }
 }

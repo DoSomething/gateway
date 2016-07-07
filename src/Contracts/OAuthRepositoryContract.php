@@ -25,9 +25,10 @@ interface OAuthRepositoryContract
      * @param $accessToken - Encoded OAuth access token
      * @param $refreshToken - Encoded OAuth refresh token
      * @param $expiration - Access token expiration as UNIX timestamp
+     * @param $role - Northstar user role
      * @return void
      */
-    public function persistUserToken($userId, $accessToken, $refreshToken, $expiration);
+    public function persistUserToken($userId, $accessToken, $refreshToken, $expiration, $role);
 
     /**
      * Save the access token for an authorized client.
@@ -35,9 +36,10 @@ interface OAuthRepositoryContract
      * @param $clientId - OAuth client ID
      * @param $accessToken - Encoded OAuth access token
      * @param $expiration - Access token expiration as UNIX timestamp
+     * @param $role - The role from the JWT
      * @return void
      */
-    public function persistClientToken($clientId, $accessToken, $expiration);
+    public function persistClientToken($clientId, $accessToken, $expiration, $role);
 
     /**
      * If a refresh token is invalid, request the user's credentials

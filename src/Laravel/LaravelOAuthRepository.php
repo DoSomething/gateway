@@ -29,12 +29,11 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
      */
     public function getUserToken()
     {
-        /** @var \Illuminate\Database\Eloquent\Model $user */
-        $user = app('auth')->user();
+        $user = auth()->user();
 
         // If any of the required fields are empty, return null.
         if (empty($user->northstar_id) || empty($user->access_token) ||
-            empty($user->access_token_expiration) || empty($user->refresh_token)
+            empty($user->access_token_expiration) || empty($user->refresh_token) || empty($user->role)
         ) {
             return null;
         }
@@ -44,6 +43,7 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
             'access_token' => $user->access_token,
             'refresh_token' => $user->refresh_token,
             'expires' => $user->access_token_expiration,
+            'role' => $user->role,
         ]);
     }
 
@@ -54,15 +54,24 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
      * @param $accessToken - Encoded OAuth access token
      * @param $refreshToken - Encoded OAuth refresh token
      * @param $expiration - Access token expiration as UNIX timestamp
+     * @param $role - Northstar user role
      * @return void
      */
-    public function persistUserToken($userId, $accessToken, $refreshToken, $expiration)
+    public function persistUserToken($userId, $accessToken, $refreshToken, $expiration, $role)
     {
         $user = $this->createModel()->where('northstar_id', $userId)->first();
 
+        // If user hasn't tried to log in before, make them a local record.
+        if (! $user) {
+            $user = $this->createModel();
+            $user->northstar_id = $userId;
+        }
+
+        // And then update their token details.
         $user->access_token = $accessToken;
         $user->access_token_expiration = $expiration;
         $user->refresh_token = $refreshToken;
+        $user->role = $role;
 
         $user->save();
     }
@@ -74,7 +83,7 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
     public function requestUserCredentials()
     {
         // Log the current user out of the application.
-        app('auth')->logout();
+        auth()->logout();
 
         // Save the intended path to redirect back after re-authenticating.
         session(['url.intended' => request()->fullUrl()]);
@@ -127,7 +136,7 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
      * @param $expiration - Access token expiration as UNIX timestamp
      * @return void
      */
-    public function persistClientToken($clientId, $accessToken, $expiration)
+    public function persistClientToken($clientId, $accessToken, $expiration, $role)
     {
         app('db')->connection()
             ->table('clients')
