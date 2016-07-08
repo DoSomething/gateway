@@ -2,7 +2,7 @@
 
 namespace DoSomething\Northstar\Laravel;
 
-use DoSomething\Northstar\NorthstarClient;
+use DoSomething\Northstar\Northstar;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Auth\EloquentUserProvider;
@@ -12,18 +12,18 @@ class NorthstarUserProvider extends EloquentUserProvider implements UserProvider
 {
     /**
      * The Northstar API client.
-     * @var NorthstarClient
+     * @var Northstar
      */
     protected $northstar;
 
     /**
      * Create a new Northstar user provider.
      *
-     * @param  \DoSomething\Northstar\NorthstarClient $northstar
+     * @param  \DoSomething\Northstar\Northstar $northstar
      * @param  \Illuminate\Contracts\Hashing\Hasher $hasher
      * @param  string $model
      */
-    public function __construct(NorthstarClient $northstar, HasherContract $hasher, $model)
+    public function __construct(Northstar $northstar, HasherContract $hasher, $model)
     {
         $this->northstar = $northstar;
 

@@ -2,14 +2,14 @@
 
 namespace DoSomething\Northstar\Laravel;
 
-use DoSomething\Northstar\NorthstarClient;
+use DoSomething\Northstar\Northstar;
 use DoSomething\Northstar\Exceptions\InternalException;
 use DoSomething\Northstar\Exceptions\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Contracts\Validation\ValidationException as LaravelValidationException;
 use Illuminate\Support\MessageBag;
 
-class LaravelNorthstarClient extends NorthstarClient
+class LaravelNorthstar extends Northstar
 {
     /**
      * The class name of the OAuth repository. For Laravel, we default to the included repository

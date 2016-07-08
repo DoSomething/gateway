@@ -4,7 +4,7 @@ namespace DoSomething\Northstar\Resources;
 
 use DoSomething\Northstar\Common\APIResponse;
 
-class NorthstarKey extends APIResponse
+class NorthstarClient extends APIResponse
 {
-    // major key
+    // OAuth 2 client
 }
