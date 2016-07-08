@@ -117,7 +117,7 @@ class RestApiClient
      */
     public function delete($path, $withAuthorization = true)
     {
-        $response = $this->send('DELETE', $path, $withAuthorization);
+        $response = $this->send('DELETE', $path, [], $withAuthorization);
 
         return $this->responseSuccessful($response);
     }
