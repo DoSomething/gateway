@@ -2,7 +2,7 @@
 
 namespace DoSomething\Northstar\Laravel;
 
-use DoSomething\Northstar\NorthstarClient;
+use DoSomething\Northstar\Northstar;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Application;
@@ -27,8 +27,8 @@ class NorthstarServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(NorthstarClient::class, function () {
-            return new LaravelNorthstarClient(config('services.northstar'));
+        $this->app->singleton(Northstar::class, function () {
+            return new LaravelNorthstar(config('services.northstar'));
         });
 
         // Register the custom user provider.
@@ -41,7 +41,7 @@ class NorthstarServiceProvider extends ServiceProvider
         });
 
         // Set alias for facade / requesting from app() helper.
-        $this->app->alias(NorthstarClient::class, 'northstar');
+        $this->app->alias(Northstar::class, 'northstar');
     }
 
     /**

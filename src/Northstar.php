@@ -3,12 +3,12 @@
 namespace DoSomething\Northstar;
 
 use DoSomething\Northstar\Common\RestApiClient;
-use DoSomething\Northstar\Resources\NorthstarKey;
+use DoSomething\Northstar\Resources\NorthstarClient;
 use DoSomething\Northstar\Resources\NorthstarUser;
 use DoSomething\Northstar\Resources\NorthstarUserCollection;
-use DoSomething\Northstar\Resources\NorthstarKeyCollection;
+use DoSomething\Northstar\Resources\NorthstarClientCollection;
 
-class NorthstarClient extends RestApiClient
+class Northstar extends RestApiClient
 {
     use AuthorizesWithNorthstar;
 
@@ -114,11 +114,11 @@ class NorthstarClient extends RestApiClient
      *
      * @return array - keys
      */
-    public function getAllApiKeys()
+    public function getAllClients()
     {
         $response = $this->get('v1/keys');
 
-        return new NorthstarKeyCollection($response);
+        return new NorthstarClientCollection($response);
     }
 
     /**
@@ -126,54 +126,54 @@ class NorthstarClient extends RestApiClient
      * Requires an `admin` scoped API key.
      *
      * @param array $input - key values
-     * @return NorthstarKey
+     * @return Northstar
      */
-    public function createNewApiKey($input)
+    public function createNewClient($input)
     {
-        $response = $this->post('v1/keys', $input);
+        $response = $this->post('v2/clients', $input);
 
-        return new NorthstarKey($response['data']);
+        return new NorthstarClient($response['data']);
     }
 
     /**
      * Send a GET request to get the specified key.
      * Requires an `admin` scoped API key.
      *
-     * @param string $api_key - API key
-     * @return NorthstarKey
+     * @param string $client_id - API key
+     * @return Northstar
      */
-    public function getApiKey($api_key)
+    public function getClient($client_id)
     {
-        $response = $this->get('v1/keys/'.$api_key);
+        $response = $this->get('v2/clients/'.$client_id);
 
-        return new NorthstarKey($response['data']);
+        return new NorthstarClient($response['data']);
     }
 
     /**
      * Send a POST request to generate new keys to northstar
      * Requires an `admin` scoped API key.
      *
-     * @param string $api_key - API key
+     * @param string $client_id - API key
      * @param array $input - key values
-     * @return NorthstarKey
+     * @return Northstar
      */
-    public function updateApiKey($api_key, $input)
+    public function updateClient($client_id, $input)
     {
-        $response = $this->put('v1/keys/'.$api_key, $input);
+        $response = $this->put('v2/clients/'.$client_id, $input);
 
-        return new NorthstarKey($response['data']);
+        return new NorthstarClient($response['data']);
     }
 
     /**
      * Send a DELETE request to delete an API key from Northstar.
      * Requires an `admin` scoped API key.
      *
-     * @param string $api_key - API key
+     * @param string $client_id - API key
      * @return bool - Whether user was successfully deleted
      */
-    public function deleteApiKey($api_key)
+    public function deleteClient($client_id)
     {
-        return $this->delete('v1/keys/'.$api_key);
+        return $this->delete('v2/clients/'.$client_id);
     }
 
     /**
