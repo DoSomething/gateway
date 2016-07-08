@@ -126,11 +126,11 @@ class RestApiClient
      * Get the authorization header for a request, if needed.
      * @see AuthorizesWithNorthstar
      *
-     * @return string|null
+     * @return array
      */
     protected function getAuthorizationHeader()
     {
-        return null;
+        return [];
     }
 
     /**
@@ -222,12 +222,12 @@ class RestApiClient
     {
         // By default, we append the authorization header to every request.
         if ($withAuthorization) {
-            $headers = $this->getAuthorizationHeader();
+            $authorizationHeader = $this->getAuthorizationHeader();
             if (empty($options['headers'])) {
                 $options['headers'] = [];
             }
 
-            $options['headers'] = array_merge($options['headers'], $headers);
+            $options['headers'] = array_merge($options['headers'], $authorizationHeader);
         }
 
         return $this->client->request($method, $path, $options);
