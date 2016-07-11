@@ -32,7 +32,7 @@ class NorthstarOAuthProvider extends AbstractProvider
     {
         $this->url = $options['url'];
 
-        parent::_construct($options, $collaborators);
+        parent::__construct($options, $collaborators);
     }
 
     /**
