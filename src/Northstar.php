@@ -112,11 +112,11 @@ class Northstar extends RestApiClient
      * Send a GET request to return all Northstar keys.
      * Requires an `admin` scoped API key.
      *
-     * @return array - keys
+     * @return NorthstarClientCollection
      */
     public function getAllClients()
     {
-        $response = $this->get('v1/keys');
+        $response = $this->get('v2/clients');
 
         return new NorthstarClientCollection($response);
     }
@@ -126,7 +126,7 @@ class Northstar extends RestApiClient
      * Requires an `admin` scoped API key.
      *
      * @param array $input - key values
-     * @return Northstar
+     * @return NorthstarClient
      */
     public function createNewClient($input)
     {
@@ -140,7 +140,7 @@ class Northstar extends RestApiClient
      * Requires an `admin` scoped API key.
      *
      * @param string $client_id - API key
-     * @return Northstar
+     * @return NorthstarClient
      */
     public function getClient($client_id)
     {
@@ -155,7 +155,7 @@ class Northstar extends RestApiClient
      *
      * @param string $client_id - API key
      * @param array $input - key values
-     * @return Northstar
+     * @return NorthstarClient
      */
     public function updateClient($client_id, $input)
     {
