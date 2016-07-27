@@ -20,6 +20,13 @@ class RestApiClient
     protected $client;
 
     /**
+     * Default headers applied to every request.
+     *
+     * @var array
+     */
+    protected $defaultHeaders;
+
+    /**
      * The number of times a request has been attempted.
      *
      * @var int
@@ -33,7 +40,7 @@ class RestApiClient
      */
     public function __construct($url)
     {
-        $standardHeaders = [
+        $this->defaultHeaders = [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ];
@@ -41,7 +48,7 @@ class RestApiClient
         $client = new Client([
             'base_uri' => $url,
             'defaults' => [
-                'headers' => $standardHeaders,
+                'headers' => $this->defaultHeaders,
             ],
         ]);
 
@@ -227,7 +234,7 @@ class RestApiClient
                 $options['headers'] = [];
             }
 
-            $options['headers'] = array_merge($options['headers'], $authorizationHeader);
+            $options['headers'] = array_merge($this->defaultHeaders, $options['headers'], $authorizationHeader);
         }
 
         return $this->client->request($method, $path, $options);
