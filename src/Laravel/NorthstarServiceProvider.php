@@ -67,7 +67,7 @@ class NorthstarServiceProvider extends ServiceProvider
     {
         $auth->provider('northstar', function ($app, array $config) {
             return new \DoSomething\Northstar\Laravel\NorthstarUserProvider(
-                $app['northstar'], $app['hash'], $config['auth.providers.users.model']
+                $app['northstar'], $app['hash'], config('auth.providers.users.model')
             );
         });
     }
