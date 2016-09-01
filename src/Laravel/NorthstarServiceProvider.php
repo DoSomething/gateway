@@ -33,7 +33,7 @@ class NorthstarServiceProvider extends ServiceProvider
 
         // Register the custom user provider.
         $this->app->resolving('auth', function (AuthManager $auth) {
-            if (method_exists($auth, 'provide')) {
+            if (method_exists($auth, 'provider')) {
                 return $this->registerProviderForNewLaravel($auth);
             }
 
@@ -65,9 +65,9 @@ class NorthstarServiceProvider extends ServiceProvider
      */
     public function registerProviderForNewLaravel(AuthManager $auth)
     {
-        $auth->provide('northstar', function ($app, array $config) {
+        $auth->provider('northstar', function ($app, array $config) {
             return new \DoSomething\Northstar\Laravel\NorthstarUserProvider(
-                $app['northstar'], $app['hash'], $config['auth.model']
+                $app['northstar'], $app['hash'], $config['auth.providers.users.model']
             );
         });
     }
