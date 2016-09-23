@@ -12,9 +12,9 @@ Install with Composer:
 "require": {
     "dosomething/northstar": "^1.0.0"
 }
-
-// To require the latest release candidate add it to the suffix of the version specified, such as 1.0.0-rc8
 ```
+
+To require the latest release candidate add it to the suffix of the version specified, such as `1.0.0-rc8`.
 
 ### Usage
 In vanilla PHP, you can require the `NorthstarClient` class and create a new instance with your credentials. You'll need
