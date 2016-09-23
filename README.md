@@ -12,6 +12,8 @@ Install with Composer:
 "require": {
     "dosomething/northstar": "^1.0.0"
 }
+
+// To require the latest release candidate add it to the suffix of the version specified, such as 1.0.0-rc8
 ```
 
 ### Usage
@@ -20,9 +22,9 @@ to implement your own version of the `\DoSomething\Northstar\Contracts\OAuthRepo
 and retrieving tokens.
 
 ```php
-use DoSomething\Northstar\NorthstarClient;
+use DoSomething\Northstar\Northstar;
 
-$northstar = new NorthstarClient([
+$northstar = new Northstar([
     'grant' => 'client_credentials', // OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
     'client_id' => 'example', // your app's client ID
