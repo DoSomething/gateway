@@ -25,12 +25,21 @@ and retrieving tokens.
 use DoSomething\Northstar\Northstar;
 
 $northstar = new Northstar([
-    'grant' => 'client_credentials', // OAuth grant to use: either 'password' or 'client_credentials'
+    'grant' => 'client_credentials', // Default OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'client_id' => 'example', // your app's client ID
-    'client_secret' => 'xxxxxxxxxxxxx', // your app's client secret
-    'scope' => ['user'], // the scopes to request  
     'repository' => \YourApp\OAuthRepository::class, // class which handles saving/retrieving tokens
+    
+    // Then, configure client ID, client secret, and scopes per grant.
+    'client_credentials' => [
+        'client_id' => 'example',
+        'client_secret' => 'xxxxxxxxxxxxx',
+        'scope' => ['user'],
+    ],
+    'password' => [
+        'client_id' => 'example',
+        'client_secret' => 'xxxxxxxxxxxxx',
+        'scope' => ['user'],
+    ],
 ]);
 
 // And go!
@@ -62,11 +71,21 @@ Then, set your environment & key in `config/services.php`:
 
 ```php
 'northstar' => [
-    'grant' => 'client_credentials', // OAuth grant to use: either 'password' or 'client_credentials'
+    'grant' => 'client_credentials', // Default OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'client_id' => 'example', // your app's client ID
-    'client_secret' => 'xxxxxxxxxxxxx', // your app's client secret
-    'scope' => ['user', 'admin'], // the scopes to request  
+    'repository' => \YourApp\OAuthRepository::class, // class which handles saving/retrieving tokens
+    
+    // Then, configure client ID, client secret, and scopes per grant.
+    'client_credentials' => [
+        'client_id' => 'example',
+        'client_secret' => 'xxxxxxxxxxxxx',
+        'scope' => ['user'],
+    ],
+    'password' => [
+        'client_id' => 'example',
+        'client_secret' => 'xxxxxxxxxxxxx',
+        'scope' => ['user'],
+    ],
 ]
 ```
 
