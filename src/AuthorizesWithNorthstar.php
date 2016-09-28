@@ -251,11 +251,12 @@ trait AuthorizesWithNorthstar
     protected function getAuthorizationServer()
     {
         if (! $this->authorizationServer) {
+            $config = $this->config[$this->grant];
             $this->authorizationServer = new NorthstarOAuthProvider([
                 'url' => $this->authorizationServerUri,
-                'clientId' => $this->config[$this->grant]['client_id'],
-                'clientSecret' => $this->config[$this->grant]['client_secret'],
-                'redirectUri' => $this->config[$this->grant]['redirect_uri'],
+                'clientId' => $config['client_id'],
+                'clientSecret' => $config['client_secret'],
+                'redirectUri' => ! empty($config['redirect_uri']) ? $config['redirect_uri'] : null,
             ]);
         }
 

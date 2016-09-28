@@ -111,16 +111,14 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
      */
     public function getClientToken()
     {
-        $client = app('db')->connection()
-            ->table('clients')
-            ->where('client_id', config('services.northstar.client_id'))
+        $client = app('db')->connection()->table('clients')
+            ->where('client_id', config('services.northstar.client_credentials.client_id'))
             ->first();
 
         // If any of the required fields are empty, return null.
         if (empty($client->access_token) || empty($client->access_token_expiration)) {
             return null;
         }
-
 
         return new AccessToken([
             'access_token' => $client->access_token,
@@ -138,13 +136,19 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
      */
     public function persistClientToken($clientId, $accessToken, $expiration, $role)
     {
-        app('db')->connection()
-            ->table('clients')
-            ->insert([
-                'client_id' => $clientId,
-                'access_token' => $accessToken,
-                'access_token_expiration' => $expiration,
-            ]);
+        /** @var \Illuminate\Database\Query\Builder $table */
+        $table = app('db')->connection()->table('clients');
+
+        // If the record doesn't already exist, add it.
+        if (! $table->where(['client_id' => $clientId])->exists()) {
+            $table->insert(['client_id' => $clientId]);
+        }
+
+        // Update record with the new access token & expiration.
+        $table->where(['client_id' => $clientId])->update([
+            'access_token' => $accessToken,
+            'access_token_expiration' => $expiration,
+        ]);
     }
 
     /**
