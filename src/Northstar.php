@@ -21,11 +21,9 @@ class Northstar extends RestApiClient
         $base_url = $config['url'];
 
         // Set required fields for OAuth authentication trait.
-        $this->authorizationServerUrl = $config['url'];
-        $this->grant = ! empty($config['grant']) ? $config['grant'] : 'client_credentials';
-        $this->clientId = $config['client_id'];
-        $this->clientSecret = $config['client_secret'];
-        $this->scope = isset($config['scope']) ? $config['scope'] : ['user'];
+        $this->authorizationServerUri = $config['url'];
+        $this->grant = $config['grant'];
+        $this->config = $config;
 
         if (! empty($config['repository'])) {
             $this->repository = $config['repository'];

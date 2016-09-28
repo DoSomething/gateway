@@ -10,40 +10,26 @@ use League\OAuth2\Client\Token\AccessToken;
 trait AuthorizesWithNorthstar
 {
     /**
-     * The grant to use for authorization: supported values are either
-     * 'password' or 'client_credentials'.
-     *
-     * @var string
-     */
-    protected $grant = 'password';
-
-    /**
-     * The OAuth2 client ID.
-     *
-     * @var string
-     */
-    protected $clientId;
-
-    /**
-     * The OAuth2 client secret.
-     *
-     * @var string
-     */
-    protected $clientSecret;
-
-    /**
-     * OAuth scopes to request.
-     *
-     * @var array
-     */
-    protected $scope = ['user'];
-
-    /**
      * The authorization server URL (for example, Northstar).
      *
      * @var string
      */
-    protected $authorizationServerUrl;
+    protected $authorizationServerUri;
+
+    /**
+     * The grant to use for authorization: supported values are either
+     * 'password' or 'client_credentials'. // @TODO: Add 'authorization_code'!
+     *
+     * @var string
+     */
+    protected $grant;
+
+    /**
+     * The OAuth2 configuration array, keyed by grant name.
+     *
+     * @var string
+     */
+    protected $config;
 
     /**
      * The class name of the OAuth repository.
@@ -53,7 +39,7 @@ trait AuthorizesWithNorthstar
     protected $repository;
 
     /**
-     * The authorization server.
+     * The league/oauth2-client authorization server.
      *
      * @var NorthstarOAuthProvider
      */
@@ -71,7 +57,7 @@ trait AuthorizesWithNorthstar
             $token = $this->getAuthorizationServer()->getAccessToken('password', [
                 'username' => $credentials['username'],
                 'password' => $credentials['password'],
-                'scope' => $this->scope,
+                'scope' => $this->config['password']['scope'],
             ]);
 
             $this->getOAuthRepository()->persistUserToken(
@@ -97,11 +83,11 @@ trait AuthorizesWithNorthstar
     {
         try {
             $token = $this->getAuthorizationServer()->getAccessToken('client_credentials', [
-                'scope' => $this->scope,
+                'scope' => $this->config['client_credentials']['scope'],
             ]);
 
             $this->getOAuthRepository()->persistClientToken(
-                $this->clientId,
+                $this->config['client_credentials']['client_id'],
                 $token->getToken(),
                 $token->getExpires(),
                 $token->getValues()['role']
@@ -124,7 +110,7 @@ trait AuthorizesWithNorthstar
         try {
             $token = $this->getAuthorizationServer()->getAccessToken('refresh_token', [
                 'refresh_token' => $oldToken->getRefreshToken(),
-                'scope' => $this->scope,
+                'scope' => $this->config[$this->grant]['scope'],
             ]);
 
             $this->getOAuthRepository()->persistUserToken(
@@ -166,7 +152,7 @@ trait AuthorizesWithNorthstar
     public function invalidateRefreshToken(AccessToken $token)
     {
         $this->getAuthorizationServer()->getAuthenticatedRequest('DELETE',
-            $this->authorizationServerUrl . '/v2/auth/token', $token, [
+            $this->authorizationServerUri . '/v2/auth/token', $token, [
                 'json' => [
                     'token' => $token->getRefreshToken(),
                 ],
@@ -265,11 +251,12 @@ trait AuthorizesWithNorthstar
     protected function getAuthorizationServer()
     {
         if (! $this->authorizationServer) {
+            $config = $this->config[$this->grant];
             $this->authorizationServer = new NorthstarOAuthProvider([
-                'url' => $this->authorizationServerUrl,
-                'clientId' => $this->clientId,
-                'clientSecret' => $this->clientSecret,
-                'redirectUri' => '', // @TODO: Add this once we support auth code grant.
+                'url' => $this->authorizationServerUri,
+                'clientId' => $config['client_id'],
+                'clientSecret' => $config['client_secret'],
+                'redirectUri' => ! empty($config['redirect_uri']) ? $config['redirect_uri'] : null,
             ]);
         }
 

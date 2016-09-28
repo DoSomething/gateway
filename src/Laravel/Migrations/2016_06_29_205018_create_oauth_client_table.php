@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateOAuthClientTable extends Migration
+class CreateOauthClientTable extends Migration
 {
     /**
      * Run the migrations.
