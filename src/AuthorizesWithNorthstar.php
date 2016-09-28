@@ -46,6 +46,27 @@ trait AuthorizesWithNorthstar
     private $authorizationServer;
 
     /**
+     * Authorize a machine based on the given client credentials.
+     *
+     * @return mixed
+     */
+    public function authorizeByClientCredentialsGrant()
+    {
+        $token = $this->getAuthorizationServer()->getAccessToken('client_credentials', [
+            'scope' => $this->config['client_credentials']['scope'],
+        ]);
+
+        $this->getOAuthRepository()->persistClientToken(
+            $this->config['client_credentials']['client_id'],
+            $token->getToken(),
+            $token->getExpires(),
+            $token->getValues()['role']
+        );
+
+        return $token;
+    }
+
+    /**
      * Authorize a user based on the given username & password.
      *
      * @param array $credentials
@@ -64,31 +85,6 @@ trait AuthorizesWithNorthstar
                 $token->getResourceOwnerId(),
                 $token->getToken(),
                 $token->getRefreshToken(),
-                $token->getExpires(),
-                $token->getValues()['role']
-            );
-
-            return $token;
-        } catch (IdentityProviderException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Authorize a machine based on the given client credentials.
-     *
-     * @return mixed
-     */
-    public function authorizeByClientCredentialsGrant()
-    {
-        try {
-            $token = $this->getAuthorizationServer()->getAccessToken('client_credentials', [
-                'scope' => $this->config['client_credentials']['scope'],
-            ]);
-
-            $this->getOAuthRepository()->persistClientToken(
-                $this->config['client_credentials']['client_id'],
-                $token->getToken(),
                 $token->getExpires(),
                 $token->getValues()['role']
             );
