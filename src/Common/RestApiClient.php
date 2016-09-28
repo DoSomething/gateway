@@ -69,10 +69,7 @@ class RestApiClient
             'query' => $query,
         ];
 
-        $response = $this->send('GET', $path, $options, $withAuthorization);
-        $body = $response->getBody()->getContents();
-
-        return is_null($response) ? null : json_decode($body, true);
+        return $this->send('GET', $path, $options, $withAuthorization);
     }
 
     /**
@@ -89,10 +86,7 @@ class RestApiClient
             'json' => $payload,
         ];
 
-        $response = $this->send('POST', $path, $options, $withAuthorization);
-        $body = $response->getBody()->getContents();
-
-        return is_null($response) ? null : json_decode($body, true);
+        return $this->send('POST', $path, $options, $withAuthorization);
     }
 
     /**
@@ -109,10 +103,7 @@ class RestApiClient
             'json' => $payload,
         ];
 
-        $response = $this->send('PUT', $path, $options, $withAuthorization);
-        $body = $response->getBody()->getContents();
-
-        return is_null($response) ? null : json_decode($body, true);
+        return $this->send('PUT', $path, $options, $withAuthorization);
     }
 
     /**
@@ -183,7 +174,7 @@ class RestApiClient
             // Reset the number of attempts back to zero once we've had a successful response!
             $this->attempts = 0;
 
-            return $response;
+            return json_decode($response->getBody()->getContents(), true);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $endpoint = strtoupper($method).' '.$path;
             $response = json_decode($e->getResponse()->getBody()->getContents());
@@ -243,14 +234,11 @@ class RestApiClient
     /**
      * Determine if the response was successful or not.
      *
-     * @param $response
+     * @param array $json
      * @return bool
      */
-    public function responseSuccessful(Response $response)
+    public function responseSuccessful(array $json)
     {
-        $body = $response->getBody()->getContents();
-        $json = json_decode($body, true);
-
         return ! empty($json['success']);
     }
 
