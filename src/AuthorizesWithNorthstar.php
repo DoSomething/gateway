@@ -158,6 +158,29 @@ trait AuthorizesWithNorthstar
     }
 
     /**
+     * Specify which grant is used for this request.
+     *
+     * @param $grant
+     * @return $this
+     */
+    public function usingGrant($grant)
+    {
+        $this->grant = $grant;
+
+        return $this;
+    }
+
+    /**
+     * Specify that the current request should use the client credentials grant.
+     *
+     * @return $this
+     */
+    public function asClient()
+    {
+        return $this->usingGrant('client_credentials');
+    }
+
+    /**
      * Get the access token from the repository based on the chosen grant.
      *
      * @return mixed
@@ -271,5 +294,16 @@ trait AuthorizesWithNorthstar
         }
 
         return new $this->repository();
+    }
+
+    /**
+     * Clean up after a request is sent.
+     *
+     * @return void
+     */
+    protected function cleanUp()
+    {
+        // Reset back to the default grant.
+        $this->grant = $this->config['grant'];
     }
 }
