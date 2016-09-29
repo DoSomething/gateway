@@ -171,13 +171,21 @@ trait AuthorizesWithNorthstar
     }
 
     /**
-     * Specify that the current request should use the client credentials grant.
+     * Specify that the next request should use the client credentials grant.
      *
      * @return $this
      */
     public function asClient()
     {
         return $this->usingGrant('client_credentials');
+    }
+
+    /**
+     * Specify that the next request should use the password grant.
+     */
+    public function asUser()
+    {
+        return $this->usingGrant('password');
     }
 
     /**
