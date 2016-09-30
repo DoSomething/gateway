@@ -2,14 +2,32 @@
 
 namespace DoSomething\Northstar\Contracts;
 
+use League\OAuth2\Client\Token\AccessToken;
+
 interface OAuthRepositoryContract
 {
     /**
+     * Get the ID of the logged-in user.
+     *
+     * @return NorthstarUserContract|null
+     */
+    public function getCurrentUser();
+
+    /**
+     * Get a user by their Northstar ID.
+     *
+     * @return NorthstarUserContract|null
+     */
+    public function getUser($id);
+
+    /**
      * Get the given authenticated user's access token.
+     *
+     * @param NorthstarUserContract $user
      *
      * @return \League\OAuth2\Client\Token\AccessToken|null
      */
-    public function getUserToken();
+    public function getUserToken(NorthstarUserContract $user);
 
     /**
      * Get the OAuth client's token.
@@ -21,14 +39,10 @@ interface OAuthRepositoryContract
     /**
      * Save the access & refresh tokens for an authorized user.
      *
-     * @param $userId - Northstar user ID
-     * @param $accessToken - Encoded OAuth access token
-     * @param $refreshToken - Encoded OAuth refresh token
-     * @param $expiration - Access token expiration as UNIX timestamp
-     * @param $role - Northstar user role
-     * @return void
+     * @param \League\OAuth2\Client\Token\AccessToken $token
+     * @internal param $userId - Northstar user ID
      */
-    public function persistUserToken($userId, $accessToken, $refreshToken, $expiration, $role);
+    public function persistUserToken(AccessToken $token);
 
     /**
      * Save the access token for an authorized client.
@@ -46,11 +60,4 @@ interface OAuthRepositoryContract
      * by redirecting to the login screen.
      */
     public function requestUserCredentials();
-
-    /**
-     * Remove the user's token information when they log out.
-     *
-     * @param $userId - Northstar user ID
-     */
-    public function removeUserToken($userId);
 }

@@ -2,8 +2,10 @@
 
 namespace DoSomething\Northstar\Laravel;
 
+use DoSomething\Northstar\Contracts\NorthstarUserContract;
 use DoSomething\Northstar\Contracts\OAuthRepositoryContract;
 use League\OAuth2\Client\Token\AccessToken;
+use InvalidArgumentException;
 
 class LaravelOAuthRepository implements OAuthRepositoryContract
 {
@@ -23,55 +25,71 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
     }
 
     /**
-     * Get the given authenticated user's access token.
+     * Get the the logged-in user.
      *
-     * @return \League\OAuth2\Client\Token\AccessToken|null
+     * @return NorthstarUserContract|null
      */
-    public function getUserToken()
+    public function getCurrentUser()
     {
         $user = auth()->user();
 
-        // If any of the required fields are empty, return null.
-        if (empty($user->northstar_id) || empty($user->access_token) ||
-            empty($user->access_token_expiration) || empty($user->refresh_token) || empty($user->role)
-        ) {
-            return null;
+        if (! $user instanceof NorthstarUserContract) {
+            throw new InvalidArgumentException('The user model must use the HasNorthstarToken trait & the NorthstarUserContract interface.');
         }
 
-        return new AccessToken([
-            'resource_owner_id' => $user->northstar_id,
-            'access_token' => $user->access_token,
-            'refresh_token' => $user->refresh_token,
-            'expires' => $user->access_token_expiration,
-            'role' => $user->role,
-        ]);
+        return $user;
+    }
+
+    /**
+     * Get a user by their Northstar ID.
+     *
+     * @return NorthstarUserContract|null
+     */
+    public function getUser($id)
+    {
+        /** @var NorthstarUserContract $user */
+        $user = $this->createModel()->where('northstar_id', $id)->first();
+
+        if (! $user instanceof NorthstarUserContract) {
+            throw new InvalidArgumentException('The user model must use the HasNorthstarToken trait & the NorthstarUserContract interface.');
+        }
+
+        return $user;
+    }
+
+    /**
+     * Get the given authenticated user's access token.
+     *
+     * @param NorthstarUserContract $user
+     *
+     * @return \League\OAuth2\Client\Token\AccessToken|null
+     */
+    public function getUserToken(NorthstarUserContract $user)
+    {
+        return $user->getOAuthToken();
     }
 
     /**
      * Save the access & refresh tokens for an authorized user.
      *
-     * @param $userId - Northstar user ID
-     * @param $accessToken - Encoded OAuth access token
-     * @param $refreshToken - Encoded OAuth refresh token
-     * @param $expiration - Access token expiration as UNIX timestamp
-     * @param $role - Northstar user role
+     * @param \League\OAuth2\Client\Token\AccessToken $token
      * @return void
      */
-    public function persistUserToken($userId, $accessToken, $refreshToken, $expiration, $role)
+    public function persistUserToken(AccessToken $token)
     {
-        $user = $this->createModel()->where('northstar_id', $userId)->first();
+        $northstarId = $token->getResourceOwnerId();
+
+        /** @var NorthstarUserContract $user */
+        $user = $this->getUser($northstarId);
 
         // If user hasn't tried to log in before, make them a local record.
         if (! $user) {
             $user = $this->createModel();
-            $user->northstar_id = $userId;
+            $user->setNorthstarIdentifier($northstarId);
         }
 
         // And then update their token details.
-        $user->access_token = $accessToken;
-        $user->access_token_expiration = $expiration;
-        $user->refresh_token = $refreshToken;
-        $user->role = $role;
+        $user->setOAuthToken($token);
 
         $user->save();
     }
@@ -90,20 +108,6 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
 
         // Redirect to the login page.
         abort(302, '', ['Location' => url('auth/login')]);
-    }
-
-    /**
-     * Remove the user's token information when they log out.
-     */
-    public function removeUserToken($userId)
-    {
-        $user = $this->createModel()->where('northstar_id', $userId)->first();
-
-        $user->access_token = '';
-        $user->access_token_expiration = '';
-        $user->refresh_token = '';
-
-        $user->save();
     }
 
     /**

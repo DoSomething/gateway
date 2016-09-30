@@ -81,13 +81,7 @@ trait AuthorizesWithNorthstar
                 'scope' => $this->config['password']['scope'],
             ]);
 
-            $this->getOAuthRepository()->persistUserToken(
-                $token->getResourceOwnerId(),
-                $token->getToken(),
-                $token->getRefreshToken(),
-                $token->getExpires(),
-                $token->getValues()['role']
-            );
+            $this->getOAuthRepository()->persistUserToken($token);
 
             return $token;
         } catch (IdentityProviderException $e) {
@@ -109,13 +103,7 @@ trait AuthorizesWithNorthstar
                 'scope' => $this->config[$this->grant]['scope'],
             ]);
 
-            $this->getOAuthRepository()->persistUserToken(
-                $token->getResourceOwnerId(),
-                $token->getToken(),
-                $token->getRefreshToken(),
-                $token->getExpires(),
-                $token->getValues()['role']
-            );
+            $this->getOAuthRepository()->persistUserToken($token);
 
             return $token;
         } catch (IdentityProviderException $e) {
@@ -154,7 +142,8 @@ trait AuthorizesWithNorthstar
                 ],
             ]);
 
-        $this->getOAuthRepository()->removeUserToken($token->getResourceOwnerId());
+        $user = $this->getOAuthRepository()->getUser($token->getResourceOwnerId());
+        $user->clearOAuthToken();
     }
 
     /**
