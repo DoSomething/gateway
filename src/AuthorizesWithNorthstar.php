@@ -25,6 +25,13 @@ trait AuthorizesWithNorthstar
     protected $grant;
 
     /**
+     * A queued access token to use for the next request.
+     *
+     * @var AccessToken|null
+     */
+    protected $token;
+
+    /**
      * The OAuth2 configuration array, keyed by grant name.
      *
      * @var string
@@ -81,13 +88,7 @@ trait AuthorizesWithNorthstar
                 'scope' => $this->config['password']['scope'],
             ]);
 
-            $this->getOAuthRepository()->persistUserToken(
-                $token->getResourceOwnerId(),
-                $token->getToken(),
-                $token->getRefreshToken(),
-                $token->getExpires(),
-                $token->getValues()['role']
-            );
+            $this->getOAuthRepository()->persistUserToken($token);
 
             return $token;
         } catch (IdentityProviderException $e) {
@@ -109,13 +110,7 @@ trait AuthorizesWithNorthstar
                 'scope' => $this->config[$this->grant]['scope'],
             ]);
 
-            $this->getOAuthRepository()->persistUserToken(
-                $token->getResourceOwnerId(),
-                $token->getToken(),
-                $token->getRefreshToken(),
-                $token->getExpires(),
-                $token->getValues()['role']
-            );
+            $this->getOAuthRepository()->persistUserToken($token);
 
             return $token;
         } catch (IdentityProviderException $e) {
@@ -154,7 +149,8 @@ trait AuthorizesWithNorthstar
                 ],
             ]);
 
-        $this->getOAuthRepository()->removeUserToken($token->getResourceOwnerId());
+        $user = $this->getOAuthRepository()->getUser($token->getResourceOwnerId());
+        $user->clearOAuthToken();
     }
 
     /**
@@ -182,6 +178,8 @@ trait AuthorizesWithNorthstar
 
     /**
      * Specify that the next request should use the password grant.
+     *
+     * @return $this
      */
     public function asUser()
     {
@@ -189,19 +187,43 @@ trait AuthorizesWithNorthstar
     }
 
     /**
+     * Make request using the provided access token (for example, to make
+     * a request to another service in order to complete an API request).
+     *
+     * @param AccessToken $token
+     * @return $this
+     */
+    public function withToken(AccessToken $token)
+    {
+        $this->grant = 'provided_token';
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
      * Get the access token from the repository based on the chosen grant.
      *
-     * @return mixed
+     * @return AccessToken|null
      * @throws \Exception
      */
     protected function getAccessToken()
     {
         switch ($this->grant) {
+            case 'provided_token':
+                return $this->token;
+
             case 'client_credentials':
                 return $this->getOAuthRepository()->getClientToken();
 
             case 'password':
-                return $this->getOAuthRepository()->getUserToken();
+                $user = $this->getOAuthRepository()->getCurrentUser();
+
+                if (! $user) {
+                    return null;
+                }
+
+                return $user->getOAuthToken();
 
             default:
                 throw new \Exception('Unsupported grant type. Check $this->grant.');
@@ -218,6 +240,9 @@ trait AuthorizesWithNorthstar
     protected function refreshAccessToken($token)
     {
         switch ($this->grant) {
+            case 'provided_token':
+                throw new UnauthorizedException('[internal]', 'The provided token expired.');
+
             case 'client_credentials':
                 return $this->authorizeByClientCredentialsGrant();
 
@@ -311,7 +336,8 @@ trait AuthorizesWithNorthstar
      */
     protected function cleanUp()
     {
-        // Reset back to the default grant.
+        // Reset back to the default grant & empty any provided token.
         $this->grant = $this->config['grant'];
+        $this->token = null;
     }
 }
