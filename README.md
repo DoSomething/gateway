@@ -14,10 +14,10 @@ Install with Composer:
 }
 ```
 
-To require the latest release candidate add it to the suffix of the version specified, such as `1.0.0-rc8`.
+To require the latest release candidate add it to the suffix of the version specified, such as `1.0.0-rc10`.
 
 ### Usage
-In vanilla PHP, you can require the `NorthstarClient` class and create a new instance with your credentials. You'll need
+In vanilla PHP, you can create a new `Northstar` client with your credentials to make API requests. You'll need
 to implement your own version of the `\DoSomething\Northstar\Contracts\OAuthRepositoryContract` class to handle storing
 and retrieving tokens.
 
