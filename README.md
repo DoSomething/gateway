@@ -48,6 +48,11 @@ $northstar->getUser('email', 'test@dosomething.org');
 $northstar->updateUser('5480c950bffebc651c8b4570', ['first_name' => 'Puppet']);
 $northstar->deleteUser('5480c950bffebc651c8b4570');
 
+// You can override the default grant (or provide a token) per request like so:
+$northstar->asClient()->get('v1/users');
+$northstar->asUser()->get('v1/profile');
+$northstar->withToken($accessToken)->get('v1/profile');
+
 // and so on...
 
 ```
@@ -73,7 +78,6 @@ Then, set your environment & key in `config/services.php`:
 'northstar' => [
     'grant' => 'client_credentials', // Default OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'repository' => \YourApp\OAuthRepository::class, // class which handles saving/retrieving tokens
     
     // Then, configure client ID, client secret, and scopes per grant.
     'client_credentials' => [
@@ -89,7 +93,7 @@ Then, set your environment & key in `config/services.php`:
 ]
 ```
 
-Finally, publish the included migrations (and customize as needed) to add the required client or user database columns.
+Publish the included migrations (and customize as needed) to add the required client & user database columns.
 
 ```
 php artisan vendor:publish
@@ -126,13 +130,31 @@ instead of `eloquent` in `config/auth.php`.
  ]
 ```
 
-Finally, make sure to switch the Northstar client to use the password grant in `config/services.php`:
+Make sure to switch the Northstar client to use the password grant in `config/services.php`:
 
 ```php
     'northstar' => [
         'grant' => 'password',
         // ...
     ]
+```
+
+And finally, add the Northstar contract & trait to your app's User model:
+```php
+<?php
+
+namespace App\Models;
+
+// ...
+use DoSomething\Northstar\Contracts\NorthstarUserContract;
+use DoSomething\Northstar\Laravel\HasNorthstarToken;
+
+class User extends Model implements NorthstarUserContract, /* ... */
+{
+    use HasNorthstarToken, /* ... */;
+    // ...
+}
+
 ```
 
 Now, Laravel will query Northstar to validate user credentials, rather than your local database. If a
