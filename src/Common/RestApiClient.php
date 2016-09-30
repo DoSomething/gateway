@@ -132,6 +132,17 @@ class RestApiClient
     }
 
     /**
+     * Clean up after a request is sent.
+     * @see AuthorizesWithNorthstar
+     *
+     * @return void
+     */
+    protected function cleanUp()
+    {
+        // ...
+    }
+
+    /**
      * Handle unauthorized exceptions.
      *
      * @param string $endpoint - The human-readable route that triggered the error.
@@ -171,8 +182,10 @@ class RestApiClient
             // Make the request. Any error code will send us to the 'catch' below.
             $response = $this->raw($method, $path, $options, $withAuthorization);
 
-            // Reset the number of attempts back to zero once we've had a successful response!
+            // Reset the number of attempts back to zero once we've had a successful
+            // response, and then perform any other clean-up.
             $this->attempts = 0;
+            $this->cleanUp();
 
             return json_decode($response->getBody()->getContents(), true);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
