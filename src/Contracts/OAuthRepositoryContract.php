@@ -21,13 +21,12 @@ interface OAuthRepositoryContract
     public function getUser($id);
 
     /**
-     * Get the given authenticated user's access token.
+     * Find or create a local user with the given Northstar ID.
      *
-     * @param NorthstarUserContract $user
-     *
-     * @return \League\OAuth2\Client\Token\AccessToken|null
+     * @param $id
+     * @return NorthstarUserContract
      */
-    public function getUserToken(NorthstarUserContract $user);
+    public function getOrCreateUser($id);
 
     /**
      * Get the OAuth client's token.
@@ -58,8 +57,41 @@ interface OAuthRepositoryContract
     /**
      * If a refresh token is invalid, request the user's credentials
      * by redirecting to the login screen.
+     *
+     * @return void
      */
     public function requestUserCredentials();
+
+    /**
+     * Save the OAuth state token to the session.
+     *
+     * @param $state
+     * @return void
+     */
+    public function saveStateToken($state);
+
+    /**
+     * Get a stored OAuth state token from the session.
+     *
+     * @return string
+     */
+    public function getStateToken();
+
+    /**
+     * Create a session for the given user & access token.
+     *
+     * @param NorthstarUserContract $user
+     * @param AccessToken $token
+     * @return mixed
+     */
+    public function login(NorthstarUserContract $user, AccessToken $token);
+
+    /**
+     * Destroy the current user session.
+     *
+     * @return mixed
+     */
+    public function logout();
 
     /**
      * Convert the given relative path to an absolute URL

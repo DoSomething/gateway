@@ -22,6 +22,11 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
     public function __construct()
     {
         $this->model = config('auth.model');
+
+        $interfaces = class_implements($this->model);
+        if (! in_array(NorthstarUserContract::class, $interfaces)) {
+            throw new InvalidArgumentException('The auth.user model must use the HasNorthstarToken trait & the NorthstarUserContract interface.');
+        }
     }
 
     /**
@@ -31,13 +36,7 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
      */
     public function getCurrentUser()
     {
-        $user = auth()->user();
-
-        if (! $user instanceof NorthstarUserContract) {
-            throw new InvalidArgumentException('The user model must use the HasNorthstarToken trait & the NorthstarUserContract interface.');
-        }
-
-        return $user;
+        return auth()->user();
     }
 
     /**
@@ -47,26 +46,18 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
      */
     public function getUser($id)
     {
-        /** @var NorthstarUserContract $user */
-        $user = $this->createModel()->where('northstar_id', $id)->first();
-
-        if (! $user instanceof NorthstarUserContract) {
-            throw new InvalidArgumentException('The user model must use the HasNorthstarToken trait & the NorthstarUserContract interface.');
-        }
-
-        return $user;
+        return $this->createModel()->where('northstar_id', $id)->first();
     }
 
     /**
-     * Get the given authenticated user's access token.
+     * Find or create a local user with the given Northstar ID.
      *
-     * @param NorthstarUserContract $user
-     *
-     * @return \League\OAuth2\Client\Token\AccessToken|null
+     * @param $id
+     * @return NorthstarUserContract
      */
-    public function getUserToken(NorthstarUserContract $user)
+    public function getOrCreateUser($id)
     {
-        return $user->getOAuthToken();
+        return $this->createModel()->firstOrCreate(['northstar_id' => $id]);
     }
 
     /**
@@ -97,6 +88,8 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
     /**
      * If a refresh token is invalid, request the user's credentials
      * by redirecting to the login screen.
+     *
+     * @return void
      */
     public function requestUserCredentials()
     {
@@ -153,6 +146,53 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
             'access_token' => $accessToken,
             'access_token_expiration' => $expiration,
         ]);
+    }
+
+    /**
+     * Get a stored OAuth state token from the session.
+     *
+     * @return string
+     */
+    public function getStateToken()
+    {
+        return session('oauth_state');
+    }
+
+    /**
+     * Save the OAuth state token to the session.
+     *
+     * @param $state
+     * @return void
+     */
+    public function saveStateToken($state)
+    {
+        session(['oauth_state' => $state]);
+    }
+
+    /**
+     * Log a user in to the application & update their locally cached role.
+     *
+     * @param NorthstarUserContract|\Illuminate\Contracts\Auth\Authenticatable $user
+     * @param AccessToken $token
+     * @return void
+     */
+    public function login(NorthstarUserContract $user, AccessToken $token)
+    {
+        // Save the user's role to their local account (for easy permission checking).
+        $user->setRole($token->getValues()['role']);
+        $user->save();
+
+        auth()->login($user, true);
+    }
+
+    /**
+     * Log the current user out of the application.
+     *
+     * @return void;
+     */
+    public function logout()
+    {
+        auth()->logout();
     }
 
     /**

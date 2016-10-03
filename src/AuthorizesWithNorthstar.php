@@ -3,9 +3,12 @@
 namespace DoSomething\Northstar;
 
 use DoSomething\Northstar\Contracts\OAuthRepositoryContract;
+use DoSomething\Northstar\Exceptions\InternalException;
 use DoSomething\Northstar\Exceptions\UnauthorizedException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 trait AuthorizesWithNorthstar
 {
@@ -18,7 +21,7 @@ trait AuthorizesWithNorthstar
 
     /**
      * The grant to use for authorization: supported values are either
-     * 'password' or 'client_credentials'. // @TODO: Add 'authorization_code'!
+     * 'authorization_code' or 'client_credentials'.
      *
      * @var string
      */
@@ -57,7 +60,7 @@ trait AuthorizesWithNorthstar
      *
      * @return mixed
      */
-    public function authorizeByClientCredentialsGrant()
+    public function getTokenByClientCredentialsGrant()
     {
         $token = $this->getAuthorizationServer()->getAccessToken('client_credentials', [
             'scope' => $this->config['client_credentials']['scope'],
@@ -74,18 +77,16 @@ trait AuthorizesWithNorthstar
     }
 
     /**
-     * Authorize a user based on the given username & password.
+     * Authorize a user by redirecting to Northstar's single sign-on page.
      *
-     * @param array $credentials
+     * @param string $code
      * @return \League\OAuth2\Client\Token\AccessToken
      */
-    public function authorizeByPasswordGrant($credentials)
+    public function getTokenByAuthorizationCodeGrant($code)
     {
         try {
-            $token = $this->getAuthorizationServer()->getAccessToken('password', [
-                'username' => $credentials['username'],
-                'password' => $credentials['password'],
-                'scope' => $this->config['password']['scope'],
+            $token = $this->getAuthorizationServer()->getAccessToken('authorization_code', [
+                'code' => $code,
             ]);
 
             $this->getOAuthRepository()->persistUserToken($token);
@@ -97,12 +98,74 @@ trait AuthorizesWithNorthstar
     }
 
     /**
+     * Handle the OpenID Connect authorization flow.
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param string $destination - The destination to redirect to on a successful login.
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|ResponseInterface
+     * @throws InternalException
+     */
+    public function authorize(ServerRequestInterface $request, ResponseInterface $response, $destination = '/')
+    {
+        $destination = $this->getOAuthRepository()->prepareUrl($destination);
+        $query = $request->getQueryParams();
+
+        // If we don't have an authorization code then make one and redirect.
+        if (! isset($query['code'])) {
+            $authorizationUrl = $this->getAuthorizationServer()->getAuthorizationUrl([
+                'scope' => $this->config['authorization_code']['scope'],
+            ]);
+
+            // Get the state generated for you and store it to the session.
+            $state = $this->getAuthorizationServer()->getState();
+            $this->getOAuthRepository()->saveStateToken($state);
+
+            // Redirect the user to the authorization URL.
+            return $response->withStatus(302)->withHeader('Location', $authorizationUrl);
+        }
+
+        // Check given state against previously stored one to mitigate CSRF attack
+        if (! (isset($query['state']) && $query['state'] === $this->getOAuthRepository()->getStateToken())) {
+            throw new InternalException('[authorization_code]', 500, 'The OAuth state field did not match.');
+        }
+
+        $token = $this->getTokenByAuthorizationCodeGrant($query['code']);
+        if (! $token) {
+            throw new InternalException('[authorization_code]', 500, 'The authorization server did not return a valid access token.');
+        }
+
+        // Find or create a local user account, and create a session for them.
+        $user = $this->getOAuthRepository()->getOrCreateUser($token->getResourceOwnerId());
+        $this->getOAuthRepository()->login($user, $token);
+
+        return $response->withStatus(302)->withHeader('Location', $destination);
+    }
+
+    /**
+     * Log a user out of the application and SSO service.
+     *
+     * @param ResponseInterface $response
+     * @param string $destination
+     * @return ResponseInterface
+     */
+    public function logout(ResponseInterface $response, $destination = '/')
+    {
+        $this->getOAuthRepository()->logout();
+
+        $destination = $this->getOAuthRepository()->prepareUrl($destination);
+        $ssoLogoutUrl = config('services.northstar.url').'/logout?redirect='.$destination;
+
+        return $response->withStatus(302)->withHeader('Location', $ssoLogoutUrl);
+    }
+
+    /**
      * Re-authorize a user based on their stored refresh token.
      *
      * @param AccessToken $oldToken
      * @return AccessToken
      */
-    public function authorizeByRefreshTokenGrant(AccessToken $oldToken)
+    public function getTokenByRefreshTokenGrant(AccessToken $oldToken)
     {
         try {
             $token = $this->getAuthorizationServer()->getAccessToken('refresh_token', [
@@ -177,13 +240,13 @@ trait AuthorizesWithNorthstar
     }
 
     /**
-     * Specify that the next request should use the password grant.
+     * Specify that the next request should use the authorization code grant.
      *
      * @return $this
      */
     public function asUser()
     {
-        return $this->usingGrant('password');
+        return $this->usingGrant('authorization_code');
     }
 
     /**
@@ -216,7 +279,7 @@ trait AuthorizesWithNorthstar
             case 'client_credentials':
                 return $this->getOAuthRepository()->getClientToken();
 
-            case 'password':
+            case 'authorization_code':
                 $user = $this->getOAuthRepository()->getCurrentUser();
 
                 if (! $user) {
@@ -244,10 +307,10 @@ trait AuthorizesWithNorthstar
                 throw new UnauthorizedException('[internal]', 'The provided token expired.');
 
             case 'client_credentials':
-                return $this->authorizeByClientCredentialsGrant();
+                return $this->getTokenByClientCredentialsGrant();
 
-            case 'password':
-                return $this->authorizeByRefreshTokenGrant($token);
+            case 'authorization_code':
+                return $this->getTokenByRefreshTokenGrant($token);
 
             default:
                 throw new \Exception('Unsupported grant type. Check $this->grant.');
