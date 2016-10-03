@@ -21,6 +21,20 @@ interface NorthstarUserContract
     public function setNorthstarIdentifier($id);
 
     /**
+     * Save the user's Northstar role locally.
+     *
+     * @return void
+     */
+    public function setRole($role);
+
+    /**
+     * Get the user's Northstar role.
+     *
+     * @return void
+     */
+    public function getRole();
+
+    /**
      * Get the access token for the user.
      *
      * @return AccessToken|null
