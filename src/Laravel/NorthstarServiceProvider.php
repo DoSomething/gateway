@@ -3,9 +3,7 @@
 namespace DoSomething\Northstar\Laravel;
 
 use DoSomething\Northstar\Northstar;
-use Illuminate\Auth\AuthManager;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Foundation\Application;
 
 class NorthstarServiceProvider extends ServiceProvider
 {
