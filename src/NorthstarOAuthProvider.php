@@ -43,7 +43,7 @@ class NorthstarOAuthProvider extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return $this->url . '/v2/auth/login';
+        return $this->url . '/authorize';
     }
 
     /**
