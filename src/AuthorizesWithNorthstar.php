@@ -60,7 +60,7 @@ trait AuthorizesWithNorthstar
      *
      * @return mixed
      */
-    public function getTokenByClientCredentialsGrant()
+    protected function getTokenByClientCredentialsGrant()
     {
         $token = $this->getAuthorizationServer()->getAccessToken('client_credentials', [
             'scope' => $this->config['client_credentials']['scope'],
@@ -82,7 +82,7 @@ trait AuthorizesWithNorthstar
      * @param string $code
      * @return \League\OAuth2\Client\Token\AccessToken
      */
-    public function getTokenByAuthorizationCodeGrant($code)
+    protected function getTokenByAuthorizationCodeGrant($code)
     {
         try {
             $token = $this->getAuthorizationServer()->getAccessToken('authorization_code', [
