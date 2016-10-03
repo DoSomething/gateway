@@ -3,11 +3,11 @@
 namespace DoSomething\Northstar\Laravel;
 
 use DoSomething\Northstar\Contracts\NorthstarUserContract;
-use DoSomething\Northstar\Contracts\OAuthRepositoryContract;
+use DoSomething\Northstar\Contracts\OAuthBridgeContract;
 use League\OAuth2\Client\Token\AccessToken;
 use InvalidArgumentException;
 
-class LaravelOAuthRepository implements OAuthRepositoryContract
+class LaravelOAuthBridge implements OAuthBridgeContract
 {
     /**
      * The User model class.

@@ -4,7 +4,7 @@ namespace DoSomething\Northstar\Contracts;
 
 use League\OAuth2\Client\Token\AccessToken;
 
-interface OAuthRepositoryContract
+interface OAuthBridgeContract
 {
     /**
      * Get the ID of the logged-in user.

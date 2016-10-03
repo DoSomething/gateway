@@ -2,7 +2,7 @@
 
 namespace DoSomething\Northstar;
 
-use DoSomething\Northstar\Contracts\OAuthRepositoryContract;
+use DoSomething\Northstar\Contracts\OAuthBridgeContract;
 use DoSomething\Northstar\Exceptions\InternalException;
 use DoSomething\Northstar\Exceptions\UnauthorizedException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -42,11 +42,12 @@ trait AuthorizesWithNorthstar
     protected $config;
 
     /**
-     * The class name of the OAuth repository.
+     * The class name of the OAuth framework bridge. This allows us to
+     * interact with the application framework in a standardized way.
      *
      * @var string
      */
-    protected $repository;
+    protected $bridge;
 
     /**
      * The league/oauth2-client authorization server.
@@ -66,7 +67,7 @@ trait AuthorizesWithNorthstar
             'scope' => $this->config['client_credentials']['scope'],
         ]);
 
-        $this->getOAuthRepository()->persistClientToken(
+        $this->getFrameworkBridge()->persistClientToken(
             $this->config['client_credentials']['client_id'],
             $token->getToken(),
             $token->getExpires(),
@@ -89,7 +90,7 @@ trait AuthorizesWithNorthstar
                 'code' => $code,
             ]);
 
-            $this->getOAuthRepository()->persistUserToken($token);
+            $this->getFrameworkBridge()->persistUserToken($token);
 
             return $token;
         } catch (IdentityProviderException $e) {
@@ -108,7 +109,7 @@ trait AuthorizesWithNorthstar
      */
     public function authorize(ServerRequestInterface $request, ResponseInterface $response, $destination = '/')
     {
-        $destination = $this->getOAuthRepository()->prepareUrl($destination);
+        $destination = $this->getFrameworkBridge()->prepareUrl($destination);
         $query = $request->getQueryParams();
 
         // If we don't have an authorization code then make one and redirect.
@@ -119,14 +120,14 @@ trait AuthorizesWithNorthstar
 
             // Get the state generated for you and store it to the session.
             $state = $this->getAuthorizationServer()->getState();
-            $this->getOAuthRepository()->saveStateToken($state);
+            $this->getFrameworkBridge()->saveStateToken($state);
 
             // Redirect the user to the authorization URL.
             return $response->withStatus(302)->withHeader('Location', $authorizationUrl);
         }
 
         // Check given state against previously stored one to mitigate CSRF attack
-        if (! (isset($query['state']) && $query['state'] === $this->getOAuthRepository()->getStateToken())) {
+        if (! (isset($query['state']) && $query['state'] === $this->getFrameworkBridge()->getStateToken())) {
             throw new InternalException('[authorization_code]', 500, 'The OAuth state field did not match.');
         }
 
@@ -136,8 +137,8 @@ trait AuthorizesWithNorthstar
         }
 
         // Find or create a local user account, and create a session for them.
-        $user = $this->getOAuthRepository()->getOrCreateUser($token->getResourceOwnerId());
-        $this->getOAuthRepository()->login($user, $token);
+        $user = $this->getFrameworkBridge()->getOrCreateUser($token->getResourceOwnerId());
+        $this->getFrameworkBridge()->login($user, $token);
 
         return $response->withStatus(302)->withHeader('Location', $destination);
     }
@@ -151,9 +152,9 @@ trait AuthorizesWithNorthstar
      */
     public function logout(ResponseInterface $response, $destination = '/')
     {
-        $this->getOAuthRepository()->logout();
+        $this->getFrameworkBridge()->logout();
 
-        $destination = $this->getOAuthRepository()->prepareUrl($destination);
+        $destination = $this->getFrameworkBridge()->prepareUrl($destination);
         $ssoLogoutUrl = config('services.northstar.url').'/logout?redirect='.$destination;
 
         return $response->withStatus(302)->withHeader('Location', $ssoLogoutUrl);
@@ -173,11 +174,11 @@ trait AuthorizesWithNorthstar
                 'scope' => $this->config[$this->grant]['scope'],
             ]);
 
-            $this->getOAuthRepository()->persistUserToken($token);
+            $this->getFrameworkBridge()->persistUserToken($token);
 
             return $token;
         } catch (IdentityProviderException $e) {
-            $this->getOAuthRepository()->requestUserCredentials();
+            $this->getFrameworkBridge()->requestUserCredentials();
 
             return null;
         }
@@ -212,7 +213,7 @@ trait AuthorizesWithNorthstar
                 ],
             ]);
 
-        $user = $this->getOAuthRepository()->getUser($token->getResourceOwnerId());
+        $user = $this->getFrameworkBridge()->getUser($token->getResourceOwnerId());
         $user->clearOAuthToken();
     }
 
@@ -277,10 +278,10 @@ trait AuthorizesWithNorthstar
                 return $this->token;
 
             case 'client_credentials':
-                return $this->getOAuthRepository()->getClientToken();
+                return $this->getFrameworkBridge()->getClientToken();
 
             case 'authorization_code':
-                $user = $this->getOAuthRepository()->getCurrentUser();
+                $user = $this->getFrameworkBridge()->getCurrentUser();
 
                 if (! $user) {
                     return null;
@@ -375,7 +376,7 @@ trait AuthorizesWithNorthstar
             ];
 
             if (! empty($config['redirect_uri'])) {
-                $options['redirectUri'] = $this->getOAuthRepository()->prepareUrl($config['redirect_uri']);
+                $options['redirectUri'] = $this->getFrameworkBridge()->prepareUrl($config['redirect_uri']);
             }
 
             $this->authorizationServer = new NorthstarOAuthProvider($options);
@@ -386,16 +387,16 @@ trait AuthorizesWithNorthstar
 
     /**
      * Get the OAuth repository used for storing & retrieving tokens.
-     * @return OAuthRepositoryContract $repository
+     * @return OAuthBridgeContract $repository
      * @throws \Exception
      */
-    protected function getOAuthRepository()
+    protected function getFrameworkBridge()
     {
-        if (! class_exists($this->repository)) {
-            throw new \Exception('You must provide an implementation of OAuthRepositoryContract to store tokens.');
+        if (! class_exists($this->bridge)) {
+            throw new \Exception('You must provide an implementation of OAuthBridgeContract to store tokens.');
         }
 
-        return new $this->repository();
+        return new $this->bridge();
     }
 
     /**
