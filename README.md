@@ -3,8 +3,8 @@ This is a simple PHP API client for [Northstar](https://www.github.com/dosomethi
 identity API. It supports authorization and resource requests from Northstar, and includes the tools necessary for
 building other API clients that authorize against Northstar.
 
-It also includes [built-in support for Laravel 5](https://github.com/DoSomething/northstar-php#laravel-usage) and an
-optional [authentication driver](#laravel-authentication).
+It also includes [built-in support for Laravel 5](https://github.com/DoSomething/northstar-php#laravel-usage) and can
+be used for [authentication](#authentication) via OpenID Connect.
 
 ### Installation
 Install with Composer:
@@ -110,36 +110,71 @@ class Inspire
 }
 ```
 
-### Laravel Authentication
-A Laravel user provider is also included to configure Laravel's built-in authentication to validate against Northstar
-instead of your local database. After configuring the client above, set your application to use the `northstar` driver
-instead of `eloquent` in `config/auth.php`.
+### Authentication
+You can use the `authorize` and `logout` methods on the client to let users log in using Northstar's single-sign on
+functionality. This can be implemented anywhere using a custom framework bridge, but it's super easy in Laravel:
+
+First, set up the `login` and `logout` routes in your `routes.php`:
 
 ```php
-// For Laravel 5.0 or 5.1
-'driver' => 'northstar',
-'model' => App\User::class,
-
-// For Laravel 5.2+
-'providers' => [
-    'users' => [
-        'driver' => 'northstar',
-        'model' => App\User::class,
-    ],
-    // ...
- ]
+// Authentication
+Router::get('login', 'AuthController@getLogin');
+Router::get('logout', 'AuthController@getLogout');
 ```
 
-Make sure to switch the Northstar client to use the password grant in `config/services.php`:
+And forward those requests to the Northstar client in your authentication controller:
 
 ```php
-    'northstar' => [
-        'grant' => 'password',
-        // ...
-    ]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+class AuthController extends Controller
+{
+    /**
+     * Where to redirect users after login.
+     *
+     * @var string
+     */
+    protected $redirectTo = '/users';
+
+    /**
+     * Where to redirect users after logout.
+     *
+     * @var string
+     */
+    protected $redirectAfterLogout = '/';
+
+    /**
+     * Handle a login request to the application.
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function getLogin(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        return Northstar::authorize($request, $response, $this->redirectTo);
+    }
+
+    /**
+     * Handle a logout request to the application.
+     *
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function getLogout(ResponseInterface $response)
+    {
+        return Northstar::logout($response, $this->redirectAfterLogout);
+    }
+}
 ```
 
-And finally, add the Northstar contract & trait to your app's User model:
+Finally, add the Northstar contract & trait to your app's User model:
 ```php
 <?php
 
@@ -157,9 +192,9 @@ class User extends Model implements NorthstarUserContract, /* ... */
 
 ```
 
-Now, Laravel will query Northstar to validate user credentials, rather than your local database. If a
-matching Northstar account is found, a new instance of the specified Eloquent model will be saved to your
-local database with the matching user's `northstar_id` and token, and set as the active user for the session.
+Now, Laravel will redirect to Northstar for user login and automatically create a new model in your local database
+with the appropriate `northstar_id` and `role` columns. The user's access and refresh tokens will be stored so they
+can make authorized requests to other DoSomething.org services.
 
 ### License
 &copy;2016 DoSomething.org. The Northstar PHP client is free software, and may be redistributed under the terms
