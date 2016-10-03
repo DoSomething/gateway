@@ -156,6 +156,18 @@ class LaravelOAuthRepository implements OAuthRepositoryContract
     }
 
     /**
+     * Convert the given relative path to an absolute URL
+     * with the framework's URL generator.
+     *
+     * @param $url
+     * @return string
+     */
+    public function prepareUrl($url)
+    {
+        return url($url);
+    }
+
+    /**
      * Create a new instance of the model.
      *
      * @return \Illuminate\Database\Eloquent\Model

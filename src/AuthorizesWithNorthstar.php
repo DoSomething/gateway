@@ -304,12 +304,18 @@ trait AuthorizesWithNorthstar
     {
         if (! $this->authorizationServer) {
             $config = $this->config[$this->grant];
-            $this->authorizationServer = new NorthstarOAuthProvider([
+
+            $options = [
                 'url' => $this->authorizationServerUri,
                 'clientId' => $config['client_id'],
                 'clientSecret' => $config['client_secret'],
-                'redirectUri' => ! empty($config['redirect_uri']) ? $config['redirect_uri'] : null,
-            ]);
+            ];
+
+            if (! empty($config['redirect_uri'])) {
+                $options['redirectUri'] = $this->getOAuthRepository()->prepareUrl($config['redirect_uri']);
+            }
+
+            $this->authorizationServer = new NorthstarOAuthProvider($options);
         }
 
         return $this->authorizationServer;

@@ -60,4 +60,13 @@ interface OAuthRepositoryContract
      * by redirecting to the login screen.
      */
     public function requestUserCredentials();
+
+    /**
+     * Convert the given relative path to an absolute URL
+     * with the framework's URL generator.
+     *
+     * @param $url
+     * @return string
+     */
+    public function prepareUrl($url);
 }
