@@ -102,7 +102,7 @@ class NorthstarOAuthProvider extends AbstractProvider
      */
     protected function getAccessTokenRequest(array $params)
     {
-        if (is_array($params['scope'])) {
+        if (isset($params['scope']) && is_array($params['scope'])) {
             $separator = $this->getScopeSeparator();
             $params['scope'] = implode($separator, $params['scope']);
         }
