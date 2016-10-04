@@ -25,8 +25,8 @@ class Northstar extends RestApiClient
         $this->grant = $config['grant'];
         $this->config = $config;
 
-        if (! empty($config['repository'])) {
-            $this->repository = $config['repository'];
+        if (! empty($config['bridge'])) {
+            $this->bridge = $config['bridge'];
         }
 
         parent::__construct($base_url);

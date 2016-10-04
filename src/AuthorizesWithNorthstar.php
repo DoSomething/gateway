@@ -2,10 +2,13 @@
 
 namespace DoSomething\Northstar;
 
-use DoSomething\Northstar\Contracts\OAuthRepositoryContract;
+use DoSomething\Northstar\Contracts\OAuthBridgeContract;
+use DoSomething\Northstar\Exceptions\InternalException;
 use DoSomething\Northstar\Exceptions\UnauthorizedException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 trait AuthorizesWithNorthstar
 {
@@ -18,7 +21,7 @@ trait AuthorizesWithNorthstar
 
     /**
      * The grant to use for authorization: supported values are either
-     * 'password' or 'client_credentials'. // @TODO: Add 'authorization_code'!
+     * 'authorization_code' or 'client_credentials'.
      *
      * @var string
      */
@@ -39,11 +42,12 @@ trait AuthorizesWithNorthstar
     protected $config;
 
     /**
-     * The class name of the OAuth repository.
+     * The class name of the OAuth framework bridge. This allows us to
+     * interact with the application framework in a standardized way.
      *
      * @var string
      */
-    protected $repository;
+    protected $bridge;
 
     /**
      * The league/oauth2-client authorization server.
@@ -57,13 +61,13 @@ trait AuthorizesWithNorthstar
      *
      * @return mixed
      */
-    public function authorizeByClientCredentialsGrant()
+    protected function getTokenByClientCredentialsGrant()
     {
         $token = $this->getAuthorizationServer()->getAccessToken('client_credentials', [
             'scope' => $this->config['client_credentials']['scope'],
         ]);
 
-        $this->getOAuthRepository()->persistClientToken(
+        $this->getFrameworkBridge()->persistClientToken(
             $this->config['client_credentials']['client_id'],
             $token->getToken(),
             $token->getExpires(),
@@ -74,21 +78,19 @@ trait AuthorizesWithNorthstar
     }
 
     /**
-     * Authorize a user based on the given username & password.
+     * Authorize a user by redirecting to Northstar's single sign-on page.
      *
-     * @param array $credentials
+     * @param string $code
      * @return \League\OAuth2\Client\Token\AccessToken
      */
-    public function authorizeByPasswordGrant($credentials)
+    protected function getTokenByAuthorizationCodeGrant($code)
     {
         try {
-            $token = $this->getAuthorizationServer()->getAccessToken('password', [
-                'username' => $credentials['username'],
-                'password' => $credentials['password'],
-                'scope' => $this->config['password']['scope'],
+            $token = $this->getAuthorizationServer()->getAccessToken('authorization_code', [
+                'code' => $code,
             ]);
 
-            $this->getOAuthRepository()->persistUserToken($token);
+            $this->getFrameworkBridge()->persistUserToken($token);
 
             return $token;
         } catch (IdentityProviderException $e) {
@@ -97,12 +99,74 @@ trait AuthorizesWithNorthstar
     }
 
     /**
+     * Handle the OpenID Connect authorization flow.
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param string $destination - The destination to redirect to on a successful login.
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|ResponseInterface
+     * @throws InternalException
+     */
+    public function authorize(ServerRequestInterface $request, ResponseInterface $response, $destination = '/')
+    {
+        $destination = $this->getFrameworkBridge()->prepareUrl($destination);
+        $query = $request->getQueryParams();
+
+        // If we don't have an authorization code then make one and redirect.
+        if (! isset($query['code'])) {
+            $authorizationUrl = $this->getAuthorizationServer()->getAuthorizationUrl([
+                'scope' => $this->config['authorization_code']['scope'],
+            ]);
+
+            // Get the state generated for you and store it to the session.
+            $state = $this->getAuthorizationServer()->getState();
+            $this->getFrameworkBridge()->saveStateToken($state);
+
+            // Redirect the user to the authorization URL.
+            return $response->withStatus(302)->withHeader('Location', $authorizationUrl);
+        }
+
+        // Check given state against previously stored one to mitigate CSRF attack
+        if (! (isset($query['state']) && $query['state'] === $this->getFrameworkBridge()->getStateToken())) {
+            throw new InternalException('[authorization_code]', 500, 'The OAuth state field did not match.');
+        }
+
+        $token = $this->getTokenByAuthorizationCodeGrant($query['code']);
+        if (! $token) {
+            throw new InternalException('[authorization_code]', 500, 'The authorization server did not return a valid access token.');
+        }
+
+        // Find or create a local user account, and create a session for them.
+        $user = $this->getFrameworkBridge()->getOrCreateUser($token->getResourceOwnerId());
+        $this->getFrameworkBridge()->login($user, $token);
+
+        return $response->withStatus(302)->withHeader('Location', $destination);
+    }
+
+    /**
+     * Log a user out of the application and SSO service.
+     *
+     * @param ResponseInterface $response
+     * @param string $destination
+     * @return ResponseInterface
+     */
+    public function logout(ResponseInterface $response, $destination = '/')
+    {
+        $this->getFrameworkBridge()->logout();
+
+        $destination = $this->getFrameworkBridge()->prepareUrl($destination);
+        $ssoLogoutUrl = config('services.northstar.url').'/logout?redirect='.$destination;
+
+        return $response->withStatus(302)->withHeader('Location', $ssoLogoutUrl);
+    }
+
+    /**
      * Re-authorize a user based on their stored refresh token.
      *
      * @param AccessToken $oldToken
      * @return AccessToken
      */
-    public function authorizeByRefreshTokenGrant(AccessToken $oldToken)
+    public function getTokenByRefreshTokenGrant(AccessToken $oldToken)
     {
         try {
             $token = $this->getAuthorizationServer()->getAccessToken('refresh_token', [
@@ -110,11 +174,11 @@ trait AuthorizesWithNorthstar
                 'scope' => $this->config[$this->grant]['scope'],
             ]);
 
-            $this->getOAuthRepository()->persistUserToken($token);
+            $this->getFrameworkBridge()->persistUserToken($token);
 
             return $token;
         } catch (IdentityProviderException $e) {
-            $this->getOAuthRepository()->requestUserCredentials();
+            $this->getFrameworkBridge()->requestUserCredentials();
 
             return null;
         }
@@ -149,7 +213,7 @@ trait AuthorizesWithNorthstar
                 ],
             ]);
 
-        $user = $this->getOAuthRepository()->getUser($token->getResourceOwnerId());
+        $user = $this->getFrameworkBridge()->getUser($token->getResourceOwnerId());
         $user->clearOAuthToken();
     }
 
@@ -177,13 +241,13 @@ trait AuthorizesWithNorthstar
     }
 
     /**
-     * Specify that the next request should use the password grant.
+     * Specify that the next request should use the authorization code grant.
      *
      * @return $this
      */
     public function asUser()
     {
-        return $this->usingGrant('password');
+        return $this->usingGrant('authorization_code');
     }
 
     /**
@@ -214,10 +278,10 @@ trait AuthorizesWithNorthstar
                 return $this->token;
 
             case 'client_credentials':
-                return $this->getOAuthRepository()->getClientToken();
+                return $this->getFrameworkBridge()->getClientToken();
 
-            case 'password':
-                $user = $this->getOAuthRepository()->getCurrentUser();
+            case 'authorization_code':
+                $user = $this->getFrameworkBridge()->getCurrentUser();
 
                 if (! $user) {
                     return null;
@@ -244,10 +308,10 @@ trait AuthorizesWithNorthstar
                 throw new UnauthorizedException('[internal]', 'The provided token expired.');
 
             case 'client_credentials':
-                return $this->authorizeByClientCredentialsGrant();
+                return $this->getTokenByClientCredentialsGrant();
 
-            case 'password':
-                return $this->authorizeByRefreshTokenGrant($token);
+            case 'authorization_code':
+                return $this->getTokenByRefreshTokenGrant($token);
 
             default:
                 throw new \Exception('Unsupported grant type. Check $this->grant.');
@@ -304,12 +368,18 @@ trait AuthorizesWithNorthstar
     {
         if (! $this->authorizationServer) {
             $config = $this->config[$this->grant];
-            $this->authorizationServer = new NorthstarOAuthProvider([
+
+            $options = [
                 'url' => $this->authorizationServerUri,
                 'clientId' => $config['client_id'],
                 'clientSecret' => $config['client_secret'],
-                'redirectUri' => ! empty($config['redirect_uri']) ? $config['redirect_uri'] : null,
-            ]);
+            ];
+
+            if (! empty($config['redirect_uri'])) {
+                $options['redirectUri'] = $this->getFrameworkBridge()->prepareUrl($config['redirect_uri']);
+            }
+
+            $this->authorizationServer = new NorthstarOAuthProvider($options);
         }
 
         return $this->authorizationServer;
@@ -317,16 +387,16 @@ trait AuthorizesWithNorthstar
 
     /**
      * Get the OAuth repository used for storing & retrieving tokens.
-     * @return OAuthRepositoryContract $repository
+     * @return OAuthBridgeContract $repository
      * @throws \Exception
      */
-    protected function getOAuthRepository()
+    protected function getFrameworkBridge()
     {
-        if (! class_exists($this->repository)) {
-            throw new \Exception('You must provide an implementation of OAuthRepositoryContract to store tokens.');
+        if (! class_exists($this->bridge)) {
+            throw new \Exception('You must provide an implementation of OAuthBridgeContract to store tokens.');
         }
 
-        return new $this->repository();
+        return new $this->bridge();
     }
 
     /**

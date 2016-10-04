@@ -12,12 +12,13 @@ use Illuminate\Support\MessageBag;
 class LaravelNorthstar extends Northstar
 {
     /**
-     * The class name of the OAuth repository. For Laravel, we default to the included repository
-     * (although that can be overridden with the $config['repository'] option in the constructor).
+     * The class name of the OAuth framework bridge. This allows us to interact with Laravel
+     * without writing any custom framework integration code, but can be overridden in the
+     * client constructor's `$config` array.
      *
      * @var string
      */
-    protected $repository = \DoSomething\Northstar\Laravel\LaravelOAuthRepository::class;
+    protected $bridge = \DoSomething\Northstar\Laravel\LaravelOAuthBridge::class;
 
     /**
      * Send a Northstar API request, and translates any Northstar exceptions

@@ -45,6 +45,26 @@ trait HasNorthstarToken
     }
 
     /**
+     * Save the user's Northstar role locally.
+     *
+     * @return void
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
+    }
+
+    /**
+     * Get the user's Northstar role.
+     *
+     * @return string
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
      * Get the access token for the user.
      *
      * @return AccessToken|null
