@@ -231,14 +231,16 @@ class RestApiClient
      */
     public function raw($method, $path, $options, $withAuthorization = true)
     {
-        // By default, we append the authorization header to every request.
-        if ($withAuthorization) {
-            $authorizationHeader = $this->getAuthorizationHeader();
-            if (empty($options['headers'])) {
-                $options['headers'] = [];
-            }
+        // Find what traits this class is using.
+        $class = get_called_class();
+        $traits = array_keys(class_uses($class));
 
-            $options['headers'] = array_merge($this->defaultHeaders, $options['headers'], $authorizationHeader);
+        // If these traits have a "hook" (uh oh!), run that before making a request.
+        foreach ($traits as $trait) {
+            $method = 'run'.class_basename($trait).'Tasks';
+            if (method_exists($class, $method)) {
+                $this->{$method}($method, $path, $options, $withAuthorization);
+            }
         }
 
         return $this->client->request($method, $path, $options);
