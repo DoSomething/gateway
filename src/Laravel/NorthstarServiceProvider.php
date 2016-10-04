@@ -29,7 +29,7 @@ class NorthstarServiceProvider extends ServiceProvider
             return new LaravelNorthstar(config('services.northstar'));
         });
 
-        // Set alias for facade / requesting from app() helper.
+        // Set alias for requesting from app() helper.
         $this->app->alias(Northstar::class, 'northstar');
     }
 }
