@@ -105,7 +105,7 @@ class Inspire
 {
     public function doSomething()
     {
-        $users = Northstar::getAllUsers();
+        $users = app('northstar')->getAllUsers();
     }
 }
 ```
@@ -158,7 +158,7 @@ class AuthController extends Controller
      */
     public function getLogin(ServerRequestInterface $request, ResponseInterface $response)
     {
-        return Northstar::authorize($request, $response, $this->redirectTo);
+        return app('northstar')->authorize($request, $response, $this->redirectTo);
     }
 
     /**
@@ -169,7 +169,7 @@ class AuthController extends Controller
      */
     public function getLogout(ResponseInterface $response)
     {
-        return Northstar::logout($response, $this->redirectAfterLogout);
+        return app('northstar')->logout($response, $this->redirectAfterLogout);
     }
 }
 ```
