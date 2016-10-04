@@ -1,8 +1,8 @@
 <?php
 
-namespace DoSomething\Northstar\Resources;
+namespace DoSomething\Gateway\Resources;
 
-use DoSomething\Northstar\Common\APICollection;
+use DoSomething\Gateway\Common\APICollection;
 
 class NorthstarUserCollection extends APICollection
 {

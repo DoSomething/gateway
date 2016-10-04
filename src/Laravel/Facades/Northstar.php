@@ -1,6 +1,6 @@
 <?php
 
-namespace DoSomething\Northstar\Laravel\Facades;
+namespace DoSomething\Gateway\Laravel\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

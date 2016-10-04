@@ -1,6 +1,6 @@
 <?php
 
-namespace DoSomething\Northstar\Laravel;
+namespace DoSomething\Gateway\Laravel;
 
 use League\OAuth2\Client\Token\AccessToken;
 

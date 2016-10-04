@@ -1,8 +1,8 @@
 <?php
 
-namespace DoSomething\Northstar;
+namespace DoSomething\Gateway;
 
-use DoSomething\Northstar\Resources\NorthstarUser;
+use DoSomething\Gateway\Resources\NorthstarUser;
 use Lcobucci\JWT\Parser;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;

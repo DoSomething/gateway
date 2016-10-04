@@ -1,10 +1,10 @@
 <?php
 
-namespace DoSomething\Northstar;
+namespace DoSomething\Gateway;
 
-use DoSomething\Northstar\Contracts\OAuthBridgeContract;
-use DoSomething\Northstar\Exceptions\InternalException;
-use DoSomething\Northstar\Exceptions\UnauthorizedException;
+use DoSomething\Gateway\Contracts\OAuthBridgeContract;
+use DoSomething\Gateway\Exceptions\InternalException;
+use DoSomething\Gateway\Exceptions\UnauthorizedException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ServerRequestInterface;

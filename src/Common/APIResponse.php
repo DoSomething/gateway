@@ -1,6 +1,6 @@
 <?php
 
-namespace DoSomething\Northstar\Common;
+namespace DoSomething\Gateway\Common;
 
 use Carbon\Carbon;
 

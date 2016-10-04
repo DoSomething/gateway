@@ -1,8 +1,8 @@
 <?php
 
-namespace DoSomething\Northstar\Laravel;
+namespace DoSomething\Gateway\Laravel;
 
-use DoSomething\Northstar\Northstar;
+use DoSomething\Gateway\Northstar;
 use Illuminate\Support\ServiceProvider;
 
 class NorthstarServiceProvider extends ServiceProvider

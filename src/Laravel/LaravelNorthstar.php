@@ -1,10 +1,10 @@
 <?php
 
-namespace DoSomething\Northstar\Laravel;
+namespace DoSomething\Gateway\Laravel;
 
-use DoSomething\Northstar\Northstar;
-use DoSomething\Northstar\Exceptions\InternalException;
-use DoSomething\Northstar\Exceptions\ValidationException;
+use DoSomething\Gateway\Northstar;
+use DoSomething\Gateway\Exceptions\InternalException;
+use DoSomething\Gateway\Exceptions\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Contracts\Validation\ValidationException as LaravelValidationException;
 use Illuminate\Support\MessageBag;
@@ -18,7 +18,7 @@ class LaravelNorthstar extends Northstar
      *
      * @var string
      */
-    protected $bridge = \DoSomething\Northstar\Laravel\LaravelOAuthBridge::class;
+    protected $bridge = \DoSomething\Gateway\Laravel\LaravelOAuthBridge::class;
 
     /**
      * Send a Northstar API request, and translates any Northstar exceptions

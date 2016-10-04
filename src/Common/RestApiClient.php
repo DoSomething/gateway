@@ -1,12 +1,12 @@
 <?php
 
-namespace DoSomething\Northstar\Common;
+namespace DoSomething\Gateway\Common;
 
-use DoSomething\Northstar\Exceptions\BadRequestException;
-use DoSomething\Northstar\Exceptions\ForbiddenException;
-use DoSomething\Northstar\Exceptions\InternalException;
-use DoSomething\Northstar\Exceptions\UnauthorizedException;
-use DoSomething\Northstar\Exceptions\ValidationException;
+use DoSomething\Gateway\Exceptions\BadRequestException;
+use DoSomething\Gateway\Exceptions\ForbiddenException;
+use DoSomething\Gateway\Exceptions\InternalException;
+use DoSomething\Gateway\Exceptions\UnauthorizedException;
+use DoSomething\Gateway\Exceptions\ValidationException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 

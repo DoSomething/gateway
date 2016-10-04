@@ -1,16 +1,15 @@
-# Northstar PHP [![Packagist](https://img.shields.io/packagist/v/dosomething/northstar.svg)](https://packagist.org/packages/dosomething/northstar)
-This is a simple PHP API client for [Northstar](https://www.github.com/dosomething/northstar), the DoSomething.org
-identity API. It supports authorization and resource requests from Northstar, and includes the tools necessary for
-building other API clients that authorize against Northstar.
+# Gateway [![Packagist](https://img.shields.io/packagist/v/dosomething/gateway.svg)](https://packagist.org/packages/dosomething/gateway)
+This is a simple PHP API client for DoSomething.org services. It supports authorization and resource requests from Northstar,
+and includes the tools necessary for building other API clients that authorize against Northstar.
 
-It also includes [built-in support for Laravel 5](https://github.com/DoSomething/northstar-php#laravel-usage) and can
-be used for [authentication](#authentication) via OpenID Connect.
+It also includes [built-in support for Laravel 5](#laravel-usage) (but can easily be customized to work with any framework)
+and can be used for [user authentication](#authentication) via OpenID Connect.
 
 ### Installation
 Install with Composer:
 ```json
 "require": {
-    "dosomething/northstar": "^1.0.0"
+    "dosomething/gateway": "^1.0.0"
 }
 ```
 
@@ -18,11 +17,11 @@ To require the latest release candidate add it to the suffix of the version spec
 
 ### Usage
 In vanilla PHP, you can create a new `Northstar` client with your credentials to make API requests. You'll need
-to implement your own version of the `\DoSomething\Northstar\Contracts\OAuthBridgeContract` class to handle storing
+to implement your own version of the `\DoSomething\Gateway\Contracts\OAuthBridgeContract` class to handle storing
 and retrieving tokens.
 
 ```php
-use DoSomething\Northstar\Northstar;
+use DoSomething\Gateway\Northstar;
 
 $northstar = new Northstar([
     'grant' => 'client_credentials', // Default OAuth grant to use: either 'password' or 'client_credentials'
@@ -63,13 +62,8 @@ Laravel support is built-in. First, add a service provider to your `config/app.p
 ```php
 'providers' => [
     // ...
-    DoSomething\Northstar\Laravel\NorthstarServiceProvider::class,
+    DoSomething\Gateway\Laravel\NorthstarServiceProvider::class,
 ],
-
-'aliases' => [
-   // ...
-   'Northstar' => DoSomething\Northstar\Laravel\Facades\Northstar::class,
-]
 ```
 
 Then, set your environment & key in `config/services.php`:
@@ -99,13 +93,13 @@ Publish the included migrations (and customize as needed) to add the required cl
 php artisan vendor:publish
 ```
 
-You can now use the `Northstar` facade anywhere in your app:
+You can now use the `gateway()` helper method anywhere in your app:
 ```php
 class Inspire
 {
     public function doSomething()
     {
-        $users = app('northstar')->getAllUsers();
+        $users = gateway('northstar')->getAllUsers();
     }
 }
 ```
@@ -158,7 +152,7 @@ class AuthController extends Controller
      */
     public function getLogin(ServerRequestInterface $request, ResponseInterface $response)
     {
-        return app('northstar')->authorize($request, $response, $this->redirectTo);
+        return gateway('northstar')->authorize($request, $response, $this->redirectTo);
     }
 
     /**
@@ -169,7 +163,7 @@ class AuthController extends Controller
      */
     public function getLogout(ResponseInterface $response)
     {
-        return app('northstar')->logout($response, $this->redirectAfterLogout);
+        return gateway('northstar')->logout($response, $this->redirectAfterLogout);
     }
 }
 ```
@@ -181,8 +175,8 @@ Finally, add the Northstar contract & trait to your app's User model:
 namespace App\Models;
 
 // ...
-use DoSomething\Northstar\Contracts\NorthstarUserContract;
-use DoSomething\Northstar\Laravel\HasNorthstarToken;
+use DoSomething\Gateway\Contracts\NorthstarUserContract;
+use DoSomething\Gateway\Laravel\HasNorthstarToken;
 
 class User extends Model implements NorthstarUserContract, /* ... */
 {
@@ -197,5 +191,5 @@ with the appropriate `northstar_id` and `role` columns. The user's access and re
 can make authorized requests to other DoSomething.org services.
 
 ### License
-&copy;2016 DoSomething.org. The Northstar PHP client is free software, and may be redistributed under the terms
+&copy;2016 DoSomething.org. Gateway is free software, and may be redistributed under the terms
 specified in the [LICENSE](https://github.com/DoSomething/northstar-php/blob/master/LICENSE) file.
