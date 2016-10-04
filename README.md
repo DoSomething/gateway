@@ -14,11 +14,11 @@ Install with Composer:
 }
 ```
 
-To require the latest release candidate add it to the suffix of the version specified, such as `1.0.0-rc10`.
+To require the latest release candidate add it to the suffix of the version specified, such as `1.0.0-rc11`.
 
 ### Usage
 In vanilla PHP, you can create a new `Northstar` client with your credentials to make API requests. You'll need
-to implement your own version of the `\DoSomething\Northstar\Contracts\OAuthRepositoryContract` class to handle storing
+to implement your own version of the `\DoSomething\Northstar\Contracts\OAuthBridgeContract` class to handle storing
 and retrieving tokens.
 
 ```php
@@ -27,7 +27,7 @@ use DoSomething\Northstar\Northstar;
 $northstar = new Northstar([
     'grant' => 'client_credentials', // Default OAuth grant to use: either 'password' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'repository' => \YourApp\OAuthRepository::class, // class which handles saving/retrieving tokens
+    'bridge' => \YourApp\OAuthBridge::class, // class which handles saving/retrieving tokens
     
     // Then, configure client ID, client secret, and scopes per grant.
     'client_credentials' => [
