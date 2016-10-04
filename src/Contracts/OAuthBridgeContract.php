@@ -1,6 +1,6 @@
 <?php
 
-namespace DoSomething\Northstar\Contracts;
+namespace DoSomething\Gateway\Contracts;
 
 use League\OAuth2\Client\Token\AccessToken;
 

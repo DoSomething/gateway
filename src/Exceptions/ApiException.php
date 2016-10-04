@@ -1,6 +1,6 @@
 <?php
 
-namespace DoSomething\Northstar\Exceptions;
+namespace DoSomething\Gateway\Exceptions;
 
 use Exception;
 

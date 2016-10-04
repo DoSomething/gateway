@@ -1,8 +1,8 @@
 <?php
 
-namespace DoSomething\Northstar\Resources;
+namespace DoSomething\Gateway\Resources;
 
-use DoSomething\Northstar\Common\APIResponse;
+use DoSomething\Gateway\Common\APIResponse;
 
 class NorthstarClient extends APIResponse
 {

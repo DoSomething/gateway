@@ -1,11 +1,11 @@
 <?php
 
-namespace DoSomething\Northstar\Laravel;
+namespace DoSomething\Gateway\Laravel;
 
-use DoSomething\Northstar\Northstar;
+use DoSomething\Gateway\Northstar;
 use Illuminate\Support\ServiceProvider;
 
-class NorthstarServiceProvider extends ServiceProvider
+class GatewayServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
@@ -29,7 +29,7 @@ class NorthstarServiceProvider extends ServiceProvider
             return new LaravelNorthstar(config('services.northstar'));
         });
 
-        // Set alias for facade / requesting from app() helper.
+        // Set alias for requesting from app() helper.
         $this->app->alias(Northstar::class, 'northstar');
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace DoSomething\Northstar;
+namespace DoSomething\Gateway;
 
-use DoSomething\Northstar\Common\RestApiClient;
-use DoSomething\Northstar\Resources\NorthstarClient;
-use DoSomething\Northstar\Resources\NorthstarUser;
-use DoSomething\Northstar\Resources\NorthstarUserCollection;
-use DoSomething\Northstar\Resources\NorthstarClientCollection;
+use DoSomething\Gateway\Common\RestApiClient;
+use DoSomething\Gateway\Resources\NorthstarClient;
+use DoSomething\Gateway\Resources\NorthstarUser;
+use DoSomething\Gateway\Resources\NorthstarUserCollection;
+use DoSomething\Gateway\Resources\NorthstarClientCollection;
 
 class Northstar extends RestApiClient
 {

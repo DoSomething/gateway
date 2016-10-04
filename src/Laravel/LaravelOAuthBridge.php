@@ -1,9 +1,9 @@
 <?php
 
-namespace DoSomething\Northstar\Laravel;
+namespace DoSomething\Gateway\Laravel;
 
-use DoSomething\Northstar\Contracts\NorthstarUserContract;
-use DoSomething\Northstar\Contracts\OAuthBridgeContract;
+use DoSomething\Gateway\Contracts\NorthstarUserContract;
+use DoSomething\Gateway\Contracts\OAuthBridgeContract;
 use League\OAuth2\Client\Token\AccessToken;
 use InvalidArgumentException;
 
