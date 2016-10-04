@@ -57,12 +57,12 @@ $northstar->withToken($accessToken)->get('v1/profile');
 ```
 
 ### Laravel Usage
-Laravel support is built-in. First, add a service provider to your `config/app.php`:
+Laravel support is built-in. First, add the service provider to your `config/app.php`:
 
 ```php
 'providers' => [
     // ...
-    DoSomething\Gateway\Laravel\NorthstarServiceProvider::class,
+    DoSomething\Gateway\Laravel\GatewayServiceProvider::class,
 ],
 ```
 

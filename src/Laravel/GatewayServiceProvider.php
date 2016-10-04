@@ -5,7 +5,7 @@ namespace DoSomething\Gateway\Laravel;
 use DoSomething\Gateway\Northstar;
 use Illuminate\Support\ServiceProvider;
 
-class NorthstarServiceProvider extends ServiceProvider
+class GatewayServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
