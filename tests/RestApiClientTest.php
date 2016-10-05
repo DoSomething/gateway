@@ -5,7 +5,7 @@ use DoSomething\Gateway\Common\RestApiClient;
 class RestApiClientTest extends TestCase
 {
     /** @test */
-    function makeRestApiClientForCustomResource()
+    public function makeRestApiClientForCustomResource()
     {
         $apiUrl = 'api.xavierinstitute.edu';
 

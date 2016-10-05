@@ -77,7 +77,8 @@ class RestApiClient
      *
      * @return GuzzleHttp\Client
      */
-    public function getGuzzleClient() {
+    public function getGuzzleClient()
+    {
         return $this->client;
     }
 
