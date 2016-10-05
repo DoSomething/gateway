@@ -61,7 +61,8 @@ trait AuthorizesWithNorthstar
      *
      * @see RestApiClient@raw
      */
-    protected function runAuthorizesWithNorthstarTasks($method, &$path, &$options, &$withAuthorization) {
+    protected function runAuthorizesWithNorthstarTasks($method, &$path, &$options, &$withAuthorization)
+    {
         // By default, we append the authorization header to every request.
         if ($withAuthorization) {
             $authorizationHeader = $this->getAuthorizationHeader();

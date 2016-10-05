@@ -9,14 +9,14 @@ trait ForwardsTransactionIds
      *
      * @see RestApiClient@raw
      */
-    function runForwardsTransactionIdsTasks($method, &$path, &$options, &$withAuthorization)
+    public function runForwardsTransactionIdsTasks($method, &$path, &$options, &$withAuthorization)
     {
         $transactionId = $this->getTransactionBridge()->getHeader('X-Request-ID');
 
         // If there is no 'X-Request-ID' in the header, create one.
         if (! $transactionId) {
             $step = 0;
-            $transactionIdHeader = ['X-Request-ID' => microtime(TRUE) . '-' . $step];
+            $transactionIdHeader = ['X-Request-ID' => microtime(true) . '-' . $step];
         } else {
             // Else, if there is a 'X-Request-ID' in the header, get transaction ID and increment the step at the end of Transaction ID.
             $transactionIdBase = substr($transactionId, 0, -1);
@@ -27,7 +27,6 @@ trait ForwardsTransactionIds
         // Add to header.
         $options['headers'] = array_merge($options['headers'], $transactionIdHeader);
 
-        // TODO: Prepend the application name to the beginning of the Transaction ID.
         $this->getTransactionBridge()->log('Request made.', ['method' => $method, 'Transaction ID' => $options['headers']['X-Request-ID'], 'Path' => $this->url() . $path]);
     }
 

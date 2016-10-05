@@ -55,7 +55,8 @@ class RestApiClient
         $this->client = $client;
     }
 
-    public function url() {
+    public function url()
+    {
         return $this->client->getConfig('base_uri');
     }
 
