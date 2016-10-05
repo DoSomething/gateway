@@ -21,6 +21,13 @@ class LaravelNorthstar extends Northstar
     protected $bridge = \DoSomething\Gateway\Laravel\LaravelOAuthBridge::class;
 
     /**
+     * The class name of the transaction framework bridge.
+     *
+     * @var string
+     */
+    protected $transactionBridge = \DoSomething\Gateway\Laravel\LaravelTransactionBridge::class;
+
+    /**
      * Send a Northstar API request, and translates any Northstar exceptions
      * into their built-in Laravel equivalents.
      *

@@ -407,7 +407,7 @@ trait AuthorizesWithNorthstar
      * @return OAuthBridgeContract $repository
      * @throws \Exception
      */
-    protected function getFrameworkBridge()
+    private function getFrameworkBridge()
     {
         if (! class_exists($this->bridge)) {
             throw new \Exception('You must provide an implementation of OAuthBridgeContract to store tokens.');

@@ -55,6 +55,10 @@ class RestApiClient
         $this->client = $client;
     }
 
+    public function url() {
+        return $this->client->getConfig('base_uri');
+    }
+
     /**
      * Send a GET request to the given URL.
      *
@@ -235,11 +239,15 @@ class RestApiClient
         $class = get_called_class();
         $traits = array_keys(class_uses($class));
 
+        if (empty($options['headers'])) {
+            $options['headers'] = [];
+        }
+
         // If these traits have a "hook" (uh oh!), run that before making a request.
         foreach ($traits as $trait) {
-            $method = 'run'.class_basename($trait).'Tasks';
+            $function = 'run'.class_basename($trait).'Tasks';
             if (method_exists($class, $method)) {
-                $this->{$method}($method, $path, $options, $withAuthorization);
+                $this->{$function}($method, $path, $options, $withAuthorization);
             }
         }
 

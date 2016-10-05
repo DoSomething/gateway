@@ -1,7 +1,6 @@
 <?php
 
 namespace DoSomething\Gateway;
-use Request;
 
 trait ForwardsTransactionIds
 {
@@ -12,14 +11,37 @@ trait ForwardsTransactionIds
      */
     function runForwardsTransactionIdsTasks($method, &$path, &$options, &$withAuthorization)
     {
+        $transactionId = $this->getTransactionBridge()->getHeader('X-Request-ID');
 
-        // Get transaction ID and append microtime to end of Transaction ID.
-        // TODO: prepend application name that is making the request to Transaction ID.
-        $newTransactionIDHeader = ['X-Request-ID' => Request::header('X-Request-ID') . '-' . microtime(TRUE)];
+        // If there is no 'X-Request-ID' in the header, create one.
+        if (! $transactionId) {
+            $step = 0;
+            $transactionIdHeader = ['X-Request-ID' => microtime(TRUE) . '-' . $step];
+        } else {
+            // Else, if there is a 'X-Request-ID' in the header, get transaction ID and increment the step at the end of Transaction ID.
+            $transactionIdBase = substr($transactionId, 0, -1);
+            $step = substr($transactionId, -1) + 1;
+            $transactionIdHeader = ['X-Request-ID' => $transactionIdBase . $step];
+        }
 
-        // add to header
-        $options['headers'] = array_merge($this->defaultHeaders, $authorizationHeader, $newTransactionIDHeader);
+        // Add to header.
+        $options['headers'] = array_merge($options['headers'], $transactionIdHeader);
 
-        // add to laravel logs (doesn't this need to happen in the raw function though since we want to log that it has been sent?) - no this happens at the end of the handle function of SendReportbackToPhoenix.
+        // TODO: Prepend the application name to the beginning of the Transaction ID.
+        $this->getTransactionBridge()->log('Request made.', ['method' => $method, 'Transaction ID' => $options['headers']['X-Request-ID'], 'Path' => $this->url() . $path]);
+    }
+
+    /**
+     * Get the OAuth repository used for storing & retrieving tokens.
+     * @return OAuthBridgeContract $repository
+     * @throws \Exception
+     */
+    private function getTransactionBridge()
+    {
+        if (! class_exists($this->transactionBridge)) {
+            throw new \Exception('You must provide an implementation of TransactionBridgeContract to store tokens.');
+        }
+
+        return new $this->transactionBridge();
     }
 }
