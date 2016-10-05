@@ -10,6 +10,10 @@
     "symfony/psr-http-message-bridge": "^1.0",
     "zendframework/zend-diactoros": "^1.3"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8",
+    "illuminate/database": "^5.2"
+  },
   "license": "MIT",
   "authors": [
     {
@@ -22,5 +26,8 @@
       "DoSomething\\Gateway\\": "src/"
     },
     "files": ["src/Laravel/helpers.php"]
+  },
+  "autoload-dev": {
+    "classmap": ["tests/TestCase.php"]
   }
 }
