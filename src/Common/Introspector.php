@@ -48,7 +48,7 @@ class Introspector
         $traits = class_uses($trait);
 
         foreach ($traits as $trait) {
-            $traits += trait_uses_recursive($trait);
+            $traits += self::getAllTraits($trait);
         }
 
         return $traits;
