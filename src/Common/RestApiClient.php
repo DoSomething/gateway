@@ -37,22 +37,23 @@ class RestApiClient
      * RestApiClient constructor.
      *
      * @param string $url - Base URL for this Resource API, e.g. https://api.dosomething.org/
+     * @param array $overrides
      */
-    public function __construct($url)
+    public function __construct($url, $overrides = [])
     {
         $this->defaultHeaders = [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ];
 
-        $client = new Client([
+        $options = [
             'base_uri' => $url,
             'defaults' => [
                 'headers' => $this->defaultHeaders,
             ],
-        ]);
+        ];
 
-        $this->client = $client;
+        $this->client = new Client(array_merge($options, $overrides));
     }
 
     /**
@@ -85,7 +86,7 @@ class RestApiClient
     /**
      * Get the Guzzle Client created for this instance.
      *
-     * @return GuzzleHttp\Client
+     * @return \GuzzleHttp\Client
      */
     public function getGuzzleClient()
     {
