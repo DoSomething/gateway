@@ -254,7 +254,7 @@ class RestApiClient
     {
         // Find what traits this class is using.
         $class = get_called_class();
-        $traits = array_keys(class_uses($class));
+        $traits = Introspector::getAllClassTraits($class);
 
         if (empty($options['headers'])) {
             $options['headers'] = [];
@@ -262,7 +262,7 @@ class RestApiClient
 
         // If these traits have a "hook" (uh oh!), run that before making a request.
         foreach ($traits as $trait) {
-            $function = 'run'.class_basename($trait).'Tasks';
+            $function = 'run'.Introspector::baseName($trait).'Tasks';
             if (method_exists($class, $method)) {
                 $this->{$function}($method, $path, $options, $withAuthorization);
             }
