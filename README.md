@@ -1,4 +1,4 @@
-# Gateway [![Packagist](https://img.shields.io/packagist/v/dosomething/gateway.svg)](https://packagist.org/packages/dosomething/gateway)
+# Gateway [![Packagist](https://img.shields.io/packagist/v/dosomething/gateway.svg?style=flat)](https://packagist.org/packages/dosomething/gateway) [![wercker status](https://app.wercker.com/status/42faaea97c7e73c85e24ddf56df9f1e2/s/master "wercker status")](https://app.wercker.com/project/byKey/42faaea97c7e73c85e24ddf56df9f1e2)
 This is a simple PHP API client for DoSomething.org services. It supports authorization and resource requests from Northstar,
 and includes the tools necessary for building other API clients that authorize against Northstar.
 
