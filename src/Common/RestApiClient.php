@@ -60,7 +60,6 @@ class RestApiClient
      *
      * @return \Psr\Http\Message\UriInterface
      */
-
     public function getBaseUri()
     {
         return $this->client->getConfig('base_uri');
