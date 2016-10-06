@@ -53,11 +53,19 @@ class RestApiClient
         ]);
 
         $this->client = $client;
+
+        $this->url = $url;
     }
 
-    public function url()
+    /**
+     * Get the URL for where the request is going to.
+     *
+     * @return string
+     */
+
+    public function getUrl()
     {
-        return $this->client->getConfig('base_uri');
+        return $this->url;
     }
 
     /**

@@ -27,7 +27,7 @@ trait ForwardsTransactionIds
         // Add to header.
         $options['headers'] = array_merge($options['headers'], $transactionIdHeader);
 
-        $this->getTransactionBridge()->log('Request made.', ['method' => $method, 'Transaction ID' => $options['headers']['X-Request-ID'], 'Path' => $this->url() . $path]);
+        $this->getTransactionBridge()->log('Request made.', ['method' => $method, 'Transaction ID' => $options['headers']['X-Request-ID'], 'Path' => $this->getUrl() . $path]);
     }
 
     /**
