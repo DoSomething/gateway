@@ -19,9 +19,10 @@ trait ForwardsTransactionIds
             $transactionIdHeader = ['X-Request-ID' => microtime(true) . '-' . $step];
         } else {
             // Else, if there is a 'X-Request-ID' in the header, get transaction ID and increment the step at the end of Transaction ID.
-            $transactionIdBase = substr($transactionId, 0, -1);
-            $step = substr($transactionId, -1) + 1;
-            $transactionIdHeader = ['X-Request-ID' => $transactionIdBase . $step];
+            $transactionIdParts = explode('-', $transactionId);
+            $transactionIdBase = $transactionIdParts[0];
+            $incrementedStep = $transactionIdParts[1] + 1;
+            $transactionIdHeader = ['X-Request-ID' => $transactionIdBase . '-' . $incrementedStep];
         }
 
         // Add to header.
