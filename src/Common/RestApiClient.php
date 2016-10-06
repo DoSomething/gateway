@@ -67,6 +67,16 @@ class RestApiClient
     }
 
     /**
+     * Get the Guzzle Client created for this instance.
+     *
+     * @return \GuzzleHttp\Client
+     */
+    public function getGuzzleClient()
+    {
+        return $this->client;
+    }
+
+    /**
      * Send a GET request to the given URL.
      *
      * @param string $path - URL to make request to (relative to base URL)
@@ -81,16 +91,6 @@ class RestApiClient
         ];
 
         return $this->send('GET', $path, $options, $withAuthorization);
-    }
-
-    /**
-     * Get the Guzzle Client created for this instance.
-     *
-     * @return \GuzzleHttp\Client
-     */
-    public function getGuzzleClient()
-    {
-        return $this->client;
     }
 
     /**

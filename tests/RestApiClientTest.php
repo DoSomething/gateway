@@ -14,7 +14,7 @@ class RestApiClientTest extends TestCase
         $apiUrl = 'https://api.xavierinstitute.edu';
         $restClient = new RestApiClient($apiUrl);
 
-        $this->assertEquals((string) $restClient->getGuzzleClient()->getConfig('base_uri'), $apiUrl);
+        $this->assertEquals((string) $restClient->getBaseUri(), $apiUrl);
     }
 
     /**
@@ -72,5 +72,35 @@ class RestApiClientTest extends TestCase
 
         $this->setExpectedException(ValidationException::class);
         $client->post('classes', ['teacher' => 'Erik Lehnsherr']);
+    }
+
+    /**
+     * Test that making a normal PUT request works.
+     */
+    public function testMakePutRequest()
+    {
+        $body = ['teacher' => 'Charles Xavier', 'job' => 'Professor'];
+        $client = new MockClient('https://api.xavierinstitute.edu', [
+            new Response(200, ['Content-Type' => 'application/json'], json_encode($body)),
+        ]);
+
+        $this->assertEquals($client->put('teachers/1', ['job' => 'Professor']), $body);
+    }
+
+    /**
+     * Test that making a normal DELETE request works.
+     */
+    public function testMakeDeleteRequest()
+    {
+        $client = new MockClient('https://api.xavierinstitute.edu', [
+            new Response(201, ['Content-Type' => 'application/json'], json_encode([
+                'success' => [
+                    'code' => 200,
+                    'message' => 'Deleted.',
+                ],
+            ])),
+        ]);
+
+        $this->assertEquals($client->delete('teachers/1'), true);
     }
 }
