@@ -57,6 +57,24 @@ trait AuthorizesWithNorthstar
     private $authorizationServer;
 
     /**
+     * Run custom tasks before making a request.
+     *
+     * @see RestApiClient@raw
+     */
+    protected function runAuthorizesWithNorthstarTasks($method, &$path, &$options, &$withAuthorization)
+    {
+        // By default, we append the authorization header to every request.
+        if ($withAuthorization) {
+            $authorizationHeader = $this->getAuthorizationHeader();
+            if (empty($options['headers'])) {
+                $options['headers'] = [];
+            }
+
+            $options['headers'] = array_merge($this->defaultHeaders, $options['headers'], $authorizationHeader);
+        }
+    }
+
+    /**
      * Authorize a machine based on the given client credentials.
      *
      * @return mixed
@@ -390,7 +408,7 @@ trait AuthorizesWithNorthstar
      * @return OAuthBridgeContract $repository
      * @throws \Exception
      */
-    protected function getFrameworkBridge()
+    private function getFrameworkBridge()
     {
         if (! class_exists($this->bridge)) {
             throw new \Exception('You must provide an implementation of OAuthBridgeContract to store tokens.');

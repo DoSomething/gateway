@@ -56,6 +56,16 @@ class RestApiClient
     }
 
     /**
+     * Get the base URI for where the request is going to.
+     *
+     * @return \Psr\Http\Message\UriInterface
+     */
+    public function getBaseUri()
+    {
+        return $this->client->getConfig('base_uri');
+    }
+
+    /**
      * Send a GET request to the given URL.
      *
      * @param string $path - URL to make request to (relative to base URL)
@@ -241,14 +251,20 @@ class RestApiClient
      */
     public function raw($method, $path, $options, $withAuthorization = true)
     {
-        // By default, we append the authorization header to every request.
-        if ($withAuthorization) {
-            $authorizationHeader = $this->getAuthorizationHeader();
-            if (empty($options['headers'])) {
-                $options['headers'] = [];
-            }
+        // Find what traits this class is using.
+        $class = get_called_class();
+        $traits = array_keys(class_uses($class));
 
-            $options['headers'] = array_merge($this->defaultHeaders, $options['headers'], $authorizationHeader);
+        if (empty($options['headers'])) {
+            $options['headers'] = [];
+        }
+
+        // If these traits have a "hook" (uh oh!), run that before making a request.
+        foreach ($traits as $trait) {
+            $function = 'run'.class_basename($trait).'Tasks';
+            if (method_exists($class, $method)) {
+                $this->{$function}($method, $path, $options, $withAuthorization);
+            }
         }
 
         return $this->client->request($method, $path, $options);
