@@ -58,7 +58,7 @@ class RestApiClient
     /**
      * Get the base URI for where the request is going to.
      *
-     * @return object
+     * @return \Psr\Http\Message\UriInterface
      */
 
     public function getBaseUri()
