@@ -7,7 +7,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 
-abstract class APICollection implements ArrayAccess, Countable, IteratorAggregate
+abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregate
 {
     /**
      * The items returned from the request.
@@ -90,7 +90,7 @@ abstract class APICollection implements ArrayAccess, Countable, IteratorAggregat
     /**
      * Get the first item from the collection.
      *
-     * @return APIResponse|null
+     * @return ApiResponse|null
      */
     public function first()
     {

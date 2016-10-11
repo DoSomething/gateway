@@ -4,7 +4,7 @@ namespace DoSomething\Gateway\Common;
 
 use Carbon\Carbon;
 
-abstract class APIResponse
+class ApiResponse
 {
     /**
      * Raw API response data.
