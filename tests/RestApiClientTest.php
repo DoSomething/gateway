@@ -27,7 +27,7 @@ class RestApiClientTest extends TestCase
             new JsonResponse(['teacher' => 'Charles Xavier']),
         ]);
 
-        $this->assertEquals($client->get('classes/1'), ['teacher' => 'Charles Xavier']);
+        $this->assertEquals($client->get('classes/1')->toArray(), ['teacher' => 'Charles Xavier']);
     }
 
     /**
@@ -51,7 +51,7 @@ class RestApiClientTest extends TestCase
             new JsonResponse(['teacher' => 'Charles Xavier'], 201),
         ]);
 
-        $this->assertEquals($client->post('teachers'), ['teacher' => 'Charles Xavier']);
+        $this->assertEquals($client->post('teachers')->toArray(), ['teacher' => 'Charles Xavier']);
     }
 
     /**
@@ -85,7 +85,7 @@ class RestApiClientTest extends TestCase
             new JsonResponse($body),
         ]);
 
-        $this->assertEquals($client->put('teachers/1', ['job' => 'Professor']), $body);
+        $this->assertEquals($client->put('teachers/1', ['job' => 'Professor'])->toArray(), $body);
     }
 
     /**

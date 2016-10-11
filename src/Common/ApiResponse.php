@@ -2,15 +2,23 @@
 
 namespace DoSomething\Gateway\Common;
 
+use ArrayAccess;
 use Carbon\Carbon;
 
-class ApiResponse
+class ApiResponse implements ArrayAccess
 {
     /**
      * Raw API response data.
      * @var array
      */
     protected $attributes = [];
+
+    /**
+     * Meta-information about this response.
+     *
+     * @var array
+     */
+    protected $meta = [];
 
     /**
      * The attributes that should be mutated to dates.
@@ -36,10 +44,44 @@ class ApiResponse
     /**
      * Create a new API response model.
      * @param $attributes
+     * @param array $meta
      */
-    public function __construct($attributes)
+    public function __construct($attributes, $meta = [])
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * Get the status code for this response.
+     *
+     * @return mixed|null
+     */
+    public function getStatus()
+    {
+        return $this->getMeta('code', 200);
+    }
+
+    /**
+     * Get meta-information about this response.
+     *
+     * @param $key
+     * @param null $default
+     * @return mixed|null
+     */
+    public function getMeta($key, $default = null)
+    {
+        return isset($this->meta[$key]) ? $this->meta[$key] : $default;
+    }
+
+    /**
+     * Set meta-information on this response.
+     *
+     * @param $key
+     * @param $value
+     */
+    public function setMeta($key, $value)
+    {
+        $this->meta[$key] = $value;
     }
 
     /**
@@ -178,5 +220,61 @@ class ApiResponse
     protected function getDateFormat()
     {
         return $this->dateFormat ?: \DateTime::ISO8601;
+    }
+
+    /**
+     * Cast the response as an array.
+     */
+    public function toArray()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Check whether an item exists at that offset in the response.
+     *
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * @param mixed $offset - An offset to check for.
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->attributes[$offset]);
+    }
+
+    /**
+     * Get an item from the response by its offset.
+     *
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->attributes[$offset];
+    }
+
+    /**
+     * Set an item in the response by its offset.
+     *
+     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->attributes[$offset] = $value;
+    }
+
+    /**
+     * Unset an item in the response by its offset.
+     *
+     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->attributes[$offset]);
     }
 }

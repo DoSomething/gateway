@@ -45,7 +45,7 @@ class NorthstarTest extends TestCase
         ]);
 
         $response = $restClient->get('status');
-        $this->assertEquals($response, ['status' => 'good']);
+        $this->assertEquals($response->toArray(), ['status' => 'good']);
     }
 
     /**

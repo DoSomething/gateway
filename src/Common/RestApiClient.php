@@ -82,7 +82,7 @@ class RestApiClient
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $query - Key-value array of query string values
      * @param bool $withAuthorization - Should this request be authorized?
-     * @return array
+     * @return ApiResponse
      */
     public function get($path, $query = [], $withAuthorization = true)
     {
@@ -99,7 +99,7 @@ class RestApiClient
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $payload - Body of the POST request
      * @param bool $withAuthorization - Should this request be authorized?
-     * @return array
+     * @return ApiResponse
      */
     public function post($path, $payload = [], $withAuthorization = true)
     {
@@ -116,7 +116,7 @@ class RestApiClient
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $payload - Body of the PUT request
      * @param bool $withAuthorization - Should this request be authorized?
-     * @return array
+     * @return ApiResponse
      */
     public function put($path, $payload = [], $withAuthorization = true)
     {
@@ -180,6 +180,23 @@ class RestApiClient
     }
 
     /**
+     * Create a response class for the request.
+     *
+     * @param $response
+     * @return mixed
+     */
+    public function createResponse($response, $class = null)
+    {
+        if (is_null($class)) {
+            $class = ApiResponse::class;
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        return new $class($data);
+    }
+
+    /**
      * Send a Northstar API request, and parse any returned validation
      * errors or status codes to present to the user.
      *
@@ -187,14 +204,14 @@ class RestApiClient
      * @param string $path - URL to make request to (relative to base URL)
      * @param array $options - Guzzle options (http://guzzle.readthedocs.org/en/latest/request-options.html)
      * @param bool $withAuthorization - Should this request be authorized?
-     * @return \GuzzleHttp\Psr7\Response|void
+     * @param string $class - Response class to use for result.
+     * @return ApiResponse
      * @throws BadRequestException
      * @throws ForbiddenException
      * @throws InternalException
-     * @throws UnauthorizedException
      * @throws ValidationException
      */
-    public function send($method, $path, $options = [], $withAuthorization = true)
+    public function send($method, $path, $options = [], $withAuthorization = true, $class = null)
     {
         try {
             // Increment the number of attempts so we can eventually give up.
@@ -208,7 +225,7 @@ class RestApiClient
             $this->attempts = 0;
             $this->cleanUp();
 
-            return json_decode($response->getBody()->getContents(), true);
+            return $this->createResponse($response, $class);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $endpoint = strtoupper($method).' '.$path;
             $response = json_decode($e->getResponse()->getBody()->getContents());
@@ -274,12 +291,12 @@ class RestApiClient
     /**
      * Determine if the response was successful or not.
      *
-     * @param array $json
+     * @param ApiResponse $response
      * @return bool
      */
-    public function responseSuccessful(array $json)
+    public function responseSuccessful($response)
     {
-        return ! empty($json['success']);
+        return ! empty($response['success']);
     }
 
     /**
