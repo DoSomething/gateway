@@ -2,9 +2,9 @@
 
 namespace DoSomething\Gateway\Resources;
 
-use DoSomething\Gateway\Common\APICollection;
+use DoSomething\Gateway\Common\ApiCollection;
 
-class NorthstarClientCollection extends APICollection
+class NorthstarClientCollection extends ApiCollection
 {
     public function __construct($response)
     {

@@ -2,12 +2,12 @@
 
 namespace DoSomething\Gateway\Resources;
 
-use DoSomething\Gateway\Common\APIResponse;
+use DoSomething\Gateway\Common\ApiResponse;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 
-class NorthstarUser extends APIResponse implements ResourceOwnerInterface
+class NorthstarUser extends ApiResponse implements ResourceOwnerInterface
 {
     /**
      * Create a new User from the given API response.
