@@ -157,4 +157,19 @@ class NorthstarOAuthProvider extends AbstractProvider
     {
         return new NorthstarUser($response['data']);
     }
+
+    /**
+     * Return the list of options that can be passed to the HttpClient
+     *
+     * @param array $options An array of options to set on this provider.
+     *     Options include `clientId`, `clientSecret`, `redirectUri`, and `state`.
+     *     Individual providers may introduce more options, as needed.
+     * @return array The options to pass to the HttpClient constructor
+     */
+    protected function getAllowedClientOptions(array $options)
+    {
+        $options = parent::getAllowedClientOptions($options);
+
+        return array_merge($options, ['handler']);
+    }
 }

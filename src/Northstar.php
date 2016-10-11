@@ -15,8 +15,9 @@ class Northstar extends RestApiClient
     /**
      * Create a new Northstar API client.
      * @param array $config
+     * @param array $overrides
      */
-    public function __construct($config = [])
+    public function __construct($config = [], $overrides = [])
     {
         $base_url = $config['url'];
 
@@ -29,7 +30,7 @@ class Northstar extends RestApiClient
             $this->bridge = $config['bridge'];
         }
 
-        parent::__construct($base_url);
+        parent::__construct($base_url, $overrides);
     }
 
     /**

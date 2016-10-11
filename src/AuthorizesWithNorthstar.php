@@ -122,7 +122,7 @@ trait AuthorizesWithNorthstar
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param string $destination - The destination to redirect to on a successful login.
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|ResponseInterface
+     * @return ResponseInterface
      * @throws InternalException
      */
     public function authorize(ServerRequestInterface $request, ResponseInterface $response, $destination = '/')
@@ -395,6 +395,11 @@ trait AuthorizesWithNorthstar
 
             if (! empty($config['redirect_uri'])) {
                 $options['redirectUri'] = $this->getFrameworkBridge()->prepareUrl($config['redirect_uri']);
+            }
+
+            // Allow setting a custom handler (for mocking requests in tests).
+            if (! empty($this->config['handler'])) {
+                $options['handler'] = $this->config['handler'];
             }
 
             $this->authorizationServer = new NorthstarOAuthProvider($options);
