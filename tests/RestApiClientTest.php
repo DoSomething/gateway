@@ -23,7 +23,7 @@ class RestApiClientTest extends TestCase
     public function testMakeGetRequest()
     {
         $client = new MockClient('https://api.xavierinstitute.edu', [
-            new Response(200, ['Content-Type' => 'application/json'], json_encode(['teacher' => 'Charles Xavier'])),
+            new JsonResponse(['teacher' => 'Charles Xavier']),
         ]);
 
         $this->assertEquals($client->get('classes/1'), ['teacher' => 'Charles Xavier']);
@@ -47,7 +47,7 @@ class RestApiClientTest extends TestCase
     public function testMakePostRequest()
     {
         $client = new MockClient('https://api.xavierinstitute.edu', [
-            new Response(201, ['Content-Type' => 'application/json'], json_encode(['teacher' => 'Charles Xavier'])),
+            new JsonResponse(['teacher' => 'Charles Xavier'], 201),
         ]);
 
         $this->assertEquals($client->post('teachers'), ['teacher' => 'Charles Xavier']);
@@ -59,7 +59,7 @@ class RestApiClientTest extends TestCase
     public function testHandlesValidationError()
     {
         $client = new MockClient('https://api.xavierinstitute.edu', [
-            new Response(422, ['Content-Type' => 'application/json'], json_encode([
+            new JsonResponse([
                 'error' => [
                     'code' => 422,
                     'message' => '',
@@ -67,7 +67,7 @@ class RestApiClientTest extends TestCase
                         'teacher' => ['The provided teacher is not employed here.'],
                     ],
                 ],
-            ])),
+            ], 422),
         ]);
 
         $this->setExpectedException(ValidationException::class);
@@ -81,7 +81,7 @@ class RestApiClientTest extends TestCase
     {
         $body = ['teacher' => 'Charles Xavier', 'job' => 'Professor'];
         $client = new MockClient('https://api.xavierinstitute.edu', [
-            new Response(200, ['Content-Type' => 'application/json'], json_encode($body)),
+            new JsonResponse($body),
         ]);
 
         $this->assertEquals($client->put('teachers/1', ['job' => 'Professor']), $body);
@@ -93,12 +93,12 @@ class RestApiClientTest extends TestCase
     public function testMakeDeleteRequest()
     {
         $client = new MockClient('https://api.xavierinstitute.edu', [
-            new Response(201, ['Content-Type' => 'application/json'], json_encode([
+            new JsonResponse([
                 'success' => [
                     'code' => 200,
                     'message' => 'Deleted.',
                 ],
-            ])),
+            ], 200),
         ]);
 
         $this->assertEquals($client->delete('teachers/1'), true);
