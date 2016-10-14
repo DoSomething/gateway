@@ -49,18 +49,18 @@ class NorthstarTest extends TestCase
     public function testGetAllUsers()
     {
         $restClient = new MockNorthstar($this->defaultConfig, [
-            new JwtResponse(),
+            new JwtResponse,
             new JsonResponse([
                 'data' => [
                     [
                         'id' => '5480c950bffebc651c8b456f',
-                        'first_name' => 'John',
-                        'last_name' => 'Doe',
+                        'first_name' => 'Bobby',
+                        'last_name' => 'Drake',
                     ],
                     [
                         'id' => '5480c950ce5fbc2145eb7721',
-                        'first_name' => 'Jane',
-                        'last_name' => 'Smith',
+                        'first_name' => 'Katherine',
+                        'last_name' => 'Pryde',
                     ],
                 ],
                 'meta' => [
@@ -82,8 +82,133 @@ class NorthstarTest extends TestCase
         $this->assertInstanceOf(\DoSomething\Gateway\Common\ApiCollection::class, $response);
 
         // And we should be able to traverse and read values from that.
-        $this->assertEquals('John', $response[0]->first_name);
-        $this->assertEquals('Jane', $response[1]->first_name);
+        $this->assertEquals('Bobby', $response[0]->first_name);
+        $this->assertEquals('Katherine', $response[1]->first_name);
         $this->assertEquals(2, $response->count());
+    }
+
+    /**
+     * Test that we can retrieve a user by their Northstar ID.
+     */
+    public function testGetUserById()
+    {
+        $restClient = new MockNorthstar($this->defaultConfig, [
+            new JwtResponse,
+            new JsonResponse([
+                'data' => [
+                    'id' => '5480c950ce5fbc2145eb7721',
+                    'email' => 'kitty@xavierinstitute.edu',
+                    'mobile' => '5555555555',
+                    'facebook_id' => '10101010101010101',
+                    'drupal_id' => '123456',
+                    'first_name' => 'Katherine',
+                    'last_name' => 'Pryde',
+                ]
+            ]),
+        ]);
+
+        $response = $restClient->getUser('id', '5480c950ce5fbc2145eb7721');
+
+        $this->assertEquals('Katherine', $response->first_name);
+    }
+
+    /**
+     * Test that we can retrieve a user by their mobile number.
+     */
+    public function testGetUserByMobile()
+    {
+        $restClient = new MockNorthstar($this->defaultConfig, [
+            new JwtResponse,
+            new JsonResponse([
+                'data' => [
+                    'id' => '5480c950ce5fbc2145eb7721',
+                    'email' => 'kitty@xavierinstitute.edu',
+                    'mobile' => '5551234567',
+                    'facebook_id' => '10101010101010101',
+                    'drupal_id' => '123456',
+                    'first_name' => 'Katherine',
+                    'last_name' => 'Pryde',
+                ]
+            ]),
+        ]);
+
+        $response = $restClient->getUser('mobile', '5551234567');
+
+        $this->assertEquals('Katherine', $response->first_name);
+    }
+
+    /**
+     * Test that we can retrieve a user by their email.
+     */
+    public function testGetUserByEmail()
+    {
+        $restClient = new MockNorthstar($this->defaultConfig, [
+            new JwtResponse,
+            new JsonResponse([
+                'data' => [
+                    'id' => '5480c950ce5fbc2145eb7721',
+                    'email' => 'kitty@xavierinstitute.edu',
+                    'mobile' => '5551234567',
+                    'facebook_id' => '10101010101010101',
+                    'drupal_id' => '123456',
+                    'first_name' => 'Katherine',
+                    'last_name' => 'Pryde',
+                ]
+            ]),
+        ]);
+
+        $response = $restClient->getUser('email', 'kitty@xavierinstitute.edu');
+
+        $this->assertEquals('Katherine', $response->first_name);
+    }
+
+    /**
+     * Test that we can retrieve a user by their Drupal ID.
+     */
+    public function testGetUserByDrupalId()
+    {
+        $restClient = new MockNorthstar($this->defaultConfig, [
+            new JwtResponse,
+            new JsonResponse([
+                'data' => [
+                    'id' => '5480c950ce5fbc2145eb7721',
+                    'email' => 'kitty@xavierinstitute.edu',
+                    'mobile' => '5551234567',
+                    'facebook_id' => '10101010101010101',
+                    'drupal_id' => '123456',
+                    'first_name' => 'Katherine',
+                    'last_name' => 'Pryde',
+                ]
+            ]),
+        ]);
+
+        $response = $restClient->getUser('drupal_id', '123456');
+
+        $this->assertEquals('Katherine', $response->first_name);
+    }
+
+    /**
+     * Test that we can retrieve a user by their Facebook ID.
+     */
+    public function testGetUserByFacebookId()
+    {
+        $restClient = new MockNorthstar($this->defaultConfig, [
+            new JwtResponse,
+            new JsonResponse([
+                'data' => [
+                    'id' => '5480c950ce5fbc2145eb7721',
+                    'email' => 'kitty@xavierinstitute.edu',
+                    'mobile' => '5551234567',
+                    'facebook_id' => '10101010101010101',
+                    'drupal_id' => '123456',
+                    'first_name' => 'Katherine',
+                    'last_name' => 'Pryde',
+                ]
+            ]),
+        ]);
+
+        $response = $restClient->getUser('facebook_id', '10101010101010101');
+
+        $this->assertEquals('Katherine', $response->first_name);
     }
 }
