@@ -50,7 +50,7 @@ class Northstar extends RestApiClient
     /**
      * Send a GET request to return a user with that id.
      *
-     * @param string $type - '_id', 'email', 'mobile'
+     * @param string $type - 'id', 'email', 'mobile'
      * @param string $id - ID, email, id, phone
      * @return NorthstarUser
      */
