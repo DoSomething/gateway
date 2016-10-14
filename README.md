@@ -34,10 +34,11 @@ $northstar = new Northstar([
         'client_secret' => 'xxxxxxxxxxxxx',
         'scope' => ['user'],
     ],
-    'password' => [
+    'authorization_code' => [
         'client_id' => 'example',
         'client_secret' => 'xxxxxxxxxxxxx',
         'scope' => ['user'],
+        'redirect_uri' => 'login',
     ],
 ]);
 
@@ -79,10 +80,11 @@ Then, set your environment & key in `config/services.php`:
         'client_secret' => 'xxxxxxxxxxxxx',
         'scope' => ['user'],
     ],
-    'password' => [
+    'authorization_code' => [
         'client_id' => 'example',
         'client_secret' => 'xxxxxxxxxxxxx',
         'scope' => ['user'],
+        'redirect_uri' => 'login',
     ],
 ]
 ```
