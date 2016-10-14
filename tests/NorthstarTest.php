@@ -103,7 +103,7 @@ class NorthstarTest extends TestCase
                     'drupal_id' => '123456',
                     'first_name' => 'Katherine',
                     'last_name' => 'Pryde',
-                ]
+                ],
             ]),
         ]);
 
@@ -128,7 +128,7 @@ class NorthstarTest extends TestCase
                     'drupal_id' => '123456',
                     'first_name' => 'Katherine',
                     'last_name' => 'Pryde',
-                ]
+                ],
             ]),
         ]);
 
@@ -153,7 +153,7 @@ class NorthstarTest extends TestCase
                     'drupal_id' => '123456',
                     'first_name' => 'Katherine',
                     'last_name' => 'Pryde',
-                ]
+                ],
             ]),
         ]);
 
@@ -178,7 +178,7 @@ class NorthstarTest extends TestCase
                     'drupal_id' => '123456',
                     'first_name' => 'Katherine',
                     'last_name' => 'Pryde',
-                ]
+                ],
             ]),
         ]);
 
@@ -203,7 +203,7 @@ class NorthstarTest extends TestCase
                     'drupal_id' => '123456',
                     'first_name' => 'Katherine',
                     'last_name' => 'Pryde',
-                ]
+                ],
             ]),
         ]);
 
