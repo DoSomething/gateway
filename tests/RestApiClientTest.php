@@ -2,6 +2,7 @@
 
 use DoSomething\Gateway\Common\RestApiClient;
 use DoSomething\Gateway\Exceptions\ValidationException;
+use DoSomething\GatewayTests\Helpers\JsonResponse;
 use GuzzleHttp\Psr7\Response;
 
 class RestApiClientTest extends TestCase

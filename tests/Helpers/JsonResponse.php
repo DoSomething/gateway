@@ -1,5 +1,7 @@
 <?php
 
+namespace DoSomething\GatewayTests\Helpers;
+
 use GuzzleHttp\Psr7\Response;
 
 class JsonResponse extends Response
