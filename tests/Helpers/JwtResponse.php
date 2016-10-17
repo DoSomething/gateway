@@ -1,5 +1,7 @@
 <?php
 
+namespace DoSomething\GatewayTests\Helpers;
+
 class JwtResponse extends JsonResponse
 {
     /**

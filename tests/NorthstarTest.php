@@ -1,5 +1,10 @@
 <?php
 
+use DoSomething\GatewayTests\Helpers\JsonResponse;
+use DoSomething\GatewayTests\Helpers\JwtResponse;
+use DoSomething\GatewayTests\Helpers\UserResponse;
+use DoSomething\GatewayTests\Helpers\UsersResponse;
+
 class NorthstarTest extends TestCase
 {
     protected $defaultConfig = [
@@ -50,30 +55,7 @@ class NorthstarTest extends TestCase
     {
         $restClient = new MockNorthstar($this->defaultConfig, [
             new JwtResponse,
-            new JsonResponse([
-                'data' => [
-                    [
-                        'id' => '5480c950bffebc651c8b456f',
-                        'first_name' => 'Bobby',
-                        'last_name' => 'Drake',
-                    ],
-                    [
-                        'id' => '5480c950ce5fbc2145eb7721',
-                        'first_name' => 'Katherine',
-                        'last_name' => 'Pryde',
-                    ],
-                ],
-                'meta' => [
-                    'pagination' => [
-                        'total' => 2,
-                        'count' => 2,
-                        'per_page' => 15,
-                        'current_page' => 1,
-                        'total_pages' => 1,
-                        'links' => [],
-                    ],
-                ],
-            ]),
+            new UsersResponse,
         ]);
 
         $response = $restClient->getAllUsers();
@@ -82,8 +64,8 @@ class NorthstarTest extends TestCase
         $this->assertInstanceOf(\DoSomething\Gateway\Common\ApiCollection::class, $response);
 
         // And we should be able to traverse and read values from that.
-        $this->assertEquals('Bobby', $response[0]->first_name);
-        $this->assertEquals('Katherine', $response[1]->first_name);
+        $this->assertEquals('Katherine', $response[0]->first_name);
+        $this->assertEquals('Robert', $response[1]->first_name);
         $this->assertEquals(2, $response->count());
     }
 
@@ -94,17 +76,7 @@ class NorthstarTest extends TestCase
     {
         $restClient = new MockNorthstar($this->defaultConfig, [
             new JwtResponse,
-            new JsonResponse([
-                'data' => [
-                    'id' => '5480c950ce5fbc2145eb7721',
-                    'email' => 'kitty@xavierinstitute.edu',
-                    'mobile' => '5555555555',
-                    'facebook_id' => '10101010101010101',
-                    'drupal_id' => '123456',
-                    'first_name' => 'Katherine',
-                    'last_name' => 'Pryde',
-                ],
-            ]),
+            new UserResponse,
         ]);
 
         $response = $restClient->getUser('id', '5480c950ce5fbc2145eb7721');
@@ -119,17 +91,7 @@ class NorthstarTest extends TestCase
     {
         $restClient = new MockNorthstar($this->defaultConfig, [
             new JwtResponse,
-            new JsonResponse([
-                'data' => [
-                    'id' => '5480c950ce5fbc2145eb7721',
-                    'email' => 'kitty@xavierinstitute.edu',
-                    'mobile' => '5551234567',
-                    'facebook_id' => '10101010101010101',
-                    'drupal_id' => '123456',
-                    'first_name' => 'Katherine',
-                    'last_name' => 'Pryde',
-                ],
-            ]),
+            new UserResponse,
         ]);
 
         $response = $restClient->getUser('mobile', '5551234567');
@@ -144,17 +106,7 @@ class NorthstarTest extends TestCase
     {
         $restClient = new MockNorthstar($this->defaultConfig, [
             new JwtResponse,
-            new JsonResponse([
-                'data' => [
-                    'id' => '5480c950ce5fbc2145eb7721',
-                    'email' => 'kitty@xavierinstitute.edu',
-                    'mobile' => '5551234567',
-                    'facebook_id' => '10101010101010101',
-                    'drupal_id' => '123456',
-                    'first_name' => 'Katherine',
-                    'last_name' => 'Pryde',
-                ],
-            ]),
+            new UserResponse,
         ]);
 
         $response = $restClient->getUser('email', 'kitty@xavierinstitute.edu');
@@ -169,17 +121,7 @@ class NorthstarTest extends TestCase
     {
         $restClient = new MockNorthstar($this->defaultConfig, [
             new JwtResponse,
-            new JsonResponse([
-                'data' => [
-                    'id' => '5480c950ce5fbc2145eb7721',
-                    'email' => 'kitty@xavierinstitute.edu',
-                    'mobile' => '5551234567',
-                    'facebook_id' => '10101010101010101',
-                    'drupal_id' => '123456',
-                    'first_name' => 'Katherine',
-                    'last_name' => 'Pryde',
-                ],
-            ]),
+            new UserResponse,
         ]);
 
         $response = $restClient->getUser('drupal_id', '123456');
@@ -194,17 +136,7 @@ class NorthstarTest extends TestCase
     {
         $restClient = new MockNorthstar($this->defaultConfig, [
             new JwtResponse,
-            new JsonResponse([
-                'data' => [
-                    'id' => '5480c950ce5fbc2145eb7721',
-                    'email' => 'kitty@xavierinstitute.edu',
-                    'mobile' => '5551234567',
-                    'facebook_id' => '10101010101010101',
-                    'drupal_id' => '123456',
-                    'first_name' => 'Katherine',
-                    'last_name' => 'Pryde',
-                ],
-            ]),
+            new UserResponse,
         ]);
 
         $response = $restClient->getUser('facebook_id', '10101010101010101');
