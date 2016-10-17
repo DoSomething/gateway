@@ -48,7 +48,7 @@ class UsersResponse extends JsonResponse
                     'role' => 'user',
                     'updated_at' => '2016-10-17T19:33:24+0000',
                     'created_at' => '2016-10-17T19:33:24+0000',
-                ]
+                ],
             ],
             'meta' => [
                 'pagination' => [
@@ -57,7 +57,7 @@ class UsersResponse extends JsonResponse
                     'per_page' => 15,
                     'current_page' => 1,
                     'total_pages' => 1,
-                    'links' => []
+                    'links' => [],
                 ],
             ],
         ];
