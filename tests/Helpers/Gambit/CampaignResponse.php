@@ -11,7 +11,8 @@ class CampaignResponse extends JsonResponse
      */
     public function __construct($code = 200)
     {
-        $body = ['data' => [
+        $body = [];
+        $body['data'] = [
             'id' => 4944,
             'rb_verb' => 'Swappin Stories',
             'rb_noun' => 'Seniors',
@@ -24,8 +25,7 @@ class CampaignResponse extends JsonResponse
             'mobilecommons_group_doing' => 255742,
             'mobilecommons_group_completed' => 255724,
             'mobilecommons_keywords' => ['SWAPBOT'],
-        ]];
-
+        ];
         parent::__construct($body, $code);
     }
 }
