@@ -1,6 +1,5 @@
 <?php
 
-use DoSomething\GatewayTests\Helpers\JsonResponse;
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignResponse;
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignsResponse;
 
@@ -89,5 +88,4 @@ class GambitTest extends PHPUnit_Framework_TestCase
         $this->assertContainsOnly('string', $campaign->mobilecommons_keywords);
         $this->assertEquals(['SWAPBOT'], $campaign->mobilecommons_keywords);
     }
-
 }

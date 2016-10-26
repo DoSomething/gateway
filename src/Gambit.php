@@ -8,7 +8,6 @@ use DoSomething\Gateway\Resources\GambitCampaignCollection;
 
 class Gambit extends RestApiClient
 {
-
     /**
      * Configuration array.
      *
@@ -36,6 +35,7 @@ class Gambit extends RestApiClient
     public function getAllCampaigns()
     {
         $response = $this->get('v1/campaigns');
+
         return new GambitCampaignCollection($response);
     }
 
@@ -55,5 +55,4 @@ class Gambit extends RestApiClient
 
         return new GambitCampaign($response['data']);
     }
-
 }
