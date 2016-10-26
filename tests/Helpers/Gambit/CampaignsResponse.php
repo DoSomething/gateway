@@ -7,7 +7,7 @@ use DoSomething\GatewayTests\Helpers\JsonResponse;
 class CampaignsResponse extends JsonResponse
 {
     /**
-     * Make a new mock user response.
+     * Make a new mock Gambit list all campaigns response.
      */
     public function __construct($code = 200)
     {
