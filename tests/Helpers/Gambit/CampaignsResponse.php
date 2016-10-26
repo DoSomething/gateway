@@ -19,7 +19,7 @@ class CampaignsResponse extends JsonResponse
             'msg_rb_confirmation' => 'You SLAYED this campaign. Badass. ',
             'title' => 'Don\'t Be a Sucker',
             'tagline' => 'Unplug unused electronics to conserve energy.',
-            'status' => '6196',
+            'status' => 'active',
             'current_run' => 6196,
             'mobilecommons_group_doing' => 255889,
             'mobilecommons_group_completed' => 255886,
