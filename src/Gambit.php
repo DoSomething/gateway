@@ -4,6 +4,7 @@ namespace DoSomething\Gateway;
 
 use DoSomething\Gateway\Common\RestApiClient;
 use DoSomething\Gateway\Resources\GambitCampaign;
+use DoSomething\Gateway\Resources\GambitCampaignCollection;
 
 class Gambit extends RestApiClient
 {
@@ -28,24 +29,21 @@ class Gambit extends RestApiClient
     }
 
     /**
-     * Send a GET request to return all users matching a given
-     * query from Northstar.
+     * Send a GET request to return all campaigns.
      *
-     * @param array $inputs - Filter, search, or pagination queries
-     * @return NorthstarUserCollection
+     * @return GambitCampaignCollection
      */
-    // public function getAllUsers($inputs = [])
-    // {
-    //     $response = $this->get('v1/users', $inputs);
-
-    //     return new NorthstarUserCollection($response);
-    // }
+    public function getAllCampaigns()
+    {
+        $response = $this->get('v1/campaigns');
+        return new GambitCampaignCollection($response);
+    }
 
     /**
-     * Send a GET request to return a user with that id.
+     * Send a GET request to return a campaign with that id.
      *
      * @param string $id - ID
-     * @return NorthstarUser
+     * @return GambitCampaign
      */
     public function getCampaign($id)
     {

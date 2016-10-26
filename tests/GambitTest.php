@@ -2,13 +2,35 @@
 
 use DoSomething\GatewayTests\Helpers\JsonResponse;
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignResponse;
-// use DoSomething\GatewayTests\Helpers\Gambit\CampaignsResponse;
+use DoSomething\GatewayTests\Helpers\Gambit\CampaignsResponse;
 
 class GambitTest extends PHPUnit_Framework_TestCase
 {
     protected $defaultConfig = [
         'url' => 'https://gambit-phpunit.dosomething.org', // not a real server!
     ];
+
+    /**
+     * Test that we can use the all campaigns endpoint.
+     */
+    public function testGetAllCampaigns()
+    {
+        $restClient = new MockGambit($this->defaultConfig, [
+            new CampaignsResponse,
+        ]);
+
+        $campaigns = $restClient->getAllCampaigns();
+
+        // It should successfully serialize into a collection.
+        $this->assertInstanceOf(\DoSomething\Gateway\Common\ApiCollection::class, $campaigns);
+
+        // Test correct campaigns count.
+        $this->assertEquals(2, $campaigns->count());
+
+        // And we should be able to traverse and read values from that.
+        $this->assertEquals('Don\'t Be a Sucker', $campaigns[0]->title);
+        $this->assertEquals('Senior Story Swap', $campaigns[1]->title);
+    }
 
     /**
      * Test that we can retrieve a campaign by their ID.
