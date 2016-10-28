@@ -40,7 +40,7 @@ class Gambit extends RestApiClient
         $this->config = $config;
 
         // Set response header.
-        if (!empty($config['apiKey'])) {
+        if (! empty($config['apiKey'])) {
             $this->apiKey = $config['apiKey'];
         }
         parent::__construct($config['url'], $overrides);
@@ -81,7 +81,7 @@ class Gambit extends RestApiClient
      * To notify Gambit that signup has been created.
      *
      * @param string $id - Signup
-     * @return boolean
+     * @return bool
      */
     public function createSignup($id, $source = self::SIGNUP_SOURCE_FALLBACK)
     {
@@ -91,7 +91,7 @@ class Gambit extends RestApiClient
         ];
         $response = $this->post('v1/signup/', $payload);
 
-        if (is_null($response) || !$this->responseSuccessful($response)) {
+        if (is_null($response) || ! $this->responseSuccessful($response)) {
             return false;
         }
 
