@@ -8,12 +8,26 @@ use DoSomething\Gateway\Resources\GambitCampaignCollection;
 
 class Gambit extends RestApiClient
 {
+    use AuthorizesWithGambit;
+
+    /**
+     * Unknown signup source.
+     */
+    const SIGNUP_SOURCE_FALLBACK = 'unknown';
+
     /**
      * Configuration array.
      *
      * @var string
      */
     protected $config;
+
+    /**
+     * Default headers applied to every request.
+     *
+     * @var array
+     */
+    protected $defaultHeaders;
 
     /**
      * Create a new Gambit API client.
@@ -24,6 +38,11 @@ class Gambit extends RestApiClient
     {
         // Save configuration.
         $this->config = $config;
+
+        // Set response header.
+        if (! empty($config['apiKey'])) {
+            $this->apiKey = $config['apiKey'];
+        }
         parent::__construct($config['url'], $overrides);
     }
 
@@ -34,7 +53,7 @@ class Gambit extends RestApiClient
      */
     public function getAllCampaigns()
     {
-        $response = $this->get('v1/campaigns');
+        $response = $this->get('v1/campaigns', [], false);
 
         return new GambitCampaignCollection($response);
     }
@@ -47,12 +66,41 @@ class Gambit extends RestApiClient
      */
     public function getCampaign($id)
     {
-        $response = $this->get('v1/campaigns/' . $id);
+        $response = $this->get('v1/campaigns/' . $id, [], false);
 
         if (is_null($response)) {
             return null;
         }
 
         return new GambitCampaign($response['data']);
+    }
+
+    /**
+     * Send a Post request Gambit signup endpoint.
+     *
+     * To notify Gambit that signup has been created.
+     *
+     * @param string $id - Signup
+     * @return bool
+     */
+    public function createSignup($id, $source = self::SIGNUP_SOURCE_FALLBACK)
+    {
+        $payload = [
+            'id' => $id,
+            'source' => $source,
+        ];
+        $response = $this->post('v1/signup/', $payload);
+
+        if (is_null($response) || ! $this->responseSuccessful($response)) {
+            return false;
+        }
+
+        $result = $response['success'];
+        if (empty($result['code']) || $result['code'] !== 200) {
+            // Todo: log error.
+            return false;
+        }
+
+        return true;
     }
 }
