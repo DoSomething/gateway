@@ -76,7 +76,7 @@ class Gambit extends RestApiClient
     }
 
     /**
-     * Send a Post request Gambit signup endpoing.
+     * Send a Post request Gambit signup endpoint.
      *
      * To notify Gambit that signup has been created.
      *
