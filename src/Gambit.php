@@ -9,6 +9,12 @@ use DoSomething\Gateway\Resources\GambitCampaignCollection;
 class Gambit extends RestApiClient
 {
     /**
+     * Unknown signup source.
+     */
+    const SIGNUP_SOURCE_FALLBACK = 'unknown';
+
+
+    /**
      * Configuration array.
      *
      * @var string
@@ -54,5 +60,34 @@ class Gambit extends RestApiClient
         }
 
         return new GambitCampaign($response['data']);
+    }
+
+    /**
+     * Send a Post request Gambit signup endpoing.
+     *
+     * To notify Gambit that signup has been created.
+     *
+     * @param string $id - Signup
+     * @return boolean
+     */
+    public function createSignup($id, $source = self::SIGNUP_SOURCE_FALLBACK)
+    {
+        $payload = [
+            'id' => $id,
+            'source' => $source,
+        ];
+        $response = $this->post('v1/signup/', $payload);
+
+        if (is_null($response) || empty($response['success'])) {
+            return false;
+        }
+
+        $result = $response['success'];
+        if (empty($result['code']) || $result['code'] !== 200) {
+            // Todo: log error.
+            return false;
+        }
+
+        return true;
     }
 }

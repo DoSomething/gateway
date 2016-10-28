@@ -2,11 +2,16 @@
 
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignResponse;
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignsResponse;
+use DoSomething\GatewayTests\Helpers\Gambit\SignupResponse;
 
 class GambitTest extends PHPUnit_Framework_TestCase
 {
     protected $defaultConfig = [
         'url' => 'https://gambit-phpunit.dosomething.org', // not a real server!
+    ];
+    protected $authorizedConfig = [
+        'url'    => 'https://gambit-phpunit.dosomething.org', // not a real server!
+        'apiKey' => 'gambit_api_key',
     ];
 
     /**
@@ -87,5 +92,17 @@ class GambitTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $campaign->mobilecommons_keywords);
         $this->assertContainsOnly('string', $campaign->mobilecommons_keywords);
         $this->assertEquals(['SWAPBOT'], $campaign->mobilecommons_keywords);
+    }
+
+    /**
+     * Test that we can post a signup.
+     */
+    public function testCreateSignup()
+    {
+        $restClient = new MockGambit($this->authorizedConfig, [
+            new SignupResponse,
+        ]);
+        $result = $restClient->createSignup(2309260, 'node/1141');
+        $this->assertTrue($result);
     }
 }
