@@ -89,7 +89,7 @@ class Gambit extends RestApiClient
             'id' => $id,
             'source' => $source,
         ];
-        $response = $this->post('v1/signup/', $payload);
+        $response = $this->post('v1/signups/', $payload);
 
         if (is_null($response) || ! $this->responseSuccessful($response)) {
             return false;
