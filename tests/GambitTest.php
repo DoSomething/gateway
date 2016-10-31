@@ -47,22 +47,25 @@ class GambitTest extends PHPUnit_Framework_TestCase
         $campaign = $restClient->getCampaign(876);
 
         // id
-        $this->assertEquals(876, $campaign->id);
+        $this->assertSame(876, $campaign->id);
 
         // title
         $this->assertEquals('Trash Stash', $campaign->title);
+
+        // campaignbot
+        $this->assertSame(true, $campaign->campaignbot);
 
         // status
         $this->assertEquals('active', $campaign->status);
 
         // current_run
-        $this->assertEquals(6230, $campaign->current_run);
+        $this->assertSame(6230, $campaign->current_run);
 
         // mobilecommons_group_doing
-        $this->assertEquals(258142, $campaign->mobilecommons_group_doing);
+        $this->assertSame(258142, $campaign->mobilecommons_group_doing);
 
         // mobilecommons_group_completed
-        $this->assertEquals(258163, $campaign->mobilecommons_group_completed);
+        $this->assertSame(258163, $campaign->mobilecommons_group_completed);
 
         // keywords
         $this->assertInternalType('array', $campaign->keywords);
