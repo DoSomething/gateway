@@ -32,8 +32,8 @@ class GambitTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, $campaigns->count());
 
         // And we should be able to traverse and read values from that.
-        $this->assertEquals('Don\'t Be a Sucker', $campaigns[0]->title);
-        $this->assertEquals('Senior Story Swap', $campaigns[1]->title);
+        $this->assertEquals('World Recycle Week: Close The Loop', $campaigns[0]->title);
+        $this->assertEquals('Trash Stash', $campaigns[1]->title);
     }
 
     /**
@@ -44,54 +44,33 @@ class GambitTest extends PHPUnit_Framework_TestCase
         $restClient = new MockGambit($this->defaultConfig, [
             new CampaignResponse,
         ]);
-        $campaign = $restClient->getCampaign(4944);
+        $campaign = $restClient->getCampaign(876);
 
         // id
-        $this->assertEquals(4944, $campaign->id);
-
-        // rb_verb
-        $this->assertEquals('Swappin Stories', $campaign->rb_verb);
-
-        // rb_noun
-        $this->assertEquals('Seniors', $campaign->rb_noun);
-
-        // msg_rb_confirmation
-        $this->assertEquals(
-            'Wait, your Grandma did WHAT? Thanks for playing and swapping stories!',
-            $campaign->msg_rb_confirmation
-        );
+        $this->assertSame(876, $campaign->id);
 
         // title
-        $this->assertEquals('Senior Story Swap', $campaign->title);
+        $this->assertEquals('Trash Stash', $campaign->title);
 
-        // tagline
-        $this->assertEquals(
-            'Swap stories with an older adult to decrease isolation.',
-            $campaign->tagline
-        );
+        // campaignbot
+        $this->assertSame(true, $campaign->campaignbot);
 
         // status
-        $this->assertEquals('closed', $campaign->status);
-
-        // msg_ask_quantity
-        $this->assertEquals(
-            'How many seniors did you swap stories with?',
-            $campaign->msg_ask_quantity
-        );
+        $this->assertEquals('active', $campaign->status);
 
         // current_run
-        $this->assertEquals(7298, $campaign->current_run);
+        $this->assertSame(6230, $campaign->current_run);
 
         // mobilecommons_group_doing
-        $this->assertEquals(255742, $campaign->mobilecommons_group_doing);
+        $this->assertSame(258142, $campaign->mobilecommons_group_doing);
 
         // mobilecommons_group_completed
-        $this->assertEquals(255724, $campaign->mobilecommons_group_completed);
+        $this->assertSame(258163, $campaign->mobilecommons_group_completed);
 
-        // mobilecommons_keywords
-        $this->assertInternalType('array', $campaign->mobilecommons_keywords);
-        $this->assertContainsOnly('string', $campaign->mobilecommons_keywords);
-        $this->assertEquals(['SWAPBOT'], $campaign->mobilecommons_keywords);
+        // keywords
+        $this->assertInternalType('array', $campaign->keywords);
+        $this->assertContainsOnly('string', $campaign->keywords);
+        $this->assertEquals(['TRASHBOT'], $campaign->keywords);
     }
 
     /**
