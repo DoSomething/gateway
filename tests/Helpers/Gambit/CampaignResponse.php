@@ -13,18 +13,14 @@ class CampaignResponse extends JsonResponse
     {
         $body = [];
         $body['data'] = [
-            'id' => 4944,
-            'rb_verb' => 'Swappin Stories',
-            'rb_noun' => 'Seniors',
-            'msg_rb_confirmation' => 'Wait, your Grandma did WHAT? Thanks for playing and swapping stories!',
-            'title' => 'Senior Story Swap',
-            'tagline' => 'Swap stories with an older adult to decrease isolation.',
-            'status' => 'closed',
-            'msg_ask_quantity' => 'How many seniors did you swap stories with?',
-            'current_run' => 7298,
-            'mobilecommons_group_doing' => 255742,
-            'mobilecommons_group_completed' => 255724,
-            'mobilecommons_keywords' => ['SWAPBOT'],
+            'id' => 876,
+            'title' => 'Trash Stash',
+            'campaignbot' => true,
+            'status' => 'active',
+            'current_run' => 6230,
+            'mobilecommons_group_doing' => 258142,
+            'mobilecommons_group_completed' => 258163,
+            'keywords' => ['TRASHBOT'],
         ];
         parent::__construct($body, $code);
     }
