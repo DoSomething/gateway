@@ -23,8 +23,7 @@ class LaravelOAuthBridge implements OAuthBridgeContract
     {
         $this->model = config('auth.model');
 
-        $interfaces = class_implements($this->model);
-        if (! in_array(NorthstarUserContract::class, $interfaces)) {
+        if (! empty($this->model) && ! in_array(NorthstarUserContract::class, class_implements($this->model))) {
             throw new InvalidArgumentException('The auth.user model must use the HasNorthstarToken trait & the NorthstarUserContract interface.');
         }
     }
