@@ -274,10 +274,10 @@ class RestApiClient
     /**
      * Determine if the response was successful or not.
      *
-     * @param array $json
+     * @param mixed $json
      * @return bool
      */
-    public function responseSuccessful(array $json)
+    public function responseSuccessful($json)
     {
         return ! empty($json['success']);
     }
