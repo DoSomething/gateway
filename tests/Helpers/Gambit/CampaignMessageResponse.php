@@ -18,7 +18,7 @@ class CampaignMessageResponse extends JsonResponse
             $body['error'] = [
                 'error' => $code,
                 'message' => 'Missing required parameter',
-                'fields' => []
+                'fields' => [],
             ];
         } else {
             $code = 200;

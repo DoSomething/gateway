@@ -1,9 +1,9 @@
 <?php
 
-use DoSomething\GatewayTests\Helpers\Gambit\CampaignMessageResponse;
+use DoSomething\GatewayTests\Helpers\Gambit\SignupResponse;
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignResponse;
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignsResponse;
-use DoSomething\GatewayTests\Helpers\Gambit\SignupResponse;
+use DoSomething\GatewayTests\Helpers\Gambit\CampaignMessageResponse;
 
 class GambitTest extends PHPUnit_Framework_TestCase
 {
