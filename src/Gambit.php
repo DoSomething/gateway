@@ -93,18 +93,7 @@ class Gambit extends RestApiClient
             'type' => $type,
         ];
         $response = $this->post('v1/campaigns/' . $id . '/message', $payload);
-
-        if (is_null($response) || ! $this->responseSuccessful($response)) {
-            return false;
-        }
-
-        $result = $response['success'];
-        if (empty($result['code']) || $result['code'] !== 200) {
-            // Todo: log error.
-            return false;
-        }
-
-        return true;
+        return $this->responseSuccessful($response);
     }
 
     /**
@@ -122,17 +111,6 @@ class Gambit extends RestApiClient
             'source' => $source,
         ];
         $response = $this->post('v1/signups/', $payload);
-
-        if (is_null($response) || ! $this->responseSuccessful($response)) {
-            return false;
-        }
-
-        $result = $response['success'];
-        if (empty($result['code']) || $result['code'] !== 200) {
-            // Todo: log error.
-            return false;
-        }
-
-        return true;
+        return $this->responseSuccessful($response);
     }
 }
