@@ -1,8 +1,9 @@
 <?php
 
+use DoSomething\GatewayTests\Helpers\Gambit\SignupResponse;
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignResponse;
 use DoSomething\GatewayTests\Helpers\Gambit\CampaignsResponse;
-use DoSomething\GatewayTests\Helpers\Gambit\SignupResponse;
+use DoSomething\GatewayTests\Helpers\Gambit\CampaignMessageResponse;
 
 class GambitTest extends PHPUnit_Framework_TestCase
 {
@@ -71,6 +72,34 @@ class GambitTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $campaign->keywords);
         $this->assertContainsOnly('string', $campaign->keywords);
         $this->assertEquals(['TRASHBOT'], $campaign->keywords);
+    }
+
+    /**
+     * Test that we can post a campaign message.
+     */
+    public function testCreateCampaignMessage()
+    {
+        // Input data.
+        $payload = [
+            'id' => 46,
+            'phone' => '5555555511',
+            'type' => 'scheduled_relative_to_signup_date',
+        ];
+
+        // Mock response.
+        $restClient = new MockGambit($this->authorizedConfig, [
+            new CampaignMessageResponse($payload),
+        ]);
+
+        // Call the endpoint.
+        $result = $restClient->createCampaignMessage(
+          $payload['id'],
+          $payload['phone'],
+          $payload['type']
+        );
+
+        // Assert result.
+        $this->assertTrue($result);
     }
 
     /**

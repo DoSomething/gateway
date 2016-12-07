@@ -76,6 +76,28 @@ class Gambit extends RestApiClient
     }
 
     /**
+     * Call a "message" action on the Campaign endpoint.
+     *
+     * @param string $id - ID
+     * @param string $phone - Phone number, Northstar-compatible format
+     * @param string $type - The campaign message type.
+     *
+     * @see  https://github.com/DoSomething/gambit/blob/develop/documentation/endpoints/campaigns.md#send-a-campaign-message
+     *
+     * @return bool
+     */
+    public function createCampaignMessage($id, $phone, $type)
+    {
+        $payload = [
+            'phone' => $phone,
+            'type' => $type,
+        ];
+        $response = $this->post('v1/campaigns/' . $id . '/message', $payload);
+
+        return $this->responseSuccessful($response);
+    }
+
+    /**
      * Send a Post request Gambit signup endpoint.
      *
      * To notify Gambit that signup has been created.
@@ -91,16 +113,6 @@ class Gambit extends RestApiClient
         ];
         $response = $this->post('v1/signups/', $payload);
 
-        if (is_null($response) || ! $this->responseSuccessful($response)) {
-            return false;
-        }
-
-        $result = $response['success'];
-        if (empty($result['code']) || $result['code'] !== 200) {
-            // Todo: log error.
-            return false;
-        }
-
-        return true;
+        return $this->responseSuccessful($response);
     }
 }
