@@ -93,6 +93,7 @@ class Gambit extends RestApiClient
             'type' => $type,
         ];
         $response = $this->post('v1/campaigns/' . $id . '/message', $payload);
+
         return $this->responseSuccessful($response);
     }
 
@@ -111,6 +112,7 @@ class Gambit extends RestApiClient
             'source' => $source,
         ];
         $response = $this->post('v1/signups/', $payload);
+
         return $this->responseSuccessful($response);
     }
 }
