@@ -6,6 +6,8 @@ trait ForwardsTransactionIds
 {
     /**
      * Run custom tasks before making a request.
+     * Note: the below only sets up transaction id logic when making a request.
+     * Each app must do own logic to increment and log received transaction ids.
      *
      * @see RestApiClient@raw
      */
