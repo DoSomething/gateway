@@ -127,6 +127,9 @@ trait AuthorizesWithNorthstar
      */
     public function authorize(ServerRequestInterface $request, ResponseInterface $response, $destination = '/')
     {
+        // Make sure we're making request with the authorization_code grant.
+        $this->asUser();
+
         $destination = $this->getFrameworkBridge()->prepareUrl($destination);
         $query = $request->getQueryParams();
 
@@ -170,6 +173,9 @@ trait AuthorizesWithNorthstar
      */
     public function logout(ResponseInterface $response, $destination = '/')
     {
+        // Make sure we're making request with the authorization_code grant.
+        $this->asUser();
+
         $this->getFrameworkBridge()->logout();
 
         $destination = $this->getFrameworkBridge()->prepareUrl($destination);
