@@ -15,6 +15,6 @@ class ApiException extends Exception
      */
     public function __construct($endpoint, $code, $message)
     {
-        parent::__construct('Exception in Northstar "'.$endpoint.'" endpoint: ['.$code.'] '.$message);
+        parent::__construct('Exception from "'.$endpoint.'": ['.$code.'] '.$message, $code);
     }
 }
