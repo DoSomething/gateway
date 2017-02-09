@@ -49,11 +49,16 @@ class Gambit extends RestApiClient
     /**
      * Send a GET request to return all campaigns.
      *
+     * @param string $query - Filter campaigns. Following parameters allowed:
+     *   - campaignbot: (boolean) Only campaigns with campaignbot enabled
+     *
+     * @see https://github.com/DoSomething/gambit/blob/develop/documentation/endpoints/campaigns.md
+     *
      * @return GambitCampaignCollection
      */
-    public function getAllCampaigns()
+    public function getAllCampaigns($query = [])
     {
-        $response = $this->get('v1/campaigns', [], false);
+        $response = $this->get('v1/campaigns', $query, false);
 
         return new GambitCampaignCollection($response);
     }
