@@ -13,8 +13,6 @@ Install with Composer:
 }
 ```
 
-To require the latest release candidate add it to the suffix of the version specified, such as `1.0.0-rc14`.
-
 ### Usage
 In vanilla PHP, you can create a new `Northstar` client with your credentials to make API requests. You'll need
 to implement your own version of the `\DoSomething\Gateway\Contracts\OAuthBridgeContract` class to handle storing
