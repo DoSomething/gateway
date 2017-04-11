@@ -121,22 +121,24 @@ trait AuthorizesWithNorthstar
      *
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
-     * @param string $destination - The destination to redirect to on a successful login.
+     * @param string $url - The destination URL to redirect to on a successful login.
+     * @param string $destination - the title for the post-login destination
      * @return ResponseInterface
      * @throws InternalException
      */
-    public function authorize(ServerRequestInterface $request, ResponseInterface $response, $destination = '/')
+    public function authorize(ServerRequestInterface $request, ResponseInterface $response, $url = '/', $destination = null)
     {
         // Make sure we're making request with the authorization_code grant.
         $this->asUser();
 
-        $destination = $this->getFrameworkBridge()->prepareUrl($destination);
+        $url = $this->getFrameworkBridge()->prepareUrl($url);
         $query = $request->getQueryParams();
 
         // If we don't have an authorization code then make one and redirect.
         if (! isset($query['code'])) {
             $authorizationUrl = $this->getAuthorizationServer()->getAuthorizationUrl([
                 'scope' => $this->config['authorization_code']['scope'],
+                'destination' => ! empty($destination) ? $destination : null,
             ]);
 
             // Get the state generated for you and store it to the session.
@@ -161,7 +163,7 @@ trait AuthorizesWithNorthstar
         $user = $this->getFrameworkBridge()->getOrCreateUser($token->getResourceOwnerId());
         $this->getFrameworkBridge()->login($user, $token);
 
-        return $response->withStatus(302)->withHeader('Location', $destination);
+        return $response->withStatus(302)->withHeader('Location', $url);
     }
 
     /**
