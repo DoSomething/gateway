@@ -1,5 +1,6 @@
 <?php
 
+use DoSomething\Gateway\Blink;
 use DoSomething\Gateway\Resources\NorthstarUser;
 use DoSomething\GatewayTests\Helpers\Blink\BlinkResponse;
 use DoSomething\GatewayTests\Helpers\JwtResponse;
@@ -11,7 +12,7 @@ class BlinkTest extends PHPUnit_Framework_TestCase
     protected $authorizedConfig = [
         'url' => 'https://blink-phpunit.dosomething.org', // not a real server!
         'user' => 'blink',
-        'password' => 'totallysecret',
+        'password' => 'blink',
     ];
 
     protected $northstarConfig = [

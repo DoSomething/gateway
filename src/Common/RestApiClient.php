@@ -232,6 +232,7 @@ class RestApiClient
 
                 // If it's a validation error, throw a generic validation error.
                 case 422:
+                    // TODO: don't require error fields
                     $errors = $response->error->fields;
                     throw new ValidationException($errors, $endpoint);
 
