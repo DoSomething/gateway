@@ -3,8 +3,7 @@
 namespace DoSomething\Gateway;
 
 use DoSomething\Gateway\Common\RestApiClient;
-// use DoSomething\Gateway\Resources\BlinkCampaign;
-// use DoSomething\Gateway\Resources\BlinkCampaignCollection;
+use DoSomething\Gateway\Resources\NorthstarUser;
 
 class Blink extends RestApiClient
 {
@@ -49,14 +48,21 @@ class Blink extends RestApiClient
      * @param string $id - Signup
      * @return bool
      */
-    public function userCreate()
+    public function userCreate(NorthstarUser $user)
     {
-        // $payload = [
-        //     'id' => $id,
-        //     'source' => $source,
-        // ];
-        // $response = $this->post('v1/signups/', $payload);
-
-        // return $this->responseSuccessful($response);
+        $response = $this->post('v1/events/user-create', $user->toArray());
+        return $this->responseSuccessful($response);
     }
+
+    /**
+     * Determine if the response was successful or not.
+     *
+     * @param mixed $json
+     * @return bool
+     */
+    public function responseSuccessful($json)
+    {
+        return ! empty($json['ok']) && $json['ok'] === true;
+    }
+
 }
