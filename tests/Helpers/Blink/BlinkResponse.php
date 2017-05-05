@@ -17,6 +17,6 @@ class BlinkResponse extends JsonResponse
             'message' => 'Message queued',
             'code' => 'success_message_queued',
         ];
-        parent::__construct($body, 200);
+        parent::__construct($body, 201);
     }
 }
