@@ -55,6 +55,7 @@ class Blink extends RestApiClient
     public function userCreate(NorthstarUser $user)
     {
         $response = $this->post('v1/events/user-create', $user->toArray());
+
         return $this->responseSuccessful($response);
     }
 
@@ -68,5 +69,4 @@ class Blink extends RestApiClient
     {
         return ! empty($json['ok']) && $json['ok'] === true;
     }
-
 }

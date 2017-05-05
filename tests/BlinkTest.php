@@ -1,7 +1,6 @@
 <?php
 
 use DoSomething\Gateway\Blink;
-use DoSomething\Gateway\Resources\NorthstarUser;
 use DoSomething\GatewayTests\Helpers\Blink\BlinkResponse;
 use DoSomething\GatewayTests\Helpers\JwtResponse;
 use DoSomething\GatewayTests\Helpers\UserResponse;
