@@ -5,7 +5,6 @@ use DoSomething\GatewayTests\Helpers\Blink\BlinkResponse;
 use DoSomething\GatewayTests\Helpers\JwtResponse;
 use DoSomething\GatewayTests\Helpers\UserResponse;
 
-
 class BlinkTest extends PHPUnit_Framework_TestCase
 {
     protected $authorizedConfig = [
