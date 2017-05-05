@@ -20,27 +20,22 @@ trait AuthorizesWithBlink
     {
         // By default, we append the authorization header to every request.
         if ($withAuthorization) {
-            $authorizationHeader = $this->getAuthorizationHeader();
-            if (empty($options['headers'])) {
-                $options['headers'] = [];
-            }
-
-            $options['headers'] = array_merge($this->defaultHeaders, $options['headers'], $authorizationHeader);
+            $options['auth'] = $this->getAuth();
         }
     }
 
     /**
-     * Get the authorization header for a request
+     * Get the authorization credentials for a request
      *
      * @return null|array
      * @throws \Exception
      */
-    protected function getAuthorizationHeader()
+    protected function getAuth()
     {
-        if (empty($this->apiKey)) {
-            throw new \Exception('Blink API key is not set.');
+        if (empty($this->auth) || empty($this->auth['user']) || empty($this->auth['password'])) {
+            throw new \Exception('Blink authentication is not set.');
         }
 
-        return ['X-Blink-API-KEY' => $this->apiKey];
+        return [$this->auth['user'], $this->auth['password']];
     }
 }

@@ -34,8 +34,12 @@ class Blink extends RestApiClient
         $this->config = $config;
 
         // Set response header.
-        if (! empty($config['apiKey'])) {
-            $this->apiKey = $config['apiKey'];
+        $this->auth = [];
+        if (! empty($config['user'])) {
+            $this->auth['user'] = $config['user'];
+        }
+        if (! empty($config['password'])) {
+            $this->auth['password'] = $config['password'];
         }
         parent::__construct($config['url'], $overrides);
     }
