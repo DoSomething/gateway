@@ -47,15 +47,15 @@ class Blink extends RestApiClient
     /**
      * Send a Post request Blink /events/user-create endpoint.
      *
-     * To notify Blink that user has been created.
+     * To notify Blink that Northstar user has been created.
      *
-     * @param string $id - Signup
+     * @param array $user - The array containing Northstar user fields.
      * @return bool
      */
-    public function userCreate(NorthstarUser $user)
+    public function userCreate(array $user)
     {
-        $response = $this->post('v1/events/user-create', $user->toArray());
-
+        $response = $this->post('v1/events/user-create', $user);
+        // TODO: throw an exception if the post returns a validation error.
         return $this->responseSuccessful($response);
     }
 

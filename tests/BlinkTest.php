@@ -27,7 +27,7 @@ class BlinkTest extends PHPUnit_Framework_TestCase
     ];
 
     /**
-     * Test that we can post a signup.
+     * Test that we can notify blink o user creation.
      */
     public function testCreateSignup()
     {
@@ -41,7 +41,7 @@ class BlinkTest extends PHPUnit_Framework_TestCase
         ]);
         $northstarUser = $northstarRestClient->getUser('email', 'kitty@xavierinstitute.edu');
 
-        $result = $blinkRestClient->userCreate($northstarUser);
+        $result = $blinkRestClient->userCreate($northstarUser->toArray());
         $this->assertTrue($result);
     }
 }
