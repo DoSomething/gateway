@@ -3,7 +3,6 @@
 namespace DoSomething\Gateway;
 
 use DoSomething\Gateway\Common\RestApiClient;
-use DoSomething\Gateway\Resources\NorthstarUser;
 
 class Blink extends RestApiClient
 {
@@ -55,6 +54,7 @@ class Blink extends RestApiClient
     public function userCreate(array $user)
     {
         $response = $this->post('v1/events/user-create', $user);
+
         // TODO: throw an exception if the post returns a validation error.
         return $this->responseSuccessful($response);
     }
