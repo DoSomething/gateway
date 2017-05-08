@@ -22,7 +22,7 @@ class UserResponse extends JsonResponse
                 'addr_state' => 'New York',
                 'addr_zip' => '10560',
                 'country' => 'US',
-                'birthdate' => '01/09/80',
+                'birthdate' => '1980-01-31',
                 'first_name' => 'Katherine',
                 'last_name' => 'Pryde',
                 'role' => 'user',
