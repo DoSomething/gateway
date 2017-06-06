@@ -88,6 +88,6 @@ class Gladiator extends RestApiClient
      */
     public function responseSuccessful($json)
     {
-        return ! empty($json['data']);
+        return ! empty($json['data']) || ! empty($json['message']);
     }
 }
