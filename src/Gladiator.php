@@ -48,7 +48,7 @@ class Gladiator extends RestApiClient
      *
      * @return bool
      */
-    public function storeUserInContest(string $userId, $campaignId, $campaignRunId)
+    public function storeUserInContest($userId, $campaignId, $campaignRunId)
     {
         $response = $this->post('v1/users', [
             'id' => $userId,
@@ -69,7 +69,7 @@ class Gladiator extends RestApiClient
      *
      * @return bool
      */
-    public function unsubscribeUser(string $userId, $competition_id)
+    public function unsubscribeUser($userId, $competition_id)
     {
         $response = $this->post('v1/unsubscribe', [
             'northstar_id' => $userId,
@@ -78,5 +78,16 @@ class Gladiator extends RestApiClient
 
         // TODO: throw an exception if the post returns a validation error.
         return $this->responseSuccessful($response);
+    }
+
+    /**
+     * Determine if the response was successful or not.
+     *
+     * @param mixed $json
+     * @return bool
+     */
+    public function responseSuccessful($json)
+    {
+        return ! empty($json['data']);
     }
 }
