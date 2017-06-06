@@ -57,7 +57,6 @@ class Gladiator extends RestApiClient
             'campaign_run_id' => $legacyCampaignRunId,
         ]);
 
-        // TODO: throw an exception if the post returns a validation error.
         return $this->responseSuccessful($response);
     }
 
@@ -76,7 +75,6 @@ class Gladiator extends RestApiClient
             'competition_id' => $competition_id,
         ]);
 
-        // TODO: throw an exception if the post returns a validation error.
         return $this->responseSuccessful($response);
     }
 
