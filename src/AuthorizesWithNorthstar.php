@@ -119,6 +119,8 @@ trait AuthorizesWithNorthstar
     /**
      * Handle the OpenID Connect authorization flow.
      *
+     * @TODO: Merge $url & $destination into $options
+     *
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param string $url - The destination URL to redirect to on a successful login.
@@ -127,7 +129,7 @@ trait AuthorizesWithNorthstar
      * @return ResponseInterface
      * @throws InternalException
      */
-    public function authorize(ServerRequestInterface $request, ResponseInterface $response, $url = '/', $destination = null, $options = []) // TODO: Merge $url & $destination into $options
+    public function authorize(ServerRequestInterface $request, ResponseInterface $response, $url = '/', $destination = null, $options = [])
     {
         // Make sure we're making request with the authorization_code grant.
         $this->asUser();
