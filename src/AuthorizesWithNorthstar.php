@@ -123,10 +123,11 @@ trait AuthorizesWithNorthstar
      * @param ResponseInterface $response
      * @param string $url - The destination URL to redirect to on a successful login.
      * @param string $destination - the title for the post-login destination
+     * @param array  $options - Array of options to apply
      * @return ResponseInterface
      * @throws InternalException
      */
-    public function authorize(ServerRequestInterface $request, ResponseInterface $response, $url = '/', $destination = null)
+    public function authorize(ServerRequestInterface $request, ResponseInterface $response, $url = '/', $destination = null, $options = []) // TODO: Merge $url & $destination into $options
     {
         // Make sure we're making request with the authorization_code grant.
         $this->asUser();
@@ -136,10 +137,11 @@ trait AuthorizesWithNorthstar
 
         // If we don't have an authorization code then make one and redirect.
         if (! isset($query['code'])) {
-            $authorizationUrl = $this->getAuthorizationServer()->getAuthorizationUrl([
+            $params = array_merge($options, [
                 'scope' => $this->config['authorization_code']['scope'],
                 'destination' => ! empty($destination) ? $destination : null,
             ]);
+            $authorizationUrl = $this->getAuthorizationServer()->getAuthorizationUrl($params);
 
             // Get the state generated for you and store it to the session.
             $state = $this->getAuthorizationServer()->getState();
