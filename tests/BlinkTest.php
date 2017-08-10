@@ -79,18 +79,18 @@ class BlinkTest extends PHPUnit_Framework_TestCase
     {
         // Input data.
         $rogueReportbackPayload = [
-            "id" => 297635,
-            "signup_id" => 4036823,
-            "campaign_id" => 7831,
-            "northstar_id" => "5564c93d469c6415048b8670",
-            "url" => "https://s3.amazonaws.com/ds-rogue-prod/uploads/reportback-items/4036823-31b2064182a7fab7aa08d7e624faff0a-1501790315.jpeg",
-            "caption" => "test",
-            "status" => "pending",
-            "source" => "phoenix-next",
-            "remote_addr" => "104.156.90.29",
-            "created_at" => "2017-08-03 19:58:35",
-            "updated_at" => "2017-08-03 19:58:35",
-            "deleted_at" => null,
+            'id' => 297635,
+            'signup_id' => 4036823,
+            'campaign_id' => 7831,
+            'northstar_id' => '5564c93d469c6415048b8670',
+            'url' => 'https://s3.amazonaws.com/ds-rogue-prod/uploads/reportback-items/4036823-31b2064182a7fab7aa08d7e624faff0a-1501790315.jpeg',
+            'caption' => 'test',
+            'status' => 'pending',
+            'source' => 'phoenix-next',
+            'remote_addr' => '104.156.90.29',
+            'created_at' => '2017-08-03 19:58:35',
+            'updated_at' => '2017-08-03 19:58:35',
+            'deleted_at' => null,
         ];
 
         $blinkRestClient = new MockBlink($this->authorizedConfig, [
