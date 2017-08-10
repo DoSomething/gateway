@@ -1,5 +1,9 @@
 [PHP]
 
+; This is a copy of php-7.1.8 php.ini configuration recommended for development.
+; Make sure to replace it on minor PHP updates with the most recent version.
+; See https://github.com/php/php-src/blob/php-7.1.8/php.ini-development
+
 ;;;;;;;;;;;;;;;;;;;
 ; About php.ini   ;
 ;;;;;;;;;;;;;;;;;;;
