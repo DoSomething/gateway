@@ -53,8 +53,8 @@ class Gladiator extends RestApiClient
         $response = $this->post('v1/users', [
             'id' => $userId,
             'term' => 'id',
-            'campaign_id' => $legacyCampaignId,
-            'campaign_run_id' => $legacyCampaignRunId,
+            'campaign_id' => $campaignId,
+            'campaign_run_id' => $campaignRunId,
         ]);
 
         return $this->responseSuccessful($response);
