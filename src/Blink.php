@@ -60,7 +60,7 @@ class Blink extends RestApiClient
     }
 
     /**
-     * Send a Post request Blink /events/user-create endpoint.
+     * Send a Post request Blink /events/user-signup endpoint.
      *
      * To notify Blink that Northstar user has been created.
      *
