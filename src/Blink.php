@@ -62,7 +62,7 @@ class Blink extends RestApiClient
     /**
      * Send a Post request Blink /events/user-signup endpoint.
      *
-     * To notify Blink that Northstar user has been created.
+     * To notify Blink that Rogue signup has been created.
      *
      * @param array $signup - The array containing Rogue signup fields.
      * @see  https://github.com/DoSomething/rogue/blob/master/documentation/endpoints/signups.md
@@ -71,6 +71,23 @@ class Blink extends RestApiClient
     public function userSignup(array $signup)
     {
         $response = $this->post('v1/events/user-signup', $signup);
+
+        // TODO: throw an exception if the post returns a validation error.
+        return $this->responseSuccessful($response);
+    }
+
+    /**
+     * Send a Post request Blink /events/user-signup endpoint.
+     *
+     * To notify Blink that Rogue signup psot has been created.
+     *
+     * @param array $signup - The array containing Rogue signup post fields.
+     * @see  https://github.com/DoSomething/rogue/blob/master/documentation/endpoints/posts.md
+     * @return bool
+     */
+    public function userSignupPost(array $signupPost)
+    {
+        $response = $this->post('v1/events/user-signup-post', $signupPost);
 
         // TODO: throw an exception if the post returns a validation error.
         return $this->responseSuccessful($response);

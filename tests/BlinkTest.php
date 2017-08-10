@@ -73,29 +73,31 @@ class BlinkTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that we can notify blink of user campaign reporback.
+     * Test that we can notify blink of user signup post (AKA campaign reporback).
      */
-    public function testUserReportback()
+    public function testUserSignupPost()
     {
         // Input data.
         $rogueReportbackPayload = [
-            'id' => 4036838,
-            'northstar_id' => '598ca42c10707d7680749f81',
-            'campaign_id' => 7,
-            'campaign_run_id' => 7818,
-            'quantity' => 12,
-            'quantity_pending' => null,
-            'why_participated' => 'I love to test!',
-            'source' => 'niche',
-            'created_at' => '2017-08-10 18:21:35',
-            'updated_at' => '2017-08-10 18:21:35',
+            "id" => 297635,
+            "signup_id" => 4036823,
+            "campaign_id" => 7831,
+            "northstar_id" => "5564c93d469c6415048b8670",
+            "url" => "https://s3.amazonaws.com/ds-rogue-prod/uploads/reportback-items/4036823-31b2064182a7fab7aa08d7e624faff0a-1501790315.jpeg",
+            "caption" => "test",
+            "status" => "pending",
+            "source" => "phoenix-next",
+            "remote_addr" => "104.156.90.29",
+            "created_at" => "2017-08-03 19:58:35",
+            "updated_at" => "2017-08-03 19:58:35",
+            "deleted_at" => null,
         ];
 
         $blinkRestClient = new MockBlink($this->authorizedConfig, [
             new BlinkResponse,
         ]);
 
-        $result = $blinkRestClient->userReporback($rogueReportbackPayload);
+        $result = $blinkRestClient->userSignupPost($rogueReportbackPayload);
         $this->assertTrue($result);
     }
 }
