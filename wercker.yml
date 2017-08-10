@@ -5,6 +5,9 @@ build:
     - install-packages:
         packages: git
     - script:
+        name: install php.ini
+        code: cp php.ini-development /usr/local/etc/php/php.ini
+    - script:
         name: install composer
         code: curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
     - script:
