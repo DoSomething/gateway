@@ -48,7 +48,7 @@ class BlinkTest extends PHPUnit_Framework_TestCase
     /**
      * Test that we can notify blink of user campaign signup.
      */
-    public function testUserSigup()
+    public function testUserSigupCreate()
     {
         // Input data.
         $rogueSignupPayload = [
@@ -75,7 +75,7 @@ class BlinkTest extends PHPUnit_Framework_TestCase
     /**
      * Test that we can notify blink of user signup post (AKA campaign reporback).
      */
-    public function testUserSignupPost()
+    public function testUserSignupPostCreate()
     {
         // Input data.
         $rogueReportbackPayload = [
