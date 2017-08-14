@@ -79,7 +79,7 @@ class Blink extends RestApiClient
     /**
      * Send a Post request Blink /events/user-signup endpoint.
      *
-     * To notify Blink that Rogue signup psot has been created.
+     * To notify Blink that Rogue signup post has been created.
      *
      * @param array $signup - The array containing Rogue signup post fields.
      * @see  https://github.com/DoSomething/rogue/blob/master/documentation/endpoints/posts.md
