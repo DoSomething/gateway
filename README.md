@@ -91,7 +91,7 @@ $result = $blinkRestClient->userSignup([
 // has been performed successfully.
 ```
 
-For more call and usage examples see Blink and BlinkTest classes.
+For more call and usage examples see [Blink](/DoSomething/gateway/blob/master/src/Blink.php) and [BlinkTest](/DoSomething/gateway/blob/master/tests/BlinkTest.php) classes.
 
 ### Laravel Usage
 Laravel support is built-in. First, add the service provider to your `config/app.php`:
