@@ -8,7 +8,7 @@ use DoSomething\GatewayTests\Helpers\UserResponse;
 class BlinkTest extends PHPUnit_Framework_TestCase
 {
     protected $authorizedConfig = [
-        'url' => 'https://blink-phpunit.dosomething.org', // not a real server!
+        'url' => 'https://blink-phpunit.dosomething.org/api/', // not a real server!
         'user' => 'blink',
         'password' => 'blink',
     ];
