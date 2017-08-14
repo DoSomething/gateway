@@ -57,7 +57,7 @@ $northstar->withToken($accessToken)->get('v1/profile');
 
 **Blink**
 
-This package includes basic API wrapper for [DoSomething/blink](/DoSomething/blink).
+This package includes basic API wrapper for [DoSomething/blink](https://github.com/DoSomething/blink).
 
 Usage is similar to the example above with an exception that it doesn't require using class bridge,
 and rely on HTTP Basic authentication instead.
@@ -91,7 +91,7 @@ $result = $blinkRestClient->userSignup([
 // has been performed successfully.
 ```
 
-For more call and usage examples see [Blink](/DoSomething/gateway/blob/master/src/Blink.php) and [BlinkTest](/DoSomething/gateway/blob/master/tests/BlinkTest.php) classes.
+For more calls and usage examples see [Blink](https://github.com/DoSomething/gateway/blob/master/src/Blink.php) and [BlinkTest](https://github.com/DoSomething/gateway/blob/master/tests/BlinkTest.php) classes.
 
 ### Laravel Usage
 Laravel support is built-in. First, add the service provider to your `config/app.php`:
