@@ -60,7 +60,7 @@ $northstar->withToken($accessToken)->get('v1/profile');
 This package includes basic API wrapper for [DoSomething/blink](https://github.com/DoSomething/blink).
 
 Usage is similar to the example above with an exception that it doesn't require using bridge class,
-and rely on HTTP Basic Authentication with by HTTP header instead.
+and rely on HTTP Basic Authentication with HTTP header instead.
 
 ```php
 use DoSomething\Gateway\Blink;
