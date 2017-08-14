@@ -78,7 +78,7 @@ class BlinkTest extends PHPUnit_Framework_TestCase
     public function testUserSignupPostCreate()
     {
         // Input data.
-        $rogueReportbackPayload = [
+        $rogueSignupPostPayload = [
             'id' => 297635,
             'signup_id' => 4036823,
             'campaign_id' => 7831,
@@ -97,7 +97,7 @@ class BlinkTest extends PHPUnit_Framework_TestCase
             new BlinkResponse,
         ]);
 
-        $result = $blinkRestClient->userSignupPost($rogueReportbackPayload);
+        $result = $blinkRestClient->userSignupPost($rogueSignupPostPayload);
         $this->assertTrue($result);
     }
 }
