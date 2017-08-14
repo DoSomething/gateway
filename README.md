@@ -57,10 +57,10 @@ $northstar->withToken($accessToken)->get('v1/profile');
 
 **Blink**
 
-This package includes basic API wrapper for [DoSomething/blink)(/DoSomething/blink).
+This package includes basic API wrapper for [DoSomething/blink](/DoSomething/blink).
 
 Usage is similar to the example above with an exception that it doesn't require using class bridge,
-but uses header HTTP Basic instead.
+and rely on HTTP Basic authentication instead.
 
 ```php
 use DoSomething\Gateway\Blink;
@@ -86,8 +86,8 @@ $result = $blinkRestClient->userSignup([
     'updated_at' => '2017-08-10 18:21:35',
 ]);
 
-// $result variable would contain boolean response state,
-// but in most cases, it's safe to ignore it and assume that the operation
+// $result variable would contain boolean response state.
+// In most cases, it's safe to ignore it and assume that the operation
 // has been performed successfully.
 ```
 
