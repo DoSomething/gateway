@@ -359,6 +359,12 @@ trait AuthorizesWithNorthstar
     protected function getAuthorizationHeader($forceRefresh = false)
     {
         $token = $this->getAccessToken();
+        $user = $this->getFrameworkBridge()->getCurrentUser();
+
+        // Don't attempt to refresh token if there isn't a logged-in user.
+        if ($this->grant === 'authorization_code' && ! $user) {
+            return [];
+        }
 
         // If the token is expired, fetch a new one before making the request.
         if (! $token || ($token && $token->hasExpired()) || $forceRefresh) {
