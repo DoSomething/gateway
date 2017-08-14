@@ -72,7 +72,7 @@ $blink = new Blink([
     'password' => 'blink', //Replace with real blink password
 ]);
 
-// Send userSignup() event to blink with specified payload.
+// Send user signup event to blink with specified data payload.
 $result = $blinkRestClient->userSignup([
     'id' => 4036838,
     'northstar_id' => '598ca42c10707d7680749f81',
@@ -86,9 +86,9 @@ $result = $blinkRestClient->userSignup([
     'updated_at' => '2017-08-10 18:21:35',
 ]);
 
-// $result variable would contain boolean response state.
+// $result variable will contain boolean response state.
 // In most cases, it's safe to ignore it and assume that the operation
-// has been performed successfully.
+// was completed successfully.
 ```
 
 For more calls and usage examples see [Blink](https://github.com/DoSomething/gateway/blob/master/src/Blink.php) and [BlinkTest](https://github.com/DoSomething/gateway/blob/master/tests/BlinkTest.php) classes.
