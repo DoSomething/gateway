@@ -55,6 +55,44 @@ $northstar->withToken($accessToken)->get('v1/profile');
 
 ```
 
+**Blink**
+
+This package includes basic API wrapper for [DoSomething/blink)(/DoSomething/blink).
+
+Usage is similar to the example above with an exception that it doesn't require using class bridge,
+but uses header HTTP Basic instead.
+
+```php
+use DoSomething\Gateway\Blink;
+
+// Create blink API object.
+$blink = new Blink([
+    'url' => 'https://blink.dosomething.org/api/',
+    'user' => 'blink',     // Replace with real blink username
+    'password' => 'blink', //Replace with real blink password
+]);
+
+// Send userSignup() event to blink with specified payload.
+$result = $blinkRestClient->userSignup([
+    'id' => 4036838,
+    'northstar_id' => '598ca42c10707d7680749f81',
+    'campaign_id' => 7,
+    'campaign_run_id' => 7818,
+    'quantity' => 12,
+    'quantity_pending' => null,
+    'why_participated' => 'I love to test!',
+    'source' => 'niche',
+    'created_at' => '2017-08-10 18:21:35',
+    'updated_at' => '2017-08-10 18:21:35',
+]);
+
+// $result variable would contain boolean response state,
+// but in most cases, it's safe to ignore it and assume that the operation
+// has been performed successfully.
+```
+
+For more call and usage examples see Blink and BlinkTest classes.
+
 ### Laravel Usage
 Laravel support is built-in. First, add the service provider to your `config/app.php`:
 
@@ -191,5 +229,5 @@ with the appropriate `northstar_id` and `role` columns. The user's access and re
 can make authorized requests to other DoSomething.org services.
 
 ### License
-&copy;2016 DoSomething.org. Gateway is free software, and may be redistributed under the terms
+&copy;2017 DoSomething.org. Gateway is free software, and may be redistributed under the terms
 specified in the [LICENSE](https://github.com/DoSomething/northstar-php/blob/master/LICENSE) file.
