@@ -2,8 +2,13 @@
 
 namespace DoSomething\Gateway\Laravel;
 
+use Auth;
+use Illuminate\Http\Request;
 use DoSomething\Gateway\Northstar;
+use DoSomething\Gateway\Server\Token;
 use Illuminate\Support\ServiceProvider;
+use DoSomething\Gateway\Server\GatewayGuard;
+use DoSomething\Gateway\Server\GatewayUserProvider;
 
 class GatewayServiceProvider extends ServiceProvider
 {
@@ -31,5 +36,22 @@ class GatewayServiceProvider extends ServiceProvider
 
         // Set alias for requesting from app() helper.
         $this->app->alias(Northstar::class, 'northstar');
+
+        // Register token validator w/ config dependency.
+        $this->app->singleton(Token::class, function ($app) {
+            return new Token($app[Request::class], config('services.northstar.key'));
+        });
+
+        // Register custom Gateway authentication guard.
+        Auth::extend('gateway', function ($app, $name, array $config) {
+            $provider = Auth::createUserProvider($config['provider']);
+
+            return new GatewayGuard($app[Token::class], $provider, $app[Request::class]);
+        });
+
+        // Register custom Gateway user provider.
+        Auth::provider('gateway', function ($app, array $config) {
+            return new GatewayUserProvider();
+        });
     }
 }
