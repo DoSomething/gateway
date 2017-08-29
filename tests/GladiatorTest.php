@@ -35,6 +35,6 @@ class GladiatorTest extends PHPUnit_Framework_TestCase
 
         $response = $restClient->unsubscribeUser('550200bba39awieg467a3cg2', '6749');
 
-        $this->assertResponseOk();
+        $this->assertArrayHasKey('message', $response);
     }
 }
