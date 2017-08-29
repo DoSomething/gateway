@@ -75,7 +75,7 @@ class Gladiator extends RestApiClient
             'competition_id' => $competition_id,
         ]);
 
-        return $this->responseSuccessful($response);
+        return $response;
     }
 
     /**
