@@ -1,12 +1,30 @@
 <?php
 
-namespace DoSomething\Gateway\Server;
+namespace DoSomething\Gateway\Server\Middleware;
 
 use Closure;
+use DoSomething\Gateway\Server\Token;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class RequireScope
 {
+    /**
+     * The JWT token.
+     *
+     * @var Token
+     */
+    protected $token;
+
+    /**
+     * RequireScope constructor.
+     *
+     * @param Token $token
+     */
+    public function __construct(Token $token)
+    {
+        $this->token = $token;
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -17,7 +35,7 @@ class RequireScope
      */
     public function handle($request, Closure $next, ...$requestedScopes)
     {
-        $providedScopes = token()->scopes;
+        $providedScopes = $this->token->scopes;
 
         // If any of the requested scopes were not provided, throw an exception.
         $missingScopes = array_diff($requestedScopes, $providedScopes);

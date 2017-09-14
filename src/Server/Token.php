@@ -2,6 +2,7 @@
 
 namespace DoSomething\Gateway\Server;
 
+use Carbon\Carbon;
 use Lcobucci\JWT\Token as JwtToken;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\ValidationData;
@@ -89,7 +90,9 @@ class Token
      */
     public function scopes()
     {
-        return $this->getClaim('scopes');
+        $scopes = $this->getClaim('scopes');
+
+        return ! empty($scopes) ? $scopes : [];
     }
 
     /**
@@ -99,7 +102,9 @@ class Token
      */
     public function role()
     {
-        return $this->getClaim('role');
+        $role = $this->getClaim('role');
+
+        return ! empty($role) ? $role : null;
     }
 
     /**
@@ -152,7 +157,7 @@ class Token
 
             // Ensure access token hasn't expired
             $data = new ValidationData();
-            $data->setCurrentTime(time());
+            $data->setCurrentTime(Carbon::now()->timestamp);
             if ($token->validate($data) === false) {
                 throw new AccessDeniedHttpException('Access token is invalid');
             }
