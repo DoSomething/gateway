@@ -2,8 +2,10 @@
 
 namespace DoSomething\Gateway\Server;
 
+use InvalidArgumentException;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
+use DoSomething\Gateway\Resources\AuthenticatableUser;
 
 class GatewayUserProvider implements UserProvider
 {
@@ -15,14 +17,9 @@ class GatewayUserProvider implements UserProvider
      */
     public function retrieveById($identifier)
     {
-        $response = gateway('northstar')->get('profile');
+        $response = gateway('northstar')->getUser('id', $identifier);
 
-        if ($profile['data']['id'] !== $identifier) {
-            // @TOOD: Error handling.
-            throw new \Exception('Could not load profile.');
-        }
-
-        return new AuthorizedUser($response);
+        return new AuthenticatableUser($response);
     }
 
     /**
