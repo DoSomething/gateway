@@ -325,6 +325,26 @@ trait AuthorizesWithNorthstar
     }
 
     /**
+     * If a user is logged in & has an expired access token,
+     * fetch a new one using their refresh token.
+     *
+     * @return void
+     */
+    public function refreshIfExpired()
+    {
+        $user = $this->getFrameworkBridge()->getCurrentUser();
+
+        if (! $user) {
+            return null;
+        }
+
+        $token = $user->getOAuthToken();
+        if ($token && $token->hasExpired()) {
+            $this->refreshAccessToken($token);
+        }
+    }
+
+    /**
      * Get a new access token based on the chosen grant.
      *
      * @param $token

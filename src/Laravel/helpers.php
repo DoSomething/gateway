@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use DoSomething\Gateway\Common\RestApiClient;
 use DoSomething\Gateway\Server\Token;
 use DoSomething\Gateway\Northstar;
@@ -13,11 +14,11 @@ if (! function_exists('gateway')) {
      */
     function gateway($client)
     {
-        if ($client !== 'northstar') {
-            throw new InvalidArgumentException('There isn\'t a Gateway client registered with that name.');
+        try {
+            return app('gateway.'.$client);
+        } catch (BindingResolutionException $e) {
+            throw new InvalidArgumentException('There isn\'t a Gateway client registered as "'.$client.'".');
         }
-
-        return app(Northstar::class);
     }
 
     /**

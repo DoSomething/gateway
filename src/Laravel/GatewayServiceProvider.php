@@ -4,6 +4,8 @@ namespace DoSomething\Gateway\Laravel;
 
 use Auth;
 use Illuminate\Http\Request;
+use DoSomething\Gateway\Blink;
+use DoSomething\Gateway\Gladiator;
 use DoSomething\Gateway\Northstar;
 use DoSomething\Gateway\Server\Token;
 use Illuminate\Support\ServiceProvider;
@@ -34,7 +36,20 @@ class GatewayServiceProvider extends ServiceProvider
             return new LaravelNorthstar(config('services.northstar'));
         });
 
+        $this->app->singleton(Blink::class, function () {
+            return new Blink(config('services.blink'));
+        });
+
+        $this->app->singleton(Gladiator::class, function () {
+            return new Gladiator(config('services.gladiator'));
+        });
+
         // Set alias for requesting from app() helper.
+        $this->app->alias(Northstar::class, 'gateway.northstar');
+        $this->app->alias(Blink::class, 'gateway.blink');
+        $this->app->alias(Gladiator::class, 'gateway.gladiator');
+
+        // Backwards-compatibility.
         $this->app->alias(Northstar::class, 'northstar');
 
         // Register token validator w/ config dependency.
