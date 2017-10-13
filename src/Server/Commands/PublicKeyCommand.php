@@ -36,16 +36,29 @@ class PublicKeyCommand extends Command
         // Print an error if a URL isn't set in config file.
         if (empty($url)) {
             $this->error('Set a Northstar URL in config/services.php! <https://git.io/...>');
+
+            return false;
         }
 
         $discoveryUrl = $url.'/.well-known/openid-configuration';
 
         $this->comment('Reading configuration from '.$discoveryUrl.'...');
         $configuration = $http->get($discoveryUrl);
+        if (empty($configuration)) {
+            $this->error('Could not load configuration.');
+
+            return false;
+        }
+
         $jwksUri = $configuration['jwks_uri'];
 
         $this->comment('Reading public key from '.$jwksUri.'...');
         $jwks = $http->get($jwksUri);
+        if (empty($jwks)) {
+            $this->error('Could not load public key.');
+
+            return false;
+        }
 
         $components = $jwks['keys'][0];
         $jwk = JOSE_JWK::decode($components);
