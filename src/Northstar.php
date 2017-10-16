@@ -111,11 +111,12 @@ class Northstar extends RestApiClient
      * Send a GET request to return all Northstar keys.
      * Requires an `admin` scoped API key.
      *
+     * @param array $inputs - Pagination queries
      * @return NorthstarClientCollection
      */
-    public function getAllClients()
+    public function getAllClients($inputs = [])
     {
-        $response = $this->get('v2/clients');
+        $response = $this->get('v2/clients', $inputs);
 
         return new NorthstarClientCollection($response);
     }
