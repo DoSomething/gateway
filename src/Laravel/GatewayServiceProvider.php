@@ -21,8 +21,15 @@ class GatewayServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Allow sample migrations to be published using `php artisan vendor:publish`.
-        $this->publishes([realpath(__DIR__ . '/Migrations/') => database_path('migrations')], 'migrations');
+        if ($this->app->runningInConsole()) {
+            // Allow sample migrations to be published using `php artisan vendor:publish`.
+            $this->publishes([realpath(__DIR__ . '/Migrations/') => database_path('migrations')], 'migrations');
+
+            // Register 'key' Artisan command.
+            $this->commands([
+                \DoSomething\Gateway\Server\Commands\PublicKeyCommand::class,
+            ]);
+        }
     }
 
     /**
