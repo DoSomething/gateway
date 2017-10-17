@@ -38,6 +38,14 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
     protected $currentPage;
 
     /**
+     * Whether a cursor-based paginator can load more
+     * pages from the API endpoint.
+     *
+     * @var bool
+     */
+    protected $hasMore;
+
+    /**
      * The collection's paginator.
      *
      * @var \Illuminate\Pagination\LengthAwarePaginator
@@ -67,6 +75,7 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
         if (isset($response['meta']['cursor'])) {
             $this->perPage = $response['meta']['cursor']['count'];
             $this->currentPage = $response['meta']['cursor']['current'];
+            $this->hasMore = ! empty($response['meta']['cursor']['next']);
         }
     }
 
@@ -84,6 +93,7 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
             $paginator = new $class($this->items, $this->total, $this->perPage, $this->currentPage, $options);
         } elseif (in_array('Illuminate\Contracts\Pagination\Paginator', $interfaces)) {
             $paginator = new $class($this->items, $this->perPage, $this->currentPage, $options);
+            $paginator->hasMorePagesWhen($this->hasMore);
         } else {
             throw new \InvalidArgumentException('Cannot use the given paginator.');
         }
