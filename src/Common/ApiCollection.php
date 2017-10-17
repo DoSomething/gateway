@@ -38,6 +38,14 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
     protected $currentPage;
 
     /**
+     * Whether a cursor-based paginator can load more
+     * pages from the API endpoint.
+     *
+     * @var bool
+     */
+    protected $hasMore;
+
+    /**
      * The collection's paginator.
      *
      * @var \Illuminate\Pagination\LengthAwarePaginator
@@ -56,35 +64,53 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
             array_push($this->items, new $class($item));
         }
 
-        // If the response is paginated, create a Paginator.
+        // If the response is paginated:
         if (isset($response['meta']['pagination'])) {
             $this->total = $response['meta']['pagination']['total'];
             $this->perPage = $response['meta']['pagination']['per_page'];
             $this->currentPage = $response['meta']['pagination']['current_page'];
+        }
+
+        // If the response uses a cursor:
+        if (isset($response['meta']['cursor'])) {
+            $this->perPage = $response['meta']['cursor']['count'];
+            $this->currentPage = $response['meta']['cursor']['current'];
+            $this->hasMore = ! empty($response['meta']['cursor']['next']);
         }
     }
 
     /**
      * Set a paginator for this collection.
      *
-     * @param \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginator
+     * @param string $class
+     * @param array $options
      */
-    public function setPaginator($paginator, $options = [])
+    public function setPaginator($class, $options = [])
     {
-        $this->paginator = new $paginator($this->items, $this->total, $this->perPage, $this->currentPage, $options);
+        $interfaces = class_implements($class);
+
+        if (in_array('Illuminate\Contracts\Pagination\LengthAwarePaginator', $interfaces)) {
+            $paginator = new $class($this->items, $this->total, $this->perPage, $this->currentPage, $options);
+        } elseif (in_array('Illuminate\Contracts\Pagination\Paginator', $interfaces)) {
+            $paginator = new $class($this->items, $this->perPage, $this->currentPage, $options);
+            $paginator->hasMorePagesWhen($this->hasMore);
+        } else {
+            throw new \InvalidArgumentException('Cannot use the given paginator.');
+        }
+
+        $this->paginator = $paginator;
     }
 
     /**
      * Render pagination links to HTML.
      *
-     * @param \Illuminate\Contracts\Pagination\Presenter $presenter
+     * @param  string|null  $view
+     * @param  array  $data
      * @return string
      */
-    public function links($presenter)
+    public function links($view = null, $data = [])
     {
-        $presenter = new $presenter($this->paginator);
-
-        return $presenter->render();
+        return $this->paginator->render($view, $data);
     }
 
     /**
