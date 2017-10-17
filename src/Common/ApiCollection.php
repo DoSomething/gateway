@@ -75,7 +75,7 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
     /**
      * Set a paginator for this collection.
      *
-     * @param \Illuminate\Contracts\Pagination\LengthAwarePaginator $class
+     * @param string $class
      * @param array $options
      */
     public function setPaginator($class, $options = [])
