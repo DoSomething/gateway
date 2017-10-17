@@ -68,6 +68,7 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
      * Set a paginator for this collection.
      *
      * @param \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginator
+     * @param array $options
      */
     public function setPaginator($paginator, $options = [])
     {
@@ -77,14 +78,13 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
     /**
      * Render pagination links to HTML.
      *
-     * @param \Illuminate\Contracts\Pagination\Presenter $presenter
+     * @param  string|null  $view
+     * @param  array  $data
      * @return string
      */
-    public function links($presenter)
+    public function links($view = null, $data = [])
     {
-        $presenter = new $presenter($this->paginator);
-
-        return $presenter->render();
+        return $this->paginator->render($view, $data);
     }
 
     /**
