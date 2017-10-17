@@ -5,6 +5,8 @@ namespace DoSomething\Gateway\Common;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use IteratorAggregate;
 
 abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregate
@@ -56,23 +58,43 @@ abstract class ApiCollection implements ArrayAccess, Countable, IteratorAggregat
             array_push($this->items, new $class($item));
         }
 
-        // If the response is paginated, create a Paginator.
+        // If the response is paginated:
         if (isset($response['meta']['pagination'])) {
             $this->total = $response['meta']['pagination']['total'];
             $this->perPage = $response['meta']['pagination']['per_page'];
             $this->currentPage = $response['meta']['pagination']['current_page'];
+        }
+
+        // If the response uses a cursor:
+        if (isset($response['meta']['cursor'])) {
+            $this->perPage = $response['meta']['cursor']['per_page'];
+            $this->currentPage = $response['meta']['cursor']['current_page'];
         }
     }
 
     /**
      * Set a paginator for this collection.
      *
-     * @param \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginator
+     * @param \Illuminate\Contracts\Pagination\LengthAwarePaginator $class
      * @param array $options
      */
-    public function setPaginator($paginator, $options = [])
+    public function setPaginator($class, $options = [])
     {
-        $this->paginator = new $paginator($this->items, $this->total, $this->perPage, $this->currentPage, $options);
+        switch ($class) {
+            case LengthAwarePaginator::class:
+                $paginator = new $class($this->items, $this->total, $this->perPage, $this->currentPage, $options);
+                break;
+
+            case Paginator::class:
+                $paginator = new $class($this->items, $this->perPage, $this->currentPage, $options);
+                break;
+
+            default:
+                throw new \InvalidArgumentException('Cannot use the given paginator.');
+
+        }
+
+        $this->paginator = $paginator;
     }
 
     /**
