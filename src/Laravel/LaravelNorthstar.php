@@ -6,8 +6,7 @@ use DoSomething\Gateway\Northstar;
 use DoSomething\Gateway\Exceptions\InternalException;
 use DoSomething\Gateway\Exceptions\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Illuminate\Contracts\Validation\ValidationException as LaravelValidationException;
-use Illuminate\Support\MessageBag;
+use Illuminate\Validation\ValidationException as LaravelValidationException;
 
 class LaravelNorthstar extends Northstar
 {
@@ -42,15 +41,7 @@ class LaravelNorthstar extends Northstar
         try {
             return parent::send($method, $path, $options, $withAuthorization);
         } catch (ValidationException $e) {
-            $messages = new MessageBag;
-
-            foreach ($e->getErrors() as $attribute => $errors) {
-                foreach ($errors as $error) {
-                    $messages->add($attribute, $error);
-                }
-            }
-
-            throw new LaravelValidationException($messages);
+            throw LaravelValidationException::withMessages($e->getErrors());
         } catch (InternalException $e) {
             $message = 'Northstar returned an unexpected error for that request.';
 
