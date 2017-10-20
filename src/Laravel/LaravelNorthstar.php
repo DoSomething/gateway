@@ -4,7 +4,9 @@ namespace DoSomething\Gateway\Laravel;
 
 use DoSomething\Gateway\Northstar;
 use DoSomething\Gateway\Exceptions\InternalException;
+use DoSomething\Gateway\Exceptions\ForbiddenException;
 use DoSomething\Gateway\Exceptions\ValidationException;
+use DoSomething\Gateway\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Validation\ValidationException as LaravelValidationException;
 
@@ -42,6 +44,10 @@ class LaravelNorthstar extends Northstar
             return parent::send($method, $path, $options, $withAuthorization);
         } catch (ValidationException $e) {
             throw LaravelValidationException::withMessages($e->getErrors());
+        } catch (UnauthorizedException $e) {
+            throw new \Illuminate\Auth\AuthenticationException;
+        } catch (ForbiddenException $e) {
+            throw new \Illuminate\Auth\AuthenticationException;
         } catch (InternalException $e) {
             $message = 'Northstar returned an unexpected error for that request.';
 
