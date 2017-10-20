@@ -84,6 +84,18 @@ class Token
     }
 
     /**
+     * Get the expiration of the token, if set.
+     *
+     * @return string|null
+     */
+    public function expires()
+    {
+        $exp = $this->getClaim('exp');
+
+        return $exp ? Carbon::createFromTimestamp($exp) : null;
+    }
+
+    /**
      * Get the scopes granted to the token.
      *
      * @return array
