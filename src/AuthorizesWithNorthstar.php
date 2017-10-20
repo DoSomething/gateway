@@ -373,15 +373,20 @@ trait AuthorizesWithNorthstar
      * Overrides this empty method in RestApiClient.
      *
      * @param bool $forceRefresh - Should the token be refreshed, even if expiration timestamp hasn't passed?
-     * @return null|string
+     * @return array
      * @throws \Exception
      */
     protected function getAuthorizationHeader($forceRefresh = false)
     {
         $token = $this->getAccessToken();
-        $user = $this->getFrameworkBridge()->getCurrentUser();
+
+        // If we're using a token provided with the request, return it.
+        if ($this->grant === 'provided_token') {
+            return ['Authorization' => 'Bearer ' . $token->getToken()];
+        }
 
         // Don't attempt to refresh token if there isn't a logged-in user.
+        $user = $this->getFrameworkBridge()->getCurrentUser();
         if ($this->grant === 'authorization_code' && ! $user) {
             return [];
         }
