@@ -9,6 +9,7 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use DoSomething\Gateway\Server\Token;
 
 trait AuthorizesWithNorthstar
 {
@@ -284,13 +285,16 @@ trait AuthorizesWithNorthstar
      * Make request using the provided access token (for example, to make
      * a request to another service in order to complete an API request).
      *
-     * @param AccessToken $token
+     * @param Token $token
      * @return $this
      */
-    public function withToken(AccessToken $token)
+    public function withToken(Token $token)
     {
         $this->grant = 'provided_token';
-        $this->token = $token;
+        $this->token = new AccessToken([
+            'access_token' => $token->jwt(),
+            'expires' => $token->expires()->timestamp,
+        ]);
 
         return $this;
     }
