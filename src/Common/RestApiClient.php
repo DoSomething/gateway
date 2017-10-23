@@ -211,7 +211,7 @@ class RestApiClient
             return json_decode($response->getBody()->getContents(), true);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $endpoint = strtoupper($method).' '.$path;
-            $response = json_decode($e->getResponse()->getBody()->getContents());
+            $response = json_decode($e->getResponse()->getBody()->getContents(), true);
 
             switch ($e->getCode()) {
                 // If the request is bad, throw a generic bad request exception.
@@ -233,7 +233,7 @@ class RestApiClient
                 // If it's a validation error, throw a generic validation error.
                 case 422:
                     // TODO: don't require error fields
-                    $errors = $response->error->fields;
+                    $errors = $response['error']['fields'];
                     throw new ValidationException($errors, $endpoint);
 
                 default:
