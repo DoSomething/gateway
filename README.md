@@ -45,6 +45,10 @@ $northstar->getAllUsers();
 $northstar->getUser('email', 'test@dosomething.org');
 $northstar->updateUser('5480c950bffebc651c8b4570', ['first_name' => 'Puppet']);
 $northstar->deleteUser('5480c950bffebc651c8b4570');
+// Pretend merge:
+$northstar->mergeUsers('5480c950bffebc651c8b4570', '5480c950bffebc651c8b4571', true);
+// Real merge:
+$northstar->mergeUsers('5480c950bffebc651c8b4570', '5480c950bffebc651c8b4571');
 
 // You can override the default grant (or provide a token) per request like so:
 $northstar->asClient()->get('v1/users');
