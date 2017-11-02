@@ -108,6 +108,21 @@ class Northstar extends RestApiClient
     }
 
     /**
+     * Send a POST request to merge two users in Northstar.
+     *
+     * @param string $id - Northstar User ID.
+     * @param string $duplicateId - Northstar User ID of duplicate user.
+     * @param bool $pretend - Whether to persist the merge or not.
+     * @return mixed
+     */
+    public function mergeUsers($id, $duplicateId, $pretend = false)
+    {
+        $response = $this->post('v1/users/'.$id.'/merge/?pretend='.$pretend, ['id' => $duplicateId]);
+
+        return new NorthstarUser($response['data']);
+    }
+
+    /**
      * Send a GET request to return all Northstar keys.
      * Requires an `admin` scoped API key.
      *
