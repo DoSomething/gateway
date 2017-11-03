@@ -117,9 +117,9 @@ class Northstar extends RestApiClient
      */
     public function mergeUsers($id, $duplicateId, $pretend = false)
     {
-        $pretendParam = $pretend ? 'pretend=true' : null;
+        $pretendParam = $pretend ? '?pretend=true' : null;
 
-        $response = $this->post('v1/users/'.$id.'/merge/?'.$pretendParam, ['id' => $duplicateId]);
+        $response = $this->post('v1/users/'.$id.'/merge'.$pretendParam, ['id' => $duplicateId]);
 
         return new NorthstarUser($response['data']);
     }
