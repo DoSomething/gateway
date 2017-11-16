@@ -1,19 +1,11 @@
-box: php:7.1
+box: dosomething/ds-docker-php
 
 build:
   steps:
-    - install-packages:
-        packages: git
     - script:
-        name: install php.ini
-        code: cp php.ini-development /usr/local/etc/php/php.ini
-    - script:
-        name: install composer
-        code: curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-    - script:
-        name: install dependencies
-        code: composer install --no-interaction
+        name: install sqlite
+        code: sudo apt-get install php7.0-sqlite3
+    - leipert/composer-install
     - script:
         name: run phpunit tests
-        code: |-
-          vendor/bin/phpunit
+        code: vendor/bin/phpunit
