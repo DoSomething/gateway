@@ -9,23 +9,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class RequireRole
 {
     /**
-     * The JWT token.
-     *
-     * @var Token
-     */
-    protected $token;
-
-    /**
-     * RequireRole constructor.
-     *
-     * @param Token $token
-     */
-    public function __construct(Token $token)
-    {
-        $this->token = $token;
-    }
-
-    /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request $request
@@ -35,11 +18,11 @@ class RequireRole
      */
     public function handle($request, Closure $next, ...$allowedRoles)
     {
-        $role = $this->token->role;
+        $role = token()->role;
 
         // Allow the 'admin' scope to grant privileges to clients.
         // @TODO: Remove this after refactoring client_credential tokens.
-        if (in_array('admin', $this->token->scopes)) {
+        if (in_array('admin', token()->scopes)) {
             $role = 'admin';
         }
 

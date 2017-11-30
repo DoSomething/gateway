@@ -77,14 +77,14 @@ class GatewayGuard implements Guard
     /**
      * Determine if the current user is authenticated.
      *
-     * @return \Illuminate\Contracts\Auth\Authenticatable
+     * @return bool
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
     public function authenticate()
     {
-        if (! is_null($user = $this->user())) {
-            return $user;
+        if (! is_null($user = $this->id())) {
+            return true;
         }
 
         throw new AuthenticationException($this);
