@@ -4,7 +4,7 @@ build:
   steps:
     - script:
         name: install sqlite
-        code: sudo apt-get install php7.0-sqlite3
+        code: sudo apt-get update && sudo apt-get install php7.0-sqlite3
     - leipert/composer-install
     - script:
         name: run phpunit tests

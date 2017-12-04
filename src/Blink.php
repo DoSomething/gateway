@@ -3,6 +3,7 @@
 namespace DoSomething\Gateway;
 
 use DoSomething\Gateway\Common\RestApiClient;
+use DoSomething\Gateway\Exceptions\ValidationException;
 
 class Blink extends RestApiClient
 {
@@ -91,6 +92,26 @@ class Blink extends RestApiClient
 
         // TODO: throw an exception if the post returns a validation error.
         return $this->responseSuccessful($response);
+    }
+
+    /**
+     * Handle validation exceptions.
+     *
+     * @param string $endpoint - The human-readable route that triggered the error.
+     * @param array $response - The body of the response.
+     * @param string $method - The HTTP method for the request that triggered the error, for optionally resending.
+     * @param string $path - The path for the request that triggered the error, for optionally resending.
+     * @param array $options - The options for the request that triggered the error, for optionally resending.
+     * @return \GuzzleHttp\Psr7\Response|void
+     * @throws UnauthorizedException
+     */
+    public function handleValidationException($endpoint, $response, $method, $path, $options)
+    {
+        // Hackily format the "message" string in key-value format.
+        $message = $response['message'];
+        $errors = ['error' => [$message]];
+
+        throw new ValidationException($errors, $endpoint);
     }
 
     /**
