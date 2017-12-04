@@ -180,6 +180,23 @@ class RestApiClient
     }
 
     /**
+     * Handle validation exceptions.
+     *
+     * @param string $endpoint - The human-readable route that triggered the error.
+     * @param array $response - The body of the response.
+     * @param string $method - The HTTP method for the request that triggered the error, for optionally resending.
+     * @param string $path - The path for the request that triggered the error, for optionally resending.
+     * @param array $options - The options for the request that triggered the error, for optionally resending.
+     * @return \GuzzleHttp\Psr7\Response|void
+     * @throws UnauthorizedException
+     */
+    public function handleValidationException($endpoint, $response, $method, $path, $options)
+    {
+        $errors = $response['error']['fields'];
+        throw new ValidationException($response, $endpoint);
+    }
+
+    /**
      * Send a Northstar API request, and parse any returned validation
      * errors or status codes to present to the user.
      *
@@ -232,9 +249,7 @@ class RestApiClient
 
                 // If it's a validation error, throw a generic validation error.
                 case 422:
-                    // TODO: don't require error fields
-                    $errors = $response['error']['fields'];
-                    throw new ValidationException($errors, $endpoint);
+                    return $this->handleValidationException($endpoint, $response, $method, $path, $options);
 
                 default:
                     throw new InternalException($endpoint, $e->getCode(), $e->getMessage());
