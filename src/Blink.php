@@ -94,6 +94,25 @@ class Blink extends RestApiClient
     }
 
     /**
+     * Handle validation exceptions.
+     *
+     * @param string $endpoint - The human-readable route that triggered the error.
+     * @param array $response - The body of the response.
+     * @param string $method - The HTTP method for the request that triggered the error, for optionally resending.
+     * @param string $path - The path for the request that triggered the error, for optionally resending.
+     * @param array $options - The options for the request that triggered the error, for optionally resending.
+     * @return \GuzzleHttp\Psr7\Response|void
+     * @throws UnauthorizedException
+     */
+    public function handleValidationException($endpoint, $response, $method, $path, $options)
+    {
+        // Hackily format as key-value of "field" errors.
+        $errors = ['error' => $message];
+
+        throw new ValidationException($errors, $endpoint);
+    }
+
+    /**
      * Determine if the response was successful or not.
      *
      * @param mixed $json
