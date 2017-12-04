@@ -3,6 +3,7 @@
 namespace DoSomething\Gateway;
 
 use DoSomething\Gateway\Common\RestApiClient;
+use DoSomething\Gateway\Exceptions\ValidationException;
 
 class Blink extends RestApiClient
 {
@@ -106,8 +107,9 @@ class Blink extends RestApiClient
      */
     public function handleValidationException($endpoint, $response, $method, $path, $options)
     {
-        // Hackily format as key-value of "field" errors.
-        $errors = ['error' => $message];
+        // Hackily format the "message" string in key-value format.
+        $message = $response['message'];
+        $errors = ['error' => [$message]];
 
         throw new ValidationException($errors, $endpoint);
     }
