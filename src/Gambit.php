@@ -8,7 +8,7 @@ use DoSomething\Gateway\Resources\GambitCampaignCollection;
 
 class Gambit extends RestApiClient
 {
-    use AuthorizesWithGambit;
+    use AuthorizesWithApiKey;
 
     /**
      * Unknown signup source.
@@ -41,6 +41,7 @@ class Gambit extends RestApiClient
 
         // Set response header.
         if (! empty($config['apiKey'])) {
+            $this->apiKeyHeader = 'X-GAMBIT-API-KEY';
             $this->apiKey = $config['apiKey'];
         }
         parent::__construct($config['url'], $overrides);

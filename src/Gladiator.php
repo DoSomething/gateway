@@ -6,7 +6,7 @@ use DoSomething\Gateway\Common\RestApiClient;
 
 class Gladiator extends RestApiClient
 {
-    use AuthorizesWithGladiator;
+    use AuthorizesWithApiKey;
 
     /**
      * Configuration array.
@@ -34,6 +34,7 @@ class Gladiator extends RestApiClient
 
         // Set response header.
         if (! empty($config['gladiator_api_key'])) {
+            $this->apiKeyHeader = 'X-DS-Gladiator-API-Key';
             $this->apiKey = $config['gladiator_api_key'];
         }
         parent::__construct($config['url'], $overrides);
