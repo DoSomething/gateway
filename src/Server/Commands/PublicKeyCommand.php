@@ -44,7 +44,7 @@ class PublicKeyCommand extends Command
 
         // Print an error if a URL isn't set in config file.
         if (empty($url)) {
-            $this->error('Set a Northstar URL in config/auth.php! <https://git.io/vbokT>');
+            $this->error('Set a Northstar URL in config/auth.php! <https://git.io/vbi7d>');
 
             return false;
         }
