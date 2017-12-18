@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use DoSomething\Gateway\Server\Token;
 
-trait AuthorizesWithNorthstar
+trait AuthorizesWithOAuth2
 {
     /**
      * The authorization server URL (for example, Northstar).
@@ -62,7 +62,7 @@ trait AuthorizesWithNorthstar
      *
      * @see RestApiClient@raw
      */
-    protected function runAuthorizesWithNorthstarTasks($method, &$path, &$options, &$withAuthorization)
+    protected function runAuthorizesWithOAuth2Tasks($method, &$path, &$options, &$withAuthorization)
     {
         // By default, we append the authorization header to every request.
         if ($withAuthorization) {

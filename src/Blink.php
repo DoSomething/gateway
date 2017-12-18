@@ -7,7 +7,7 @@ use DoSomething\Gateway\Exceptions\ValidationException;
 
 class Blink extends RestApiClient
 {
-    use AuthorizesWithBlink;
+    use AuthorizesWithBasicAuth;
 
     /**
      * Configuration array.
@@ -33,14 +33,10 @@ class Blink extends RestApiClient
         // Save configuration.
         $this->config = $config;
 
-        // Set response header.
-        $this->auth = [];
-        if (! empty($config['user'])) {
-            $this->auth['user'] = $config['user'];
-        }
-        if (! empty($config['password'])) {
-            $this->auth['password'] = $config['password'];
-        }
+        // Set fields for `AuthorizesWithBasicAuth` trait.
+        $this->username = $config['user'];
+        $this->password = $config['password'];
+
         parent::__construct($config['url'], $overrides);
     }
 

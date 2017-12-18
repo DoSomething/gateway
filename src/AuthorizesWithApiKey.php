@@ -2,7 +2,7 @@
 
 namespace DoSomething\Gateway;
 
-trait AuthorizesWithGambit
+trait AuthorizesWithApiKey
 {
     /**
      * ApiKey.
@@ -16,15 +16,11 @@ trait AuthorizesWithGambit
      *
      * @see RestApiClient@raw
      */
-    protected function runAuthorizesWithGambitTasks($method, &$path, &$options, &$withAuthorization)
+    protected function runAuthorizesWithApiKeyTasks($method, &$path, &$options, &$withAuthorization)
     {
         // By default, we append the authorization header to every request.
         if ($withAuthorization) {
             $authorizationHeader = $this->getAuthorizationHeader();
-            if (empty($options['headers'])) {
-                $options['headers'] = [];
-            }
-
             $options['headers'] = array_merge($this->defaultHeaders, $options['headers'], $authorizationHeader);
         }
     }
@@ -37,10 +33,10 @@ trait AuthorizesWithGambit
      */
     protected function getAuthorizationHeader()
     {
-        if (empty($this->apiKey)) {
-            throw new \Exception('Gambit API key is not set.');
+        if (empty($this->apiKeyHeader) || empty($this->apiKey)) {
+            throw new \Exception('API key is not set.');
         }
 
-        return ['X-GAMBIT-API-KEY' => $this->apiKey];
+        return [$this->apiKeyHeader => $this->apiKey];
     }
 }

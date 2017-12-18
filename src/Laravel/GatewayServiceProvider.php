@@ -61,7 +61,14 @@ class GatewayServiceProvider extends ServiceProvider
 
         // Register token validator w/ config dependency.
         $this->app->singleton(Token::class, function ($app) {
-            return new Token($app[Request::class], config('services.northstar.key'));
+            $key = config('auth.providers.northstar.key');
+
+            // If not set, check old suggested config location:
+            if (! $key) {
+                $key = config('services.northstar.key');
+            }
+
+            return new Token($app[Request::class], $key);
         });
 
         // Register custom Gateway authentication guard.

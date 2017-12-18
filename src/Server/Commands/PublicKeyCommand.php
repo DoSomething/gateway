@@ -29,13 +29,22 @@ class PublicKeyCommand extends Command
      */
     public function handle()
     {
-        $url = config('services.northstar.url');
-        $path = config('services.northstar.key');
+        $url = config('auth.providers.northstar.key');
+        if (! $url) {
+            $key = config('services.northstar.key');
+        }
+
+        // Get key storage location from config.
+        $key = config('auth.providers.northstar.key');
+        if (! $key) {
+            $key = config('services.northstar.key');
+        }
+
         $http = new RestApiClient($url);
 
         // Print an error if a URL isn't set in config file.
         if (empty($url)) {
-            $this->error('Set a Northstar URL in config/services.php! <https://git.io/...>');
+            $this->error('Set a Northstar URL in config/auth.php! <https://git.io/vbi7d>');
 
             return false;
         }
@@ -45,7 +54,7 @@ class PublicKeyCommand extends Command
         $this->comment('Reading configuration from '.$discoveryUrl.'...');
         $configuration = $http->get($discoveryUrl);
         if (empty($configuration)) {
-            $this->error('Could not load configuration.');
+            $this->error('Could not load configuration. Is the URL correct?');
 
             return false;
         }

@@ -274,7 +274,7 @@ class RestApiClient
 
         if (empty($options['headers'])) {
             // Guzzle doesn't merge default headers with $options array
-            $options['headers'] = $this->defaultHeaders;
+            $options['headers'] = $this->defaultHeaders ?: [];
         }
 
         // If these traits have a "hook" (uh oh!), run that before making a request.
