@@ -36,7 +36,7 @@ class ExampleClient extends RestApiClient
 }
 ```
 
-Now, any requests where the `$withAuthorization` argument is `true` will use the configured `default_grant` to fetch an access token. You can always switch grants using the `asClient` or `asUser` methods, or provide a JWT Token using the `withToken` method alongside the [`token` helper]().
+Now, any requests where the `$withAuthorization` argument is `true` will use the configured `default_grant` to fetch an access token. You can always switch grants using the `asClient` or `asUser` methods, or provide a JWT Token using the `withToken` method alongside the [`token` helper](../server/ResourceServer.md#usage).
 
 ```php
 <?php
