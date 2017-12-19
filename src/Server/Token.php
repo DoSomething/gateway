@@ -7,7 +7,7 @@ use Lcobucci\JWT\Token as JwtToken;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\ValidationData;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use DoSomething\Gateway\Server\Exceptions\AccessDeniedException;
 
 /**
  * @property string      $client
@@ -164,22 +164,25 @@ class Token
             $jwt = $this->request->bearerToken();
             $token = (new Parser())->parse($jwt);
             if (! $token->verify(new Sha256(), file_get_contents($this->publicKey))) {
-                throw new AccessDeniedHttpException('Access token could not be verified');
+                throw new AccessDeniedException(
+                    'Access token could not be verified.',
+                    'Check authorization and resource environment match & that token has not been tampered with.'
+                );
             }
 
             // Ensure access token hasn't expired
             $data = new ValidationData();
             $data->setCurrentTime(Carbon::now()->timestamp);
             if ($token->validate($data) === false) {
-                throw new AccessDeniedHttpException('Access token is invalid');
+                throw new AccessDeniedException('Access token is invalid or expired.');
             }
 
             // We've made it! Save the details on the validator.
             return $token;
         } catch (\InvalidArgumentException $exception) {
-            throw new AccessDeniedHttpException('Could not parse JWT.');
+            throw new AccessDeniedException('Could not parse JWT.', $exception->getMessage());
         } catch (\RuntimeException $exception) {
-            throw new AccessDeniedHttpException('Error while decoding to JSON');
+            throw new AccessDeniedException('Error while decoding JWT contents.');
         }
     }
 
