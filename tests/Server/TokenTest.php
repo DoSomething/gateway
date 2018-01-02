@@ -2,7 +2,7 @@
 
 use Carbon\Carbon;
 use DoSomething\Gateway\Server\Token;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use DoSomething\Gateway\Server\Exceptions\AccessDeniedException;
 
 class TokenTest extends TestCase
 {
@@ -21,7 +21,7 @@ class TokenTest extends TestCase
         $request = $this->createRequest('Bearer nah');
         $token = new Token($request, $this->key);
 
-        $this->setExpectedException(AccessDeniedHttpException::class);
+        $this->setExpectedException(AccessDeniedException::class);
         $token->exists(); // throws!
     }
 
@@ -33,7 +33,7 @@ class TokenTest extends TestCase
         $this->mockTime('9/14/2017 7:00pm');
         $token = new Token($request, $this->key);
 
-        $this->setExpectedException(AccessDeniedHttpException::class);
+        $this->setExpectedException(AccessDeniedException::class);
         $token->exists(); // throws!
     }
 
@@ -46,7 +46,7 @@ class TokenTest extends TestCase
         $this->mockTime('9/14/2017 4:10pm');
         $token = new Token($request, $this->key);
 
-        $this->setExpectedException(AccessDeniedHttpException::class);
+        $this->setExpectedException(AccessDeniedException::class);
         $token->exists(); // throws!
     }
 
