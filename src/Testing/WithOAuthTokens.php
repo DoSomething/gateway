@@ -9,7 +9,6 @@ use Lcobucci\JWT\Signer\Rsa\Sha256;
 
 /**
  * @mixin \Illuminate\Foundation\Testing\TestCase
- * @property \Faker\Generator $faker
  */
 trait WithOAuthTokens
 {
@@ -55,12 +54,13 @@ trait WithOAuthTokens
     public function withAccessToken($userId, $role = 'user', $scopes = ['user', 'role:staff', 'role:admin'])
     {
         $privateKey = dirname(__FILE__) . '/example-private.key';
+        $jti = hash('sha256', mt_rand());
         $now = Carbon::now();
 
         $token = (new Builder())
             ->setIssuer(url(config('services.northstar.url')))
             ->setAudience('phpunit')
-            ->setId($this->faker->sha256, true)
+            ->setId($jti, true)
             ->setIssuedAt($now->timestamp)
             ->setNotBefore($now->timestamp)
             ->setExpiration($now->addHour()->timestamp)
