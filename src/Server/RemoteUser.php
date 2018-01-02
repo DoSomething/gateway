@@ -51,7 +51,7 @@ class RemoteUser implements Authenticatable
         // Does the token include this info? If so, just use that.
         if (in_array($key, ['id', 'northstar_id'])) {
             return $this->token->id;
-        } else if ($key === 'role') {
+        } elseif ($key === 'role') {
             return $this->token->role;
         }
 
@@ -59,7 +59,10 @@ class RemoteUser implements Authenticatable
         // duration of this request. (This instance is kept by the
         // user provider.)
         if (! $this->loaded) {
-            // @TODO: Load remote profile.
+            $user = gateway('northstar')->withToken($this->token)->getUser('id', $this->id);
+
+            $this->attributes = $user->toArray();
+            $this->loaded = true;
         }
 
         if (array_key_exists($key, $this->attributes) || $this->hasGetMutator($key)) {
