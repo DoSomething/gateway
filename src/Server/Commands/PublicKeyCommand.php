@@ -29,15 +29,16 @@ class PublicKeyCommand extends Command
      */
     public function handle()
     {
-        $url = config('auth.providers.northstar.key');
+        // Get Northstar URL from config.
+        $url = config('auth.providers.northstar.url');
         if (! $url) {
-            $key = config('services.northstar.key');
+            $url = config('services.northstar.url');
         }
 
         // Get key storage location from config.
-        $key = config('auth.providers.northstar.key');
-        if (! $key) {
-            $key = config('services.northstar.key');
+        $path = config('auth.providers.northstar.key');
+        if (! $path) {
+            $path = config('services.northstar.key');
         }
 
         $http = new RestApiClient($url);
