@@ -34,7 +34,7 @@ class RefreshTokenMiddleware
     public function handle($request, Closure $next)
     {
         // If a user is logged in with an expired access token, try to refresh it.
-        $this->northstar->refreshIfExpired();
+        $this->northstar->asUser()->refreshIfExpired();
 
         return $next($request);
     }
