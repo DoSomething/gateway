@@ -5,7 +5,6 @@ namespace DoSomething\Gateway\Server;
 use InvalidArgumentException;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
-use DoSomething\Gateway\Resources\AuthenticatableUser;
 
 class GatewayUserProvider implements UserProvider
 {
@@ -17,9 +16,7 @@ class GatewayUserProvider implements UserProvider
      */
     public function retrieveById($identifier)
     {
-        $response = gateway('northstar')->getUser('id', $identifier);
-
-        return new AuthenticatableUser($response);
+        return new RemoteUser($identifier);
     }
 
     /**
