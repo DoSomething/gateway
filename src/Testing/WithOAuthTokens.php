@@ -75,6 +75,7 @@ trait WithOAuthTokens
         $this->serverVariables = array_merge($this->serverVariables, $header);
 
         // Use the bundled public key for verifying test tokens.
+        config(['auth.providers.northstar.key' => dirname(__FILE__) . '/example-public.key']);
         config(['services.northstar.key' => dirname(__FILE__) . '/example-public.key']);
 
         return $this;
