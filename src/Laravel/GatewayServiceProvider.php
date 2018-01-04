@@ -39,15 +39,15 @@ class GatewayServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Northstar::class, function () {
+        $this->app->bind(Northstar::class, function () {
             return new LaravelNorthstar(config('services.northstar'));
         });
 
-        $this->app->singleton(Blink::class, function () {
+        $this->app->bind(Blink::class, function () {
             return new Blink(config('services.blink'));
         });
 
-        $this->app->singleton(Gladiator::class, function () {
+        $this->app->bind(Gladiator::class, function () {
             return new Gladiator(config('services.gladiator'));
         });
 
