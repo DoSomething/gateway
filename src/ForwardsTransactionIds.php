@@ -11,7 +11,7 @@ trait ForwardsTransactionIds
      */
     public function runForwardsTransactionIdsTasks($method, &$path, &$options, &$withAuthorization)
     {
-        $transactionId = $this->getTransactionBridge()->getHeader('X-Request-ID');
+        $transactionId = isset($_SERVER['HTTP_X_REQUEST_ID']) ? $_SERVER['HTTP_X_REQUEST_ID'] : null;
 
         // If there is no 'X-Request-ID' in the header, create one.
         if (! $transactionId) {
