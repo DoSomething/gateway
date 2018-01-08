@@ -12,7 +12,7 @@ class JsonResponse extends Response
      * @param array $body - The contents of the response.
      * @param int $code - The HTTP status code.
      */
-    public function __construct(array $body, $code = 200)
+    public function __construct(array $body = [], $code = 200)
     {
         parent::__construct($code, ['Content-Type' => 'application/json'], json_encode($body));
     }
