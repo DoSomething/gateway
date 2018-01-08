@@ -15,20 +15,18 @@ trait ForwardsTransactionIds
 
         // If there is no 'X-Request-ID' in the header, create one.
         if (! $transactionId) {
-            $step = 0;
-            $transactionIdHeader = ['X-Request-ID' => microtime(true) . '-' . $step];
+            $newHeader = ['X-Request-ID' => microtime(true) . '-0'];
         } else {
-            // Else, if there is a 'X-Request-ID' in the header, get transaction ID and increment the step at the end of Transaction ID.
-            $transactionIdParts = explode('-', $transactionId);
-            $transactionIdBase = $transactionIdParts[0];
-            $incrementedStep = $transactionIdParts[1] + 1;
-            $transactionIdHeader = ['X-Request-ID' => $transactionIdBase . '-' . $incrementedStep];
+            // Otherwise, if there is a 'X-Request-ID' header, keep the
+            // current transaction ID and increment the step by one.
+            list($requestId, $step) = explode('-', $transactionId, 2);
+            $newHeader = ['X-Request-ID' => $requestId. '-' . ($step + 1)];
         }
 
-        // Add to header.
-        $options['headers'] = array_merge($options['headers'], $transactionIdHeader);
+        // Add incremented header to downstream API requests.
+        $options['headers'] = array_merge($options['headers'], $newHeader);
 
-        $this->getTransactionBridge()->log('Request made.', ['method' => $method, 'Transaction ID' => $options['headers']['X-Request-ID'], 'Path' => $this->getBaseUri() . $path]);
+        // @TODO: Log the request.
     }
 
     /**
