@@ -26,20 +26,13 @@ trait ForwardsTransactionIds
         // Add incremented header to downstream API requests.
         $options['headers'] = array_merge($options['headers'], $newHeader);
 
-        // @TODO: Log the request.
-    }
-
-    /**
-     * Get the OAuth repository used for storing & retrieving tokens.
-     * @return OAuthBridgeContract $repository
-     * @throws \Exception
-     */
-    private function getTransactionBridge()
-    {
-        if (! class_exists($this->transactionBridge)) {
-            throw new \Exception('You must provide an implementation of TransactionBridgeContract to store tokens.');
+        // If we have a logger, write details to the log.
+        if (! empty($this->logger)) {
+            $this->logger->info('Request made.', [
+                'method' => $method,
+                'uri' => $this->getBaseUri() . $path,
+                'transaction_id' => $options['headers']['X-Request-ID'],
+            ]);
         }
-
-        return new $this->transactionBridge();
     }
 }

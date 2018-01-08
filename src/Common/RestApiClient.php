@@ -308,4 +308,15 @@ class RestApiClient
     {
         return $this->attempts;
     }
+
+    /**
+     * Set the logger for the client.
+     *
+     * @param  \Psr\Log\LoggerInterface $logger
+     * @return void
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
 }

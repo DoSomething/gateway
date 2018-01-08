@@ -7,7 +7,7 @@ use DoSomething\Gateway\Exceptions\ValidationException;
 
 class Blink extends RestApiClient
 {
-    use AuthorizesWithBasicAuth;
+    use AuthorizesWithBasicAuth, ForwardsTransactionIds;
 
     /**
      * Configuration array.
