@@ -35,5 +35,12 @@
     "psr-4": {
       "DoSomething\\GatewayTests\\": "tests/"
     }
+  },
+  "extra": {
+    "laravel": {
+        "providers": [
+            "DoSomething\\Gateway\\Laravel\\GatewayServiceProvider"
+        ]
+    }
   }
 }

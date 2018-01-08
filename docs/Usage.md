@@ -10,22 +10,14 @@ Then, follow the instructions for [Laravel](#Laravel) or [vanilla PHP](#Vanilla-
 
 ### Laravel
 
-Laravel support is built-in. First, add the service provider to your `config/app.php`:
+Laravel will automatically register Gateway's service provider with [package discovery](https://laravel.com/docs/5.5/packages#package-discovery).
 
-```php
-'providers' => [
-    // ...
-    DoSomething\Gateway\Laravel\GatewayServiceProvider::class,
-],
-```
-
-Then, configure the services you're using in `config/services.php`:
+You can configure the services you're using in `config/services.php`:
 
 ```php
 'northstar' => [
     'grant' => 'client_credentials', // Default OAuth grant to use: either 'authorization_code' or 'client_credentials'
     'url' => 'https://northstar.dosomething.org', // the environment you want to connect to
-    'key' => storage_path('keys/public.key'), // optional: used for Gateway server middleware
 
     // Then, configure client ID, client secret, and scopes per grant.
     'client_credentials' => [
