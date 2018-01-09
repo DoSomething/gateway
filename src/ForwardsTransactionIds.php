@@ -15,7 +15,7 @@ trait ForwardsTransactionIds
 
         // If there is no 'X-Request-ID' in the header, create one.
         if (! $transactionId) {
-            $newHeader = ['X-Request-ID' => microtime(true) . '-0'];
+            $newHeader = ['X-Request-ID' => uniqid() . '-0'];
         } else {
             // Otherwise, if there is a 'X-Request-ID' header, keep the
             // current transaction ID and increment the step by one.
