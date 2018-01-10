@@ -10,7 +10,7 @@ use DoSomething\Gateway\Resources\NorthstarClientCollection;
 
 class Northstar extends RestApiClient
 {
-    use AuthorizesWithOAuth2;
+    use AuthorizesWithOAuth2, ForwardsTransactionIds;
 
     /**
      * Create a new Northstar API client.

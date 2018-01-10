@@ -39,16 +39,25 @@ class GatewayServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(Northstar::class, function () {
-            return new LaravelNorthstar(config('services.northstar'));
+        $this->app->bind(Northstar::class, function ($app) {
+            $client = new LaravelNorthstar(config('services.northstar'));
+            $client->setLogger($app['log']);
+
+            return $client;
         });
 
-        $this->app->bind(Blink::class, function () {
-            return new Blink(config('services.blink'));
+        $this->app->bind(Blink::class, function ($app) {
+            $client = new Blink(config('services.blink'));
+            $client->setLogger($app['log']);
+
+            return $client;
         });
 
-        $this->app->bind(Gladiator::class, function () {
-            return new Gladiator(config('services.gladiator'));
+        $this->app->bind(Gladiator::class, function ($app) {
+            $client = new Gladiator(config('services.gladiator'));
+            $client->setLogger($app['log']);
+
+            return $client;
         });
 
         // Set alias for requesting from app() helper.

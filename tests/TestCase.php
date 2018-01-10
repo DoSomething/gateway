@@ -33,6 +33,9 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         // Reset mocked time, if set.
         Carbon::setTestNow(null);
 
+        // Reset any mocked headers.
+        unset($_SERVER['HTTP_X_REQUEST_ID']);
+
         $this->setUpDatabase();
         $this->migrateTables();
     }
@@ -120,5 +123,20 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
             ->getToken();
 
         return $this->createRequest('Bearer ' . (string) $token);
+    }
+
+    /**
+     * Mock a header on the current PHP request.
+     *
+     * @param string $header
+     * @param string $value
+     * @return $this
+     */
+    public function withRequestHeader($header, $value)
+    {
+        $serverVariable = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
+        $_SERVER[$serverVariable] = $value;
+
+        return $this;
     }
 }

@@ -8,7 +8,7 @@ use DoSomething\Gateway\Resources\GambitCampaignCollection;
 
 class Gambit extends RestApiClient
 {
-    use AuthorizesWithApiKey;
+    use AuthorizesWithApiKey, ForwardsTransactionIds;
 
     /**
      * Unknown signup source.
