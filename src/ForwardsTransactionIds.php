@@ -2,6 +2,8 @@
 
 namespace DoSomething\Gateway;
 
+use Ramsey\Uuid\Uuid;
+
 trait ForwardsTransactionIds
 {
     /**
@@ -15,7 +17,7 @@ trait ForwardsTransactionIds
 
         // If there is no 'X-Request-ID' in the header, create one.
         if (! $transactionId) {
-            $transactionId = uniqid();
+            $transactionId = Uuid::uuid4()->toString();
         }
 
         // Attach request ID header to downstream API requests.
