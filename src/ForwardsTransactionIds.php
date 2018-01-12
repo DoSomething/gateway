@@ -2,6 +2,8 @@
 
 namespace DoSomething\Gateway;
 
+use Ramsey\Uuid\Uuid;
+
 trait ForwardsTransactionIds
 {
     /**
@@ -15,23 +17,20 @@ trait ForwardsTransactionIds
 
         // If there is no 'X-Request-ID' in the header, create one.
         if (! $transactionId) {
-            $newHeader = ['X-Request-ID' => uniqid() . '-0'];
-        } else {
-            // Otherwise, if there is a 'X-Request-ID' header, keep the
-            // current transaction ID and increment the step by one.
-            list($requestId, $step) = explode('-', $transactionId, 2);
-            $newHeader = ['X-Request-ID' => $requestId. '-' . ($step + 1)];
+            $transactionId = Uuid::uuid4()->toString();
         }
 
-        // Add incremented header to downstream API requests.
-        $options['headers'] = array_merge($options['headers'], $newHeader);
+        // Attach request ID header to downstream API requests.
+        $options['headers'] = array_merge($options['headers'], [
+            'X-Request-ID' => $transactionId,
+        ]);
 
         // If we have a logger, write details to the log.
         if (! empty($this->logger)) {
             $this->logger->info('Request made.', [
                 'method' => $method,
                 'uri' => $this->getBaseUri() . $path,
-                'transaction_id' => $options['headers']['X-Request-ID'],
+                'request_id' => $options['headers']['X-Request-ID'],
             ]);
         }
     }
