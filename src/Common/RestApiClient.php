@@ -42,7 +42,6 @@ class RestApiClient
     public function __construct($url, $overrides = [])
     {
         $this->defaultHeaders = [
-            'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ];
 
