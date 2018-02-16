@@ -127,6 +127,23 @@ class RestApiClient
     }
 
     /**
+     * Send a PATCH request to the given URL.
+     *
+     * @param string $path - URL to make request to (relative to base URL)
+     * @param array $payload - Body of the PUT request
+     * @param bool $withAuthorization - Should this request be authorized?
+     * @return array
+     */
+    public function patch($path, $payload = [], $withAuthorization = true)
+    {
+        $options = [
+            'json' => $payload,
+        ];
+
+        return $this->send('PATCH', $path, $options, $withAuthorization);
+    }
+
+    /**
      * Send a DELETE request to the given URL.
      *
      * @param string $path - URL to make request to (relative to base URL)
