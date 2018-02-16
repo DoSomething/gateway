@@ -209,7 +209,7 @@ class RestApiClient
     public function handleValidationException($endpoint, $response, $method, $path, $options)
     {
         $errors = $response['error']['fields'];
-        throw new ValidationException($response, $endpoint);
+        throw new ValidationException($errors, $endpoint);
     }
 
     /**
