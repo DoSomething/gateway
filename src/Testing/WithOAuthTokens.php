@@ -51,7 +51,7 @@ trait WithOAuthTokens
      * @param array $scopes
      * @return $this
      */
-    public function withAccessToken($userId, $role = 'user', $scopes = ['user', 'role:staff', 'role:admin', 'activity'])
+    public function withAccessToken($userId, $role = 'user', $scopes = ['user', 'role:staff', 'role:admin', 'activity', 'write'])
     {
         $privateKey = dirname(__FILE__) . '/example-private.key';
         $jti = hash('sha256', mt_rand());
