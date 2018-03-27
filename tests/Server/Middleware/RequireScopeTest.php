@@ -10,8 +10,6 @@ class RequireScopeTest extends TestCase
     /** @test */
     public function testNoToken()
     {
-        $this->setExpectedException(AccessDeniedHttpException::class);
-
         $request = $this->createRequest(null);
 
         $middleware = new RequireScope(new Token($request, $this->key));
