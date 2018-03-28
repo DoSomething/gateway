@@ -10,14 +10,19 @@ class RequireScopeTest extends TestCase
     /** @test */
     public function testNoToken()
     {
-        $this->setExpectedException(AccessDeniedHttpException::class);
+        // We can use $next & $passed as a spy here.
+        $passed = false;
+        $next = function () use (&$passed) {
+            $passed = true;
+        };
 
         $request = $this->createRequest(null);
 
         $middleware = new RequireScope(new Token($request, $this->key));
-        $middleware->handle($request, function () {
-            // ...
-        }, 'user');
+        $middleware->handle($request, $next, 'user');
+
+        // Since we don't have a token on the request, this should still pass!
+        $this->assertTrue($passed);
     }
 
     /** @test */

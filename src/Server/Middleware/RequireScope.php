@@ -35,6 +35,10 @@ class RequireScope
      */
     public function handle($request, Closure $next, ...$requestedScopes)
     {
+        if (! $this->token->exists()) {
+            return $next($request);
+        }
+
         $providedScopes = $this->token->scopes;
 
         // If any of the requested scopes were not provided, throw an exception.
