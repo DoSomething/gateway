@@ -70,6 +70,9 @@ trait WithOAuthTokens
             ->sign(new Sha256(), new Key('file://' . $privateKey))
             ->getToken();
 
+        // If a user is already authenticated, reset the guard.
+        auth('api')->logout();
+
         // Attach the token to the request.
         $header = $this->transformHeadersToServerVars(['Authorization' => 'Bearer ' . (string) $token]);
         $this->serverVariables = array_merge($this->serverVariables, $header);
