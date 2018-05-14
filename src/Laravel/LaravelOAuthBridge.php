@@ -80,8 +80,14 @@ class LaravelOAuthBridge implements OAuthBridgeContract
 
         // And then update their token details.
         $user->setOAuthToken($token);
-
         $user->save();
+
+        // Finally, tell the guard about the new token if this is the currently
+        // logged-in user. (Otherwise, they wouldn't get the new token until
+        // the following page load.)
+        if (auth()->user() && auth()->user()->getNorthstarIdentifier() === $northstarId) {
+            auth()->setUser($user);
+        }
     }
 
     /**
