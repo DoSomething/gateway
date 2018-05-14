@@ -132,4 +132,17 @@ class GatewayGuard implements Guard
 
         return $this;
     }
+
+    /**
+     * Log the user out.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable $user
+     * @return $this
+     */
+    public function logout(Authenticatable $user)
+    {
+        $this->user = null;
+
+        return $this;
+    }
 }
