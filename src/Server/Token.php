@@ -114,7 +114,6 @@ class Token
      */
     public function jwt()
     {
-
         $token = $this->parseToken();
 
         return $token ? (string) $token : null;
