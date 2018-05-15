@@ -18,11 +18,11 @@ use DoSomething\Gateway\Server\Exceptions\AccessDeniedException;
 class Token
 {
     /**
-     * The current HTTP request.
+     * The request handler.
      *
-     * @var \Illuminate\Http\Request
+     * @var RequestHandlerContract
      */
-    protected $request;
+    protected $requestHandler;
 
     /**
      * The path to the public key.
@@ -32,20 +32,13 @@ class Token
     protected $publicKey;
 
     /**
-     * The parsed and validated access token.
-     *
-     * @var \Lcobucci\JWT\Token
-     */
-    protected $token;
-
-    /**
      * Create a TokenValidator.
      *
      * @param $publicKey
      */
-    public function __construct($request, $publicKey)
+    public function __construct(RequestHandlerContract $requestHandler, $publicKey)
     {
-        $this->request = $request;
+        $this->requestHandler = $requestHandler;
         $this->publicKey = $publicKey;
     }
 
@@ -56,11 +49,7 @@ class Token
      */
     public function exists()
     {
-        if (! $this->token) {
-            $this->token = $this->parseToken();
-        }
-
-        return ! empty($this->token);
+        return ! empty($this->parseToken());
     }
 
     /**
@@ -126,11 +115,9 @@ class Token
      */
     public function jwt()
     {
-        if (! $this->token) {
-            $this->token = $this->parseToken();
-        }
+        $token = $this->parseToken();
 
-        return $this->token ? (string) $this->token : null;
+        return $token ? (string) $token : null;
     }
 
     /**
@@ -140,11 +127,9 @@ class Token
      */
     protected function getClaim($claim)
     {
-        if (! $this->token) {
-            $this->token = $this->parseToken();
-        }
+        $token = $this->parseToken();
 
-        return $this->token ? $this->token->getClaim($claim) : null;
+        return $token ? $token->getClaim($claim) : null;
     }
 
     /**
@@ -155,13 +140,14 @@ class Token
      */
     protected function parseToken()
     {
-        if (! $this->request->hasHeader('Authorization')) {
+        $request = $this->requestHandler->getRequest();
+        if (! $request->hasHeader('Authorization')) {
             return null;
         }
 
         try {
             // Attempt to parse and validate the JWT
-            $jwt = $this->request->bearerToken();
+            $jwt = $request->bearerToken();
             $token = (new Parser())->parse($jwt);
             if (! $token->verify(new Sha256(), file_get_contents($this->publicKey))) {
                 throw new AccessDeniedException(

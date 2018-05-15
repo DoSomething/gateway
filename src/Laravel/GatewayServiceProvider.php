@@ -11,6 +11,7 @@ use DoSomething\Gateway\Server\Token;
 use Illuminate\Support\ServiceProvider;
 use DoSomething\Gateway\Server\GatewayGuard;
 use DoSomething\Gateway\Server\GatewayUserProvider;
+use DoSomething\Gateway\Server\LaravelRequestHandler;
 
 class GatewayServiceProvider extends ServiceProvider
 {
@@ -69,7 +70,7 @@ class GatewayServiceProvider extends ServiceProvider
         $this->app->alias(Northstar::class, 'northstar');
 
         // Register token validator w/ config dependency.
-        $this->app->singleton(Token::class, function ($app) {
+        $this->app->bind(Token::class, function ($app) {
             $key = config('auth.providers.northstar.key');
 
             // If not set, check old suggested config location:
@@ -77,14 +78,14 @@ class GatewayServiceProvider extends ServiceProvider
                 $key = config('services.northstar.key');
             }
 
-            return new Token($app[Request::class], $key);
+            return new Token(new LaravelRequestHandler(), $key);
         });
 
         // Register custom Gateway authentication guard.
         Auth::extend('gateway', function ($app, $name, array $config) {
             $provider = Auth::createUserProvider($config['provider']);
 
-            return new GatewayGuard($app[Token::class], $provider, $app[Request::class]);
+            return new GatewayGuard($provider, $app[Request::class]);
         });
 
         // Register custom Gateway user provider.

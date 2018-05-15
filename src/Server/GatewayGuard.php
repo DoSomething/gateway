@@ -18,22 +18,14 @@ class GatewayGuard implements Guard
     protected $user;
 
     /**
-     * The validated JWT token.
-     *
-     * @var Token
-     */
-    protected $token;
-
-    /**
      * Create a new authentication guard.
      *
      * @param  Token  $token
      * @param  UserProvider  $provider
      * @param  Request  $request
      */
-    public function __construct(Token $token, UserProvider $provider, Request $request)
+    public function __construct(UserProvider $provider, Request $request)
     {
-        $this->token = $token;
         $this->provider = $provider;
         $this->request = $request;
     }
@@ -97,7 +89,7 @@ class GatewayGuard implements Guard
      */
     public function id()
     {
-        return $this->token->id;
+        return app(Token::class)->id;
     }
 
     /**
@@ -129,6 +121,18 @@ class GatewayGuard implements Guard
     public function setUser(Authenticatable $user)
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Log the user out.
+     *
+     * @return $this
+     */
+    public function logout()
+    {
+        $this->user = null;
 
         return $this;
     }

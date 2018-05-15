@@ -10,7 +10,7 @@ class TokenTest extends TestCase
     public function testNoToken()
     {
         $request = $this->createRequest(null);
-        $token = new Token($request, $this->key);
+        $token = new Token(new TestRequestHandler($request), $this->key);
 
         $this->assertFalse($token->exists());
     }
@@ -19,7 +19,7 @@ class TokenTest extends TestCase
     public function testInvalidToken()
     {
         $request = $this->createRequest('Bearer nah');
-        $token = new Token($request, $this->key);
+        $token = new Token(new TestRequestHandler($request), $this->key);
 
         $this->setExpectedException(AccessDeniedException::class);
         $token->exists(); // throws!
@@ -31,7 +31,7 @@ class TokenTest extends TestCase
         $request = $this->createJwtRequest($this->signer, 'phpunit', new Carbon('9/14/2017 4:00pm'), []);
 
         $this->mockTime('9/14/2017 7:00pm');
-        $token = new Token($request, $this->key);
+        $token = new Token(new TestRequestHandler($request), $this->key);
 
         $this->setExpectedException(AccessDeniedException::class);
         $token->exists(); // throws!
@@ -44,7 +44,7 @@ class TokenTest extends TestCase
         $request = $this->createJwtRequest($other, 'phpunit', new Carbon('9/14/2017 4:00pm'), []);
 
         $this->mockTime('9/14/2017 4:10pm');
-        $token = new Token($request, $this->key);
+        $token = new Token(new TestRequestHandler($request), $this->key);
 
         $this->setExpectedException(AccessDeniedException::class);
         $token->exists(); // throws!
@@ -58,7 +58,7 @@ class TokenTest extends TestCase
         ]);
 
         $this->mockTime('9/14/2017 4:00pm');
-        $token = new Token($request, $this->key);
+        $token = new Token(new TestRequestHandler($request), $this->key);
 
         $this->assertTrue($token->exists());
         $this->assertEquals('phpunit', $token->client);
@@ -77,7 +77,7 @@ class TokenTest extends TestCase
         ]);
 
         $this->mockTime('9/14/2017 4:00pm');
-        $token = new Token($request, $this->key);
+        $token = new Token(new TestRequestHandler($request), $this->key);
 
         $this->assertTrue($token->exists());
         $this->assertEquals('phpunit', $token->client);

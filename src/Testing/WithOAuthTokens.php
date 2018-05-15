@@ -70,13 +70,16 @@ trait WithOAuthTokens
             ->sign(new Sha256(), new Key('file://' . $privateKey))
             ->getToken();
 
-        // Attach the token to the request.
-        $header = $this->transformHeadersToServerVars(['Authorization' => 'Bearer ' . (string) $token]);
-        $this->serverVariables = array_merge($this->serverVariables, $header);
-
         // Use the bundled public key for verifying test tokens.
         config(['auth.providers.northstar.key' => dirname(__FILE__) . '/example-public.key']);
         config(['services.northstar.key' => dirname(__FILE__) . '/example-public.key']);
+
+        // If a user is already authenticated, reset the guard.
+        auth('api')->logout();
+
+        // Attach the token to the request.
+        $header = $this->transformHeadersToServerVars(['Authorization' => 'Bearer ' . (string) $token]);
+        $this->serverVariables = array_merge($this->serverVariables, $header);
 
         return $this;
     }
