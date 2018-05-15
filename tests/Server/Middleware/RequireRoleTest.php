@@ -10,14 +10,11 @@ class RequireRoleTest extends TestCase
     /** @test */
     public function testNoToken()
     {
-        // @TODO: We need app() helper available in tests.
-        $this->markTestIncomplete();
-
         $this->setExpectedException(AccessDeniedHttpException::class);
 
         $request = $this->createRequest(null);
 
-        $middleware = new RequireRole(new Token($request, $this->key));
+        $middleware = new RequireRole(new Token(new TestRequestHandler($request), $this->key));
         $middleware->handle($request, function () {
             // ...
         }, 'user');
@@ -26,16 +23,13 @@ class RequireRoleTest extends TestCase
     /** @test */
     public function testTokenWithoutRole()
     {
-        // @TODO: We need app() helper available in tests.
-        $this->markTestIncomplete();
-
         $this->setExpectedException(AccessDeniedHttpException::class);
 
         $request = $this->createJwtRequest($this->signer, 'phpunit', new Carbon('-10 minutes'), [
             'role' => 'user',
         ]);
 
-        $middleware = new RequireRole(new Token($request, $this->key));
+        $middleware = new RequireRole(new Token(new TestRequestHandler($request), $this->key));
         $middleware->handle($request, function () {
             // ...
         }, 'admin');
@@ -44,9 +38,6 @@ class RequireRoleTest extends TestCase
     /** @test */
     public function testTokenWithRole()
     {
-        // @TODO: We need app() helper available in tests.
-        $this->markTestIncomplete();
-
         // We can use $next & $passed as a spy here.
         $passed = false;
         $next = function () use (&$passed) {
@@ -57,7 +48,7 @@ class RequireRoleTest extends TestCase
             'role' => 'admin',
         ]);
 
-        $middleware = new RequireRole(new Token($request, $this->key));
+        $middleware = new RequireRole(new Token(new TestRequestHandler($request), $this->key));
         $middleware->handle($request, $next, 'admin');
 
         $this->assertTrue($passed);
@@ -66,9 +57,6 @@ class RequireRoleTest extends TestCase
     /** @test */
     public function testTokenWithMultipleRoles()
     {
-        // @TODO: We need app() helper available in tests.
-        $this->markTestIncomplete();
-
         // We can use $next & $passed as a spy here.
         $passed = false;
         $next = function () use (&$passed) {
@@ -79,7 +67,7 @@ class RequireRoleTest extends TestCase
             'role' => 'staff',
         ]);
 
-        $middleware = new RequireRole(new Token($request, $this->key));
+        $middleware = new RequireRole(new Token(new TestRequestHandler($request), $this->key));
         $middleware->handle($request, $next, 'admin', 'staff');
 
         $this->assertTrue($passed);

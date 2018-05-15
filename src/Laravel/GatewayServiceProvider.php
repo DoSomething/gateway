@@ -11,6 +11,7 @@ use DoSomething\Gateway\Server\Token;
 use Illuminate\Support\ServiceProvider;
 use DoSomething\Gateway\Server\GatewayGuard;
 use DoSomething\Gateway\Server\GatewayUserProvider;
+use DoSomething\Gateway\Server\LaravelRequestHandler;
 
 class GatewayServiceProvider extends ServiceProvider
 {
@@ -77,7 +78,7 @@ class GatewayServiceProvider extends ServiceProvider
                 $key = config('services.northstar.key');
             }
 
-            return new Token($key);
+            return new Token(new LaravelRequestHandler(), $key);
         });
 
         // Register custom Gateway authentication guard.

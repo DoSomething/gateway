@@ -18,11 +18,11 @@ use DoSomething\Gateway\Server\Exceptions\AccessDeniedException;
 class Token
 {
     /**
-     * The current HTTP request.
+     * The request handler.
      *
-     * @var \Illuminate\Http\Request
+     * @var RequestHandlerContract
      */
-    protected $request;
+    protected $requestHandler;
 
     /**
      * The path to the public key.
@@ -36,8 +36,9 @@ class Token
      *
      * @param $publicKey
      */
-    public function __construct($publicKey)
+    public function __construct(RequestHandlerContract $requestHandler, $publicKey)
     {
+        $this->requestHandler = $requestHandler;
         $this->publicKey = $publicKey;
     }
 
@@ -139,13 +140,14 @@ class Token
      */
     protected function parseToken()
     {
-        if (! request()->hasHeader('Authorization')) {
+        $request = $this->requestHandler->getRequest();
+        if (! $request->hasHeader('Authorization')) {
             return null;
         }
 
         try {
             // Attempt to parse and validate the JWT
-            $jwt = request()->bearerToken();
+            $jwt = $request->bearerToken();
             $token = (new Parser())->parse($jwt);
             if (! $token->verify(new Sha256(), file_get_contents($this->publicKey))) {
                 throw new AccessDeniedException(

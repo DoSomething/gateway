@@ -18,7 +18,7 @@ class RequireScopeTest extends TestCase
 
         $request = $this->createRequest(null);
 
-        $middleware = new RequireScope(new Token($request, $this->key));
+        $middleware = new RequireScope(new Token(new TestRequestHandler($request), $this->key));
         $middleware->handle($request, $next, 'user');
 
         // Since we don't have a token on the request, this should still pass!
@@ -34,7 +34,7 @@ class RequireScopeTest extends TestCase
             'scopes' => [],
         ]);
 
-        $middleware = new RequireScope(new Token($request, $this->key));
+        $middleware = new RequireScope(new Token(new TestRequestHandler($request), $this->key));
         $middleware->handle($request, function () {
             // ...
         }, 'user');
@@ -53,7 +53,7 @@ class RequireScopeTest extends TestCase
             'scopes' => ['user'],
         ]);
 
-        $middleware = new RequireScope(new Token($request, $this->key));
+        $middleware = new RequireScope(new Token(new TestRequestHandler($request), $this->key));
         $middleware->handle($request, $next, 'user');
 
         $this->assertTrue($passed);
@@ -72,7 +72,7 @@ class RequireScopeTest extends TestCase
             'scopes' => ['user', 'dog', 'cat', 'puppet'],
         ]);
 
-        $middleware = new RequireScope(new Token($request, $this->key));
+        $middleware = new RequireScope(new Token(new TestRequestHandler($request), $this->key));
         $middleware->handle($request, $next, 'user', 'puppet');
 
         $this->assertTrue($passed);
