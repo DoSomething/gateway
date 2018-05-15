@@ -20,9 +20,8 @@ class RequireRole
      *
      * @param Token $token
      */
-    public function __construct(Token $token)
+    public function __construct()
     {
-        $this->token = $token;
     }
 
     /**
@@ -35,11 +34,11 @@ class RequireRole
      */
     public function handle($request, Closure $next, ...$allowedRoles)
     {
-        $role = $this->token->role;
+        $role = app(Token::class)->role;
 
         // Allow the 'admin' scope to grant privileges to clients.
         // @TODO: Remove this after refactoring client_credential tokens.
-        if (in_array('admin', $this->token->scopes)) {
+        if (in_array('admin', app(Token::class)->scopes)) {
             $role = 'admin';
         }
 
