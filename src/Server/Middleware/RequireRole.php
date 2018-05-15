@@ -16,7 +16,7 @@ class RequireRole
     protected $token;
 
     /**
-     * RequireScope constructor.
+     * RequireRole constructor.
      *
      * @param Token $token
      */
