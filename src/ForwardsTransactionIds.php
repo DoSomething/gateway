@@ -29,7 +29,6 @@ trait ForwardsTransactionIds
         if (! empty($this->logger)) {
             $this->logger->info('Request made.', [
                 'method' => $method,
-                'uri' => $this->getBaseUri() . $path,
                 'request_id' => $options['headers']['X-Request-ID'],
             ]);
         }
