@@ -31,8 +31,5 @@ class ForwardsTransactionIdsTest extends TestCase
 
         // We should see the existing `X-Request-Id` on the request.
         $this->assertEquals([$requestId], $client->getLastRequest()->getHeader('X-Request-ID'));
-
-        // And we should have written an entry to the log.
-        $logger->shouldHaveReceived('info')->once()->with('Request made.', Mockery::any());
     }
 }
