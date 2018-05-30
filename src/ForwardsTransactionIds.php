@@ -24,13 +24,5 @@ trait ForwardsTransactionIds
         $options['headers'] = array_merge($options['headers'], [
             'X-Request-ID' => $transactionId,
         ]);
-
-        // If we have a logger, write details to the log.
-        if (! empty($this->logger)) {
-            $this->logger->info('Request made.', [
-                'method' => $method,
-                'request_id' => $options['headers']['X-Request-ID'],
-            ]);
-        }
     }
 }
