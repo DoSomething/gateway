@@ -57,6 +57,22 @@ class Blink extends RestApiClient
     }
 
     /**
+     * Send a Post request to the Blink /events/user-password-reset endpoint.
+     *
+     * To notify Blink to create a Customer.io password_reset event.
+     *
+     * @param array $passwordReset - The array containing password_reset event fields.
+     * @return bool
+     */
+    public function userPasswordReset(array $passwordReset)
+    {
+        $response = $this->post('v1/events/user-password-reset', $passwordReset);
+
+        // TODO: throw an exception if the post returns a validation error.
+        return $this->responseSuccessful($response);
+    }
+
+    /**
      * Send a Post request Blink /events/user-signup endpoint.
      *
      * To notify Blink that Rogue signup has been created.
