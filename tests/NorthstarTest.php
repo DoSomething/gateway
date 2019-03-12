@@ -143,4 +143,22 @@ class NorthstarTest extends TestCase
 
         $this->assertEquals('Katherine', $response->first_name);
     }
+
+    /**
+     * Test that we can send a user a password reset.
+     */
+    public function testSendUserPasswordReset()
+    {
+        $restClient = new MockNorthstar($this->defaultConfig, [
+            new JwtResponse(),
+            new JsonResponse([
+                'success' => [
+                    'code' => 200,
+                ],
+            ]),
+        ]);
+
+        $response = $restClient->sendUserPasswordReset('5480c950ce5fbc2145eb7721', 'forgot-password');
+        $this->assertEquals($response['success'], ['code' => 200]);
+    }
 }
