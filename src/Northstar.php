@@ -125,6 +125,18 @@ class Northstar extends RestApiClient
     }
 
     /**
+     * Executes a POST request to send user a password reset email.
+     *
+     * @param string $id - Northstar User ID.
+     * @param string $type - The type of password reset email to send.
+     * @return array - key/value array of Northstar response.
+     */
+    public function sendUserPasswordReset($id, $type)
+    {
+        return $this->post('v2/resets', ['id' => $id, 'type' => $type]);
+    }
+
+    /**
      * Send a GET request to return all Northstar keys.
      * Requires an `admin` scoped API key.
      *
