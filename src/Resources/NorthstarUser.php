@@ -19,21 +19,17 @@ class NorthstarUser extends ApiResponse implements ResourceOwnerInterface
     }
 
     /**
-     * Get the user's display name.
-     * @return mixed|string
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
      */
-    public function displayName()
-    {
-        if (! empty($this->first_name) && ! empty($this->last_name)) {
-            return $this->first_name.' '.$this->last_name;
-        }
-
-        if (! empty($this->first_name) && ! empty($this->last_initial)) {
-            return $this->first_name.' '.$this->last_initial.'.';
-        }
-
-        return $this->id;
-    }
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'last_accessed_at',
+        'last_messaged_at',
+        'last_authenticated_at',
+    ];
 
     /**
      * Get the user's formatted mobile number.

@@ -42,7 +42,7 @@ class Northstar extends RestApiClient
      */
     public function getAllUsers($inputs = [])
     {
-        $response = $this->get('v1/users', $inputs);
+        $response = $this->get('v2/users', $inputs);
 
         return new NorthstarUserCollection($response);
     }
@@ -50,13 +50,46 @@ class Northstar extends RestApiClient
     /**
      * Send a GET request to return a user with that id.
      *
-     * @param string $type - 'id', 'email', 'mobile'
-     * @param string $id - ID, email, id, phone
+     * @param string $id
      * @return NorthstarUser
      */
-    public function getUser($type, $id)
+    public function getUser($id)
     {
-        $response = $this->get('v1/users/'.$type.'/'.$id);
+        $response = $this->get('v2/users/'.$id);
+
+        if (is_null($response)) {
+            return null;
+        }
+
+        return new NorthstarUser($response['data']);
+    }
+
+    /**
+     * Send a GET request to return a user with that email.
+     *
+     * @param string $email
+     * @return NorthstarUser
+     */
+    public function getUserByEmail($email)
+    {
+        $response = $this->get('v2/email/'.$id);
+
+        if (is_null($response)) {
+            return null;
+        }
+
+        return new NorthstarUser($response['data']);
+    }
+
+    /**
+     * Send a GET request to return a user with that mobile.
+     *
+     * @param string $mobile
+     * @return NorthstarUser
+     */
+    public function getUserByMobile($mobile)
+    {
+        $response = $this->get('v2/mobile/'.$mobile);
 
         if (is_null($response)) {
             return null;
@@ -74,7 +107,7 @@ class Northstar extends RestApiClient
      */
     public function createUser($input)
     {
-        $response = $this->post('v1/users', $input);
+        $response = $this->post('v2/users', $input);
 
         return new NorthstarUser($response['data']);
     }
@@ -88,7 +121,7 @@ class Northstar extends RestApiClient
      */
     public function updateUser($id, $input)
     {
-        $response = $this->put('v1/users/_id/'.$id, $input);
+        $response = $this->put('v2/users/'.$id, $input);
 
         return new NorthstarUser($response['data']);
     }
@@ -102,7 +135,7 @@ class Northstar extends RestApiClient
      */
     public function deleteUser($id)
     {
-        $success = $this->delete('v1/users/_id/'.$id);
+        $success = $this->delete('v2/users/'.$id);
 
         return $success;
     }
