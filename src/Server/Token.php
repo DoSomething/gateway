@@ -141,14 +141,15 @@ class Token
     protected function parseToken()
     {
         $request = $this->requestHandler->getRequest();
-        if (! $request->hasHeader('Authorization')) {
+        $jwt = $request->bearerToken();
+        if (! $jwt) {
             return null;
         }
 
         try {
-            // Attempt to parse and validate the JWT
-            $jwt = $request->bearerToken();
             $token = (new Parser())->parse($jwt);
+
+            // If this wasn't a valid JWT, we'll either throw above or return `false` here:
             if (! $token->verify(new Sha256(), file_get_contents($this->publicKey))) {
                 throw new AccessDeniedException(
                     'Access token could not be verified.',
