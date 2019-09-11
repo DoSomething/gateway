@@ -71,7 +71,7 @@ class RestApiClientTest extends TestCase
             ], 422),
         ]);
 
-        $this->setExpectedException(ValidationException::class);
+        $this->expectException(ValidationException::class);
         $client->post('classes', ['teacher' => 'Erik Lehnsherr']);
     }
 

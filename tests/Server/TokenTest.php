@@ -21,7 +21,7 @@ class TokenTest extends TestCase
         $request = $this->createRequest('Bearer nah');
         $token = new Token(new TestRequestHandler($request), $this->key);
 
-        $this->setExpectedException(AccessDeniedException::class);
+        $this->expectException(AccessDeniedException::class);
         $token->exists(); // throws!
     }
 
@@ -33,7 +33,7 @@ class TokenTest extends TestCase
         $this->mockTime('9/14/2017 7:00pm');
         $token = new Token(new TestRequestHandler($request), $this->key);
 
-        $this->setExpectedException(AccessDeniedException::class);
+        $this->expectException(AccessDeniedException::class);
         $token->exists(); // throws!
     }
 
@@ -46,7 +46,7 @@ class TokenTest extends TestCase
         $this->mockTime('9/14/2017 4:10pm');
         $token = new Token(new TestRequestHandler($request), $this->key);
 
-        $this->setExpectedException(AccessDeniedException::class);
+        $this->expectException(AccessDeniedException::class);
         $token->exists(); // throws!
     }
 
