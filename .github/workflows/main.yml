@@ -3,20 +3,17 @@ name: CI
 on: [push]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: php:7.2-cli
     steps:
+      - uses: actions/checkout@master
       - name: Checkout
         uses: actions/checkout@master
-      - name: Installing SQLite
+      - name: Install SQLite
         run: |
           sudo apt-get update
           sudo apt-get install sqlite3
-      - name: Installing PHP
-        uses: shivammathur/setup-php@master
-        with:
-          php-version: 7.2
-          extension-csv: sqlite3
+          docker-php-ext-enable sqlite3
       - name: Install dependencies
         run: composer install
       - name: Run PHPUnit tests
