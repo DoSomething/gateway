@@ -166,6 +166,7 @@ class Token
             // We've made it! Save the details on the validator.
             return $token;
         } catch (\InvalidArgumentException $exception) {
+            dump($request->bearerToken(), $exception, $exception->getMessage());
             throw new AccessDeniedException('Could not parse JWT.', $exception->getMessage());
         } catch (\RuntimeException $exception) {
             throw new AccessDeniedException('Error while decoding JWT contents.');
