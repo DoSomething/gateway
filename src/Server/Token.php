@@ -141,15 +141,15 @@ class Token
     protected function parseToken()
     {
         $request = $this->requestHandler->getRequest();
-        if (! $request->hasHeader('Authorization')) {
-            dump('does not have header, right right right');
+        $jwt = $request->bearerToken();
+        if (! $jwt) {
             return null;
         }
 
         try {
-            // Attempt to parse and validate the JWT
-            $jwt = $request->bearerToken();
             $token = (new Parser())->parse($jwt);
+
+            // If this wasn't a valid JWT, we'll either throw above or return `false` here:
             if (! $token->verify(new Sha256(), file_get_contents($this->publicKey))) {
                 throw new AccessDeniedException(
                     'Access token could not be verified.',
@@ -167,7 +167,6 @@ class Token
             // We've made it! Save the details on the validator.
             return $token;
         } catch (\InvalidArgumentException $exception) {
-            dump('BLEH!', $request, $exception, $exception->getMessage());
             throw new AccessDeniedException('Could not parse JWT.', $exception->getMessage());
         } catch (\RuntimeException $exception) {
             throw new AccessDeniedException('Error while decoding JWT contents.');
