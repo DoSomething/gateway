@@ -3,7 +3,7 @@
 use DoSomething\GatewayTests\Helpers\Gladiator\StoreUserResponse;
 use DoSomething\GatewayTests\Helpers\Gladiator\UnsubscribeUserResponse;
 
-class GladiatorTest extends PHPUnit_Framework_TestCase
+class GladiatorTest extends TestCase
 {
     protected $defaultConfig = [
         'url' => 'https://gladiator-test.dosomething.org', // not a real server!

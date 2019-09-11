@@ -5,7 +5,7 @@ use DoSomething\GatewayTests\Helpers\Blink\BlinkResponse;
 use DoSomething\GatewayTests\Helpers\JwtResponse;
 use DoSomething\GatewayTests\Helpers\UserResponse;
 
-class BlinkTest extends PHPUnit_Framework_TestCase
+class BlinkTest extends TestCase
 {
     protected $authorizedConfig = [
         'url' => 'https://blink-phpunit.dosomething.org/api/', // not a real server!

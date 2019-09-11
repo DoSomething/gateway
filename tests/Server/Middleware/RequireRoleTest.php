@@ -10,7 +10,7 @@ class RequireRoleTest extends TestCase
     /** @test */
     public function testNoToken()
     {
-        $this->setExpectedException(AccessDeniedHttpException::class);
+        $this->expectException(AccessDeniedHttpException::class);
 
         $request = $this->createRequest(null);
 
@@ -23,7 +23,7 @@ class RequireRoleTest extends TestCase
     /** @test */
     public function testTokenWithoutRole()
     {
-        $this->setExpectedException(AccessDeniedHttpException::class);
+        $this->expectException(AccessDeniedHttpException::class);
 
         $request = $this->createJwtRequest($this->signer, 'phpunit', new Carbon('-10 minutes'), [
             'role' => 'user',

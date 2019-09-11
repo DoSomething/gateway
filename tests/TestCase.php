@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Illuminate\Database\Capsule\Manager as DB;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
-abstract class TestCase extends PHPUnit_Framework_TestCase
+abstract class TestCase extends BaseTestCase
 {
     /**
      * Location of the example private key.
@@ -28,7 +29,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Reset mocked time, if set.
         Carbon::setTestNow(null);
@@ -45,7 +46,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    protected function setUpDatabase()
+    protected function setUpDatabase(): void
     {
         $database = new DB;
 
@@ -59,7 +60,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    protected function migrateTables()
+    protected function migrateTables(): void
     {
         // @TODO: maybe try and use the migrations defined in
         // Laravel/Migrations for quick setup?
@@ -76,7 +77,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      * @param string $time
      * @return Carbon
      */
-    public function mockTime($time = 'now')
+    public function mockTime($time = 'now'): Carbon
     {
         Carbon::setTestNow((string) new Carbon($time));
 
@@ -89,7 +90,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      * @param $authorization
      * @return Request
      */
-    public function createRequest($authorization)
+    public function createRequest($authorization): Request
     {
         $request = new Request();
         $request->headers->set('Authorization', $authorization);
@@ -106,7 +107,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      * @param array $contents
      * @return Request
      */
-    public function createJwtRequest($key, $client, $issuedAt, $contents = [])
+    public function createJwtRequest($key, $client, $issuedAt, $contents = []): Request
     {
         $token = (new Builder())
             ->setIssuer('https://northstar-phpunit.dosomething.org')
@@ -132,7 +133,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      * @param string $value
      * @return $this
      */
-    public function withRequestHeader($header, $value)
+    public function withRequestHeader($header, $value): self
     {
         $serverVariable = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
         $_SERVER[$serverVariable] = $value;

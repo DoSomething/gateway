@@ -12,9 +12,9 @@ $northstar = gateway('northstar'); // or: new Northstar([...]);
 $northstar->getAllUsers([ /* query string */ ]);
 
 // Get user (by ID, email, or mobile):
-$northstar->getUser('id', '5480c950bffebc651c8b4570');
-$northstar->getUser('email', 'test@dosomething.org');
-$northstar->getUser('mobile', '1 (555) 123-4567');
+$northstar->getUser('5480c950bffebc651c8b4570');
+$northstar->getUserByEmail('test@dosomething.org');
+$northstar->getUserByMobile('1 (555) 123-4567');
 
 // Create user:
 $northstar->createUser([ /* profile fields */ ])

@@ -28,7 +28,7 @@ class RequireScopeTest extends TestCase
     /** @test */
     public function testTokenWithoutScope()
     {
-        $this->setExpectedException(AccessDeniedHttpException::class);
+        $this->expectException(AccessDeniedHttpException::class);
 
         $request = $this->createJwtRequest($this->signer, 'phpunit', new Carbon('-10 minutes'), [
             'scopes' => [],
