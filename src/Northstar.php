@@ -51,11 +51,13 @@ class Northstar extends RestApiClient
      * Send a GET request to return a user with that id.
      *
      * @param string $id
+     * @param array $fields - optional fields to request
      * @return NorthstarUser
      */
-    public function getUser($id)
+    public function getUser($id, $fields = null)
     {
-        $response = $this->get('v2/users/'.$id);
+        $include = $fields ? implode(',', $fields) : null;
+        $response = $this->get('v2/users/'.$id, ['include' => $include]);
 
         if (is_null($response)) {
             return null;
