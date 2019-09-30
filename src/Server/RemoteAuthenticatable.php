@@ -3,6 +3,7 @@
 namespace DoSomething\Gateway\Server;
 
 use InvalidArgumentException;
+use League\OAuth2\Client\Token\AccessToken;
 
 trait RemoteAuthenticatable
 {
@@ -24,6 +25,22 @@ trait RemoteAuthenticatable
     public function getAuthIdentifier()
     {
         return $this->id;
+    }
+
+    /**
+     * Get the OAuth token for downstream requests.
+     *
+     * @return AccessToken
+     */
+    public function getOAuthToken()
+    {
+        return new AccessToken([
+            'resource_owner_id' => $this->getAuthIdentifier(),
+            'access_token' => token()->jwt(),
+            'refresh_token' => null,
+            'expires' => token()->expires()->timestamp,
+            'role' => token()->role(),
+        ]);
     }
 
     /**
