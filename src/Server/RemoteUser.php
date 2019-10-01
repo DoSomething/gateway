@@ -59,7 +59,7 @@ class RemoteUser implements Authenticatable
         // duration of this request. (This instance is kept by the
         // user provider.)
         if (! $this->loaded) {
-            $user = gateway('northstar')->withToken($this->token)->getUser('id', $this->id);
+            $user = gateway('northstar')->withToken($this->token)->getUser($this->id);
 
             $this->attributes = $user->toArray();
             $this->loaded = true;

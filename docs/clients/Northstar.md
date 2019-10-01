@@ -56,7 +56,7 @@ Responses are generally returned as `NorthstarUser` or `NorthstarClient` instanc
 ```php
 <?php
 
-$user = $northstar->getUser('id', '5480c950bffebc651c8b4570');
+$user = $northstar->getUser('5480c950bffebc651c8b4570');
 
 echo $user->created_at->diffForHumans(); // two years ago
 ```
