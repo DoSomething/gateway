@@ -4,8 +4,6 @@ namespace DoSomething\Gateway\Resources;
 
 use DoSomething\Gateway\Common\ApiResponse;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-use libphonenumber\PhoneNumberFormat;
-use libphonenumber\PhoneNumberUtil;
 
 class NorthstarUser extends ApiResponse implements ResourceOwnerInterface
 {
@@ -30,28 +28,6 @@ class NorthstarUser extends ApiResponse implements ResourceOwnerInterface
         'last_messaged_at',
         'last_authenticated_at',
     ];
-
-    /**
-     * Get the user's formatted mobile number.
-     *
-     * @param string $fallback - Text to display if no mobile is set
-     * @return mixed|string
-     */
-    public function prettyMobile($fallback = '')
-    {
-        if (! isset($this->mobile)) {
-            return $fallback;
-        }
-
-        $phoneUtil = PhoneNumberUtil::getInstance();
-        try {
-            $formattedNumber = $phoneUtil->parse($this->mobile, 'US');
-
-            return $phoneUtil->format($formattedNumber, PhoneNumberFormat::INTERNATIONAL);
-        } catch (\libphonenumber\NumberParseException $e) {
-            return $this->number;
-        }
-    }
 
     /**
      * Returns the identifier of the authorized resource owner.

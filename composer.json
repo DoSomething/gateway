@@ -2,7 +2,6 @@
   "name": "dosomething/gateway",
   "description": "Standard PHP API client for DoSomething.org services.",
   "require": {
-    "giggsey/libphonenumber-for-php": "~7.0",
     "nesbot/carbon": "^2.0",
     "lcobucci/jwt": "^3.1",
     "guzzlehttp/guzzle": "^6.2",
