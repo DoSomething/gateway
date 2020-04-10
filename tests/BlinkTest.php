@@ -39,7 +39,7 @@ class BlinkTest extends TestCase
             new JwtResponse,
             new UserResponse,
         ]);
-        $northstarUser = $northstarRestClient->getUser('email', 'kitty@xavierinstitute.edu');
+        $northstarUser = $northstarRestClient->getUserByEmail('kitty@xavierinstitute.edu');
 
         $result = $blinkRestClient->userCreate($northstarUser->toArray());
         $this->assertTrue($result);
