@@ -74,7 +74,7 @@ class Northstar extends RestApiClient
      */
     public function getUserByEmail($email)
     {
-        $response = $this->get('v2/email/'.$id);
+        $response = $this->get('v2/email/'.$email);
 
         if (is_null($response)) {
             return null;

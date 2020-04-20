@@ -79,7 +79,7 @@ class NorthstarTest extends TestCase
             new UserResponse,
         ]);
 
-        $response = $restClient->getUser('id', '5480c950ce5fbc2145eb7721');
+        $response = $restClient->getUser('5480c950ce5fbc2145eb7721');
 
         $this->assertEquals('Katherine', $response->first_name);
     }
@@ -94,7 +94,7 @@ class NorthstarTest extends TestCase
             new UserResponse,
         ]);
 
-        $response = $restClient->getUser('mobile', '5551234567');
+        $response = $restClient->getUserByMobile('5551234567');
 
         $this->assertEquals('Katherine', $response->first_name);
     }
@@ -109,37 +109,7 @@ class NorthstarTest extends TestCase
             new UserResponse,
         ]);
 
-        $response = $restClient->getUser('email', 'kitty@xavierinstitute.edu');
-
-        $this->assertEquals('Katherine', $response->first_name);
-    }
-
-    /**
-     * Test that we can retrieve a user by their Drupal ID.
-     */
-    public function testGetUserByDrupalId()
-    {
-        $restClient = new MockNorthstar($this->defaultConfig, [
-            new JwtResponse,
-            new UserResponse,
-        ]);
-
-        $response = $restClient->getUser('drupal_id', '123456');
-
-        $this->assertEquals('Katherine', $response->first_name);
-    }
-
-    /**
-     * Test that we can retrieve a user by their Facebook ID.
-     */
-    public function testGetUserByFacebookId()
-    {
-        $restClient = new MockNorthstar($this->defaultConfig, [
-            new JwtResponse,
-            new UserResponse,
-        ]);
-
-        $response = $restClient->getUser('facebook_id', '10101010101010101');
+        $response = $restClient->getUserByEmail('kitty@xavierinstitute.edu');
 
         $this->assertEquals('Katherine', $response->first_name);
     }
