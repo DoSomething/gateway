@@ -40,6 +40,29 @@ class RemoteUser implements Authenticatable
     }
 
     /**
+     * Is this attribute specified on the user?
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        // We read some fields directly from the OAuth token, and so
+        // they can always be considered "set" (even if they're null):
+        if (in_array($key, ['id', 'northstar_id', 'role'])) {
+            return true;
+        }
+
+        // Otherwise, we'll need to load the user's full user profile
+        // attributes & check if requested key is set there:
+        if (! $this->loaded) {
+            $this->loadAttributes();
+        }
+
+        return isset($this->attributes[$key]);
+    }
+
+    /**
      * Get an attribute, either from the token on the request or by
      * lazy-loading the full profile from the authorization server.
      *
@@ -59,10 +82,7 @@ class RemoteUser implements Authenticatable
         // duration of this request. (This instance is kept by the
         // user provider.)
         if (! $this->loaded) {
-            $user = gateway('northstar')->withToken($this->token)->getUser($this->id);
-
-            $this->attributes = $user->toArray();
-            $this->loaded = true;
+            $this->loadAttributes();
         }
 
         if (array_key_exists($key, $this->attributes) || $this->hasGetMutator($key)) {
@@ -70,5 +90,19 @@ class RemoteUser implements Authenticatable
         }
 
         return null;
+    }
+
+    /**
+     * Load the attributes on this 'RemoteUser' by requesting
+     * the corresponding user profile in Northstar.
+     *
+     * @return void
+     */
+    private function loadAttributes()
+    {
+        $user = gateway('northstar')->withToken($this->token)->getUser($this->id);
+
+        $this->attributes = $user->toArray();
+        $this->loaded = true;
     }
 }
