@@ -40,7 +40,7 @@ class RemoteUser implements Authenticatable
     }
 
     /**
-     * Is this attribute specified on the user? 
+     * Is this attribute specified on the user?
      *
      * @param  string  $key
      * @return bool
