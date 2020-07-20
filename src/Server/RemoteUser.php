@@ -59,10 +59,7 @@ class RemoteUser implements Authenticatable
         // duration of this request. (This instance is kept by the
         // user provider.)
         if (! $this->loaded) {
-            $user = gateway('northstar')->withToken($this->token)->getUser($this->id);
-
-            $this->attributes = $user->toArray();
-            $this->loaded = true;
+            $this->loadAttributes();
         }
 
         if (array_key_exists($key, $this->attributes) || $this->hasGetMutator($key)) {
@@ -70,5 +67,19 @@ class RemoteUser implements Authenticatable
         }
 
         return null;
+    }
+
+    /**
+     * Load the attributes on this 'RemoteUser' by requesting
+     * the corresponding user profile in Northstar.
+     *
+     * @return void
+     */
+    private function loadAttributes()
+    {
+        $user = gateway('northstar')->withToken($this->token)->getUser($this->id);
+
+        $this->attributes = $user->toArray();
+        $this->loaded = true;
     }
 }
