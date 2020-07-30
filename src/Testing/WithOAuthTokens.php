@@ -4,6 +4,7 @@ namespace DoSomething\Gateway\Testing;
 
 use Carbon\Carbon;
 use Lcobucci\JWT\Builder;
+use Illuminate\Support\Arr;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 
@@ -14,7 +15,7 @@ trait WithOAuthTokens
 {
     protected function randomUserId()
     {
-        return array_random([
+        return Arr::random([
             '5554eac1a59dbf117e8b4567',
             '5570b6cea59dbf3b7a8b4567',
             '5575e568a59dbf3b7a8b4572',
