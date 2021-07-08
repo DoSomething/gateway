@@ -4,7 +4,7 @@
   "require": {
     "nesbot/carbon": "^2.0",
     "lcobucci/jwt": "^3.1",
-    "guzzlehttp/guzzle": "^6.2",
+    "guzzlehttp/guzzle": "^6.2|^7.0",
     "league/oauth2-client": "^2.2",
     "symfony/psr-http-message-bridge": "^1.0",
     "laminas/laminas-diactoros": "^2.2",
