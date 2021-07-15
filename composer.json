@@ -3,13 +3,13 @@
   "description": "Standard PHP API client for DoSomething.org services.",
   "require": {
     "nesbot/carbon": "^2.0",
-    "lcobucci/jwt": "^3.1",
+    "lcobucci/jwt": "~3.3.2",
     "guzzlehttp/guzzle": "^6.2|^7.0",
     "league/oauth2-client": "^2.2",
     "symfony/psr-http-message-bridge": "^1.0",
     "laminas/laminas-diactoros": "^2.2",
     "gree/jose": "^2.2",
-    "ramsey/uuid": "^4.0"
+    "ramsey/uuid": "^3.7|^4.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^8.0",
@@ -30,19 +30,23 @@
     "psr-4": {
       "DoSomething\\Gateway\\": "src/"
     },
-    "files": ["src/Laravel/helpers.php"]
+    "files": [
+      "src/Laravel/helpers.php"
+    ]
   },
   "autoload-dev": {
-    "classmap": ["tests/TestCase.php"],
+    "classmap": [
+      "tests/TestCase.php"
+    ],
     "psr-4": {
       "DoSomething\\GatewayTests\\": "tests/"
     }
   },
   "extra": {
     "laravel": {
-        "providers": [
-            "DoSomething\\Gateway\\Laravel\\GatewayServiceProvider"
-        ]
+      "providers": [
+        "DoSomething\\Gateway\\Laravel\\GatewayServiceProvider"
+      ]
     }
   }
 }
